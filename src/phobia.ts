@@ -21,14 +21,14 @@ const PhobiaNameMap: Record<Phobia, string> = {
 };
 
 export const PhobiaSymbolMap: Record<Phobia, string> = {
-  red: "♥︎",
-  green: "♣︎",
-  blue: "☁︎",
-  yellow: "☀︎",
-  purple: "☂︎",
-  orange: "♠︎",
-  hotpink: "★",
-  cyan: "♦︎",
+  red: "♥︎\u{FE0E}",
+  green: "♣︎\u{FE0E}",
+  blue: "☁︎\u{FE0E}",
+  yellow: "☀︎\u{FE0E}",
+  purple: "☂︎\u{FE0E}",
+  orange: "♠︎\u{FE0E}",
+  hotpink: "★\u{FE0E}",
+  cyan: "♦︎\u{FE0E}",
 };
 
 export function getPhobiaName(phobia: Phobia | undefined): string {
