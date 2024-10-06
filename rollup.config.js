@@ -7,7 +7,6 @@ import terser from "@rollup/plugin-terser";
 import typescript from "@rollup/plugin-typescript";
 import svg from "rollup-plugin-svg-import";
 import dotenv from "rollup-plugin-dotenv";
-// import manifestJSON from "rollup-plugin-manifest-json";
 import clear from "rollup-plugin-clear";
 import { minify as htmlMinifier } from "html-minifier";
 import { transformAsset } from "./rollupTransformAsset.mjs";
@@ -41,6 +40,7 @@ export default {
       minimize: production,
       sourceMap: !production,
       use: ["sass"],
+      url: { publicPath: "assets/" },
     }),
     production &&
       !poki &&
@@ -72,13 +72,11 @@ export default {
       ],
     }),
     transformAsset({
-      "index.html": (html) => {
-        // html = html.replace('</head>', '<link rel="manifest" href="manifest.json"/></head>')
-        return htmlMinifier(html, {
+      "index.html": (html) =>
+        htmlMinifier(html, {
           collapseWhitespace: true,
           collapseBooleanAttributes: true,
-        });
-      },
+        }),
     }),
     !production && serve({ contentBase: outputDir, open: true }),
     !production && livereload(outputDir),
