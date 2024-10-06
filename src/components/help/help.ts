@@ -3,8 +3,7 @@ import "./help.scss";
 import { createElement } from "../../utils/html-utils";
 import { getTranslation, TranslationKey } from "../../translations/i18n";
 import { Cell, CellType, findPerson, isChair, isEmpty, isTable, PlacedPerson } from "../../types";
-import { getPhobiaName, Phobia } from "../../phobia";
-import { Dialog } from "../dialog/dialog";
+import { getPhobiaName, Phobia, PhobiaSymbolMap } from "../../phobia";
 import { createCellElement, createPersonElement } from "../game-field/cell-component";
 import { getChairsAtTable, getGuestsOnTable } from "../../logic/checks";
 import { globals } from "../../globals";
@@ -12,8 +11,6 @@ import { getOnboardingData } from "../../logic/onboarding";
 import { baseField } from "../../logic/base-field";
 
 import { CssClass } from "../../utils/css-class";
-
-let helpDialog: Dialog | undefined;
 
 interface HappyStat {
   phobia: Phobia | CellType.CHAIR | "😱";
@@ -75,8 +72,8 @@ export function getMiniHelpContent(cell?: Cell): HTMLElement {
 
     const phobias = [
       showTriskaidekaphobia ? getTranslation(TranslationKey.TRISKAIDEKAPHOBIA) + " [13]" : "",
-      fear ? getTranslation(TranslationKey.BIG_FEAR, fearName + " " + fear) : "",
-      smallFear ? getTranslation(TranslationKey.SMALL_FEAR, smallFearName + " " + smallFear) : "",
+      fear ? getTranslation(TranslationKey.BIG_FEAR, fearName + " " + PhobiaSymbolMap[fear]) : "",
+      smallFear ? getTranslation(TranslationKey.SMALL_FEAR, smallFearName + " " + PhobiaSymbolMap[smallFear]) : "",
     ];
 
     const filterPhobias = phobias.filter(Boolean);
@@ -146,11 +143,11 @@ function getSatisfactionStats(person: PlacedPerson): HTMLElement {
       satisfied: !isTriskaidekaphobia,
       explainText: getTranslation(TranslationKey.INFO_TRISKAIDEKAPHOBIA),
     },
-    { phobia: person.fear, satisfied: noBigFear, explainText: getTranslation(TranslationKey.INFO_BIG_FEAR, person.fear) },
+    { phobia: person.fear, satisfied: noBigFear, explainText: getTranslation(TranslationKey.INFO_BIG_FEAR, PhobiaSymbolMap[person.fear]) },
     {
       phobia: person.smallFear,
       satisfied: noSmallFear,
-      explainText: getTranslation(TranslationKey.INFO_SMALL_FEAR, person.smallFear),
+      explainText: getTranslation(TranslationKey.INFO_SMALL_FEAR, PhobiaSymbolMap[person.smallFear]),
     },
     { phobia: CellType.CHAIR, satisfied: hasTable, explainText: getTranslation(TranslationKey.INFO_FOMO) },
   ];
