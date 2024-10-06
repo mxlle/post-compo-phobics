@@ -86,19 +86,19 @@ export function createPersonElement(person: BasePerson): HTMLElement {
 
   const personTextElem = createElement({
     tag: "span",
-    cssClass: CssClass.EMOJI,
-    text: person.name,
+    cssClass: CssClass.EMOJI + " " + person.name,
+    text: "",
   });
 
   personElem.append(personTextElem);
 
   if (person.fear) {
-    const fearElem = createElement({ cssClass: `fear`, text: person.fear });
+    const fearElem = createElement({ cssClass: `fear ${person.fear}`, text: "" });
     personElem.append(fearElem);
   }
 
   if (person.smallFear) {
-    const smallFearElem = createElement({ cssClass: `fear small`, text: person.smallFear });
+    const smallFearElem = createElement({ cssClass: `fear small ${person.smallFear}`, text: "" });
     personElem.append(smallFearElem);
   }
 

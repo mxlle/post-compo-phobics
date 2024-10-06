@@ -1,4 +1,4 @@
-import { ONBOARDING_PHOBIAS_EMOJIS, OnboardingEmojiIndex } from "../phobia";
+import { ONBOARDING_PHOBIAS, OnboardingEmojiIndex } from "../phobia";
 import { CellType, getCellTypesWithoutPrefix, PersonWithPosition } from "../types";
 import { globals } from "../globals";
 import { LocalStorageKey, setLocalStorageItem } from "../utils/local-storage";
@@ -102,7 +102,7 @@ export function increaseOnboardingStepIfApplicable() {
   setLocalStorageItem(LocalStorageKey.ONBOARDING_STEP, step.toString());
 }
 
-const onboardingPhobias = [...ONBOARDING_PHOBIAS_EMOJIS];
+const onboardingPhobias = [...ONBOARDING_PHOBIAS];
 
 function getOnboardingDataForIntro(): OnboardingData {
   const short: ShortCharacterDefinition[] = [
@@ -202,10 +202,10 @@ function getOnboardingDataForTriskaidekaphobia(): OnboardingData {
 }
 
 function getPersonsWithPositionFromShortDescription(short: ShortCharacterDefinition[]): PersonWithPosition[] {
-  const cesar = getRandomIntFromInterval(0, ONBOARDING_PHOBIAS_EMOJIS.length - 1);
+  const cesar = getRandomIntFromInterval(0, ONBOARDING_PHOBIAS.length - 1);
   const getOEmoji = (index) => {
-    const newIndex = (index = cesar + index) % ONBOARDING_PHOBIAS_EMOJIS.length;
-    return ONBOARDING_PHOBIAS_EMOJIS[newIndex];
+    const newIndex = (index = cesar + index) % ONBOARDING_PHOBIAS.length;
+    return ONBOARDING_PHOBIAS[newIndex];
   };
 
   return short.map(([nameIndex, fearIndex, smallFearIndex, rowIndex, columnIndex]) => {
