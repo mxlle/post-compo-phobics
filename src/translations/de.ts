@@ -11,7 +11,7 @@ export function getDeTranslationMap(): Record<TranslationKey, string> {
 const deTranslations: Record<TranslationKey, string> = {
   [TranslationKey.INFO_TRISKAIDEKAPHOBIA]: "nie genau 13 an einem Tisch",
   [TranslationKey.TRISKAIDEKAPHOBIA]: "Triskaidekaphobie",
-  [TranslationKey.WELCOME]: "Willkommen bei der Gesellschaft der Multiphobiker",
+  [TranslationKey.WELCOME]: "Willkommen bei der Gesellschaft der Chromophobiker",
   [TranslationKey.GOAL]: "🏁 Platziere alle Emojis an den Tischen ohne ihre Phobien auszulösen.",
   [TranslationKey.GOAL_2]: "🏁 Was für ein Chaos! Sortiere die Emojis um, bis alle Phobien aufgelöst sind.",
   [TranslationKey.START_GAME]: "Spiel starten",
