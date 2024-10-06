@@ -62,7 +62,7 @@ export default {
         output: "manifest.json",
       }),
     html({
-      title: "The Society of Multiphobics",
+      title: "The Society of Chromophobics",
       meta: [
         { charset: "utf-8" },
         {
