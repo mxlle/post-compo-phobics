@@ -45,11 +45,11 @@ export default {
     production &&
       !poki &&
       terser({
-        mangle: {
-          properties: {
-            keep_quoted: true,
-          },
-        },
+        // mangle: {
+        //   properties: {
+        //     keep_quoted: true,
+        //   },
+        // },
         compress: {
           booleans_as_integers: true,
           drop_console: true,
