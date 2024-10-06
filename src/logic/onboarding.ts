@@ -1,4 +1,4 @@
-import { ONBOARDING_PHOBIAS, OnboardingEmojiIndex } from "../phobia";
+import { PhobiaIndex, PHOBIAS } from "../phobia";
 import { CellType, getCellTypesWithoutPrefix, PersonWithPosition } from "../types";
 import { globals } from "../globals";
 import { LocalStorageKey, setLocalStorageItem } from "../utils/local-storage";
@@ -37,9 +37,9 @@ export interface OnboardingData {
 type BaseFieldIndex = IntRange<0, 9>;
 
 type ShortCharacterDefinition = [
-  nameIndex: OnboardingEmojiIndex,
-  fearIndex: OnboardingEmojiIndex | -1,
-  smallFearIndex: OnboardingEmojiIndex | -1,
+  nameIndex: PhobiaIndex,
+  fearIndex: PhobiaIndex | -1,
+  smallFearIndex: PhobiaIndex | -1,
   rowIndex: BaseFieldIndex,
   columnIndex: BaseFieldIndex,
 ];
@@ -101,8 +101,6 @@ export function increaseOnboardingStepIfApplicable() {
   globals.onboardingStep = step;
   setLocalStorageItem(LocalStorageKey.ONBOARDING_STEP, step.toString());
 }
-
-const onboardingPhobias = [...ONBOARDING_PHOBIAS];
 
 function getOnboardingDataForIntro(): OnboardingData {
   const short: ShortCharacterDefinition[] = [
@@ -202,10 +200,10 @@ function getOnboardingDataForTriskaidekaphobia(): OnboardingData {
 }
 
 function getPersonsWithPositionFromShortDescription(short: ShortCharacterDefinition[]): PersonWithPosition[] {
-  const cesar = getRandomIntFromInterval(0, ONBOARDING_PHOBIAS.length - 1);
-  const getOEmoji = (index) => {
-    const newIndex = (index = cesar + index) % ONBOARDING_PHOBIAS.length;
-    return ONBOARDING_PHOBIAS[newIndex];
+  const cesar = getRandomIntFromInterval(0, PHOBIAS.length - 1);
+  const getOEmoji = (index: number) => {
+    const newIndex = (cesar + index) % PHOBIAS.length;
+    return PHOBIAS[newIndex];
   };
 
   return short.map(([nameIndex, fearIndex, smallFearIndex, rowIndex, columnIndex]) => {

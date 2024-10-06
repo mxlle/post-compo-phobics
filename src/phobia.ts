@@ -1,18 +1,13 @@
 import { getRandomItem } from "./utils/array-utils";
 import { isGermanLanguage } from "./translations/i18n";
 
-export const ONBOARDING_PHOBIAS = ["red", "green", "blue", "yellow"] as const;
-
-export const OTHER_PHOBIAS = ["purple", "orange", "hotpink", "cyan"] as const;
-
-export const PHOBIAS = [...ONBOARDING_PHOBIAS, ...OTHER_PHOBIAS];
+export const PHOBIAS = ["red", "green", "blue", "yellow", "purple", "orange", "hotpink", "cyan"] as const;
 
 export type Indices<T extends readonly any[]> = Exclude<Partial<T>["length"], T["length"]>;
 
-export type OnboardingEmojiIndex = Indices<typeof ONBOARDING_PHOBIAS>;
-export type OtherEmojiIndex = Indices<typeof OTHER_PHOBIAS>;
+export type PhobiaIndex = Indices<typeof PHOBIAS>;
 
-export type Phobia = (typeof ONBOARDING_PHOBIAS)[OnboardingEmojiIndex] | (typeof OTHER_PHOBIAS)[OtherEmojiIndex];
+export type Phobia = (typeof PHOBIAS)[PhobiaIndex];
 
 const PhobiaNameMap: Record<Phobia, string> = {
   red: "Erythrophobia",
