@@ -105,6 +105,7 @@ $border-style: outset;
   line-height: 1;
   text-align: center;
   color: rgba(black, 0.6);
+  font-family: system-ui;
 
   &::before {
     content: "😊";
@@ -345,6 +346,7 @@ $border-style: outset;
   font-size: 0.6em;
   z-index: 2;
   padding: 3%;
+  font-family: system-ui;
 
   @include phobia-colors;
 
