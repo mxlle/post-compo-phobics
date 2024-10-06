@@ -12,15 +12,26 @@ $orange: orange;
 $hotpink: hotpink;
 $cyan: cyan;
 
-$secondary-alpha: 0.5;
+$color-map: (
+  red: $red,
+  blue: #0052c0,
+  green: $green,
+  yellow: #ffd500,
+  purple: #9300cb,
+  orange: #ff9100,
+  hotpink: $hotpink,
+  cyan: $cyan,
+);
 
 $color-list: $red, $blue, $green, $yellow, $purple, $orange, $hotpink, $cyan;
 
 @mixin phobia-colors {
-  @each $color in $color-list {
-    &.#{$color} {
+  @each $colorName in $color-list {
+    &.#{$colorName} {
+      $color: map-get($color-map, $colorName);
       --color: #{$color};
-      --color-secondary: #{rgba($color, $secondary-alpha)};
+      --color-secondary: #{rgba($color, 0.5)};
+      --color-tertiary: #{rgba($color, 0.3)};
     }
   }
 }
@@ -81,25 +92,30 @@ $border-style: outset;
 
 .#{$EMOJI} {
   display: block;
-  height: 0.75em;
-  width: 0.9em;
-  border-radius: 1em 1em 4px 4px;
-  margin-top: 0.4em;
+  height: 50%;
+  width: 60%;
+  font-size: 0.5em;
+  border-radius: 100% 100% 4px 4px;
+  margin-top: 20%;
   position: relative;
   background-color: var(--color, gray);
   border: 4px outset var(--color-secondary, lightgray);
   border-bottom: none;
+  padding-top: 10%;
+  text-align: center;
   font-family: "EmojiFont", sans-serif;
+  color: rgba(black, 0.6);
 
   &::before {
     content: "😊";
+    color: black;
     display: block;
     position: absolute;
-    font-size: 0.65em;
+    font-size: 1.4em;
     z-index: 2;
     top: 0;
     left: 50%;
-    transform: translate(-50%, -70%);
+    transform: translate(-50%, -75%);
   }
 
   @include phobia-colors;
@@ -323,18 +339,16 @@ $border-style: outset;
   display: grid;
   place-items: center;
   line-height: 1;
-  background: var(--color);
-  width: 0.5em;
-  height: 0.5em;
+  color: var(--color);
+  background: var(--color-tertiary);
+  font-size: 0.6em;
   z-index: 2;
-  border-radius: 50%;
-  margin: 0.05em;
+  padding: 3%;
 
   @include phobia-colors;
 
   &.small {
-    width: 0.4em;
-    height: 0.4em;
+    font-size: 0.5em;
     right: 0;
     left: auto;
   }

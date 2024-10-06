@@ -15,14 +15,25 @@ export type OtherEmojiIndex = Indices<typeof OTHER_PHOBIAS>;
 export type Phobia = (typeof ONBOARDING_PHOBIAS)[OnboardingEmojiIndex] | (typeof OTHER_PHOBIAS)[OtherEmojiIndex];
 
 const PhobiaNameMap: Record<Phobia, string> = {
-  "red": "Erythrophobia",
-  "green": "Chlorophobia",
-  "blue": "Cyanophobia",
-  "yellow": "Xanthophobia",
-  "purple": "Porphyrophobia",
-  "orange": "Chrysophobia",
-  "hotpink": "Rhodophobia",
-  "cyan": "Glaucophobia",
+  red: "Erythrophobia",
+  green: "Chlorophobia",
+  blue: "Cyanophobia",
+  yellow: "Xanthophobia",
+  purple: "Porphyrophobia",
+  orange: "Chrysophobia",
+  hotpink: "Rhodophobia",
+  cyan: "Glaucophobia",
+};
+
+export const PhobiaSymbolMap: Record<Phobia, string> = {
+  red: "♥︎",
+  green: "♣︎",
+  blue: "☁︎",
+  yellow: "☀︎",
+  purple: "☂︎",
+  orange: "♠︎",
+  hotpink: "★",
+  cyan: "♦︎",
 };
 
 export function getPhobiaName(phobia: Phobia | undefined): string {
