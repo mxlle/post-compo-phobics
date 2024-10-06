@@ -1,5 +1,14 @@
 @import "theme";
 
+@font-face {
+  font-family: "EmojiFont";
+  font-display: swap;
+  // file from https://github.com/mozilla/twemoji-colr/issues/50 for chrome fix
+  src: url("assets/Twemoji.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+}
+
 html,
 body {
   height: 100%;
