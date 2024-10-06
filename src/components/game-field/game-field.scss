@@ -25,7 +25,7 @@ $color-map: (
 
 $color-list: $red, $blue, $green, $yellow, $purple, $orange, $hotpink, $cyan;
 
-$symbol-font-family: "Arial", sans-serif;
+$symbol-font-family: "NotoSansSymbols", sans-serif;
 
 @mixin phobia-colors {
   @each $colorName in $color-list {
@@ -345,16 +345,16 @@ $border-style: outset;
   line-height: 1;
   color: var(--color);
   background: var(--color-tertiary);
-  font-size: 0.6em;
+  font-size: 0.5em;
   z-index: 2;
-  width: 1em;
-  height: 1em;
+  width: 1.2em;
+  height: 1.2em;
   font-family: $symbol-font-family;
 
   @include phobia-colors;
 
   &.small {
-    font-size: 0.5em;
+    font-size: 0.4em;
     right: 0;
     left: auto;
   }

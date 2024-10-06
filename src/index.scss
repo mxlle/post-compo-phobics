@@ -9,6 +9,14 @@
   font-style: normal;
 }
 
+@font-face {
+  font-family: "NotoSansSymbols";
+  font-display: swap;
+  src: url("./assets/NotoSansSymbols.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+}
+
 html,
 body {
   height: 100%;
