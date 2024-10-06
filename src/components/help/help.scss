@@ -40,6 +40,12 @@
         display: none;
       }
 
+      .#{$EMOJI} {
+        &::before {
+          content: "🤔";
+        }
+      }
+
       .fear {
         &::after {
           content: "A ―";

@@ -96,12 +96,13 @@ $border-style: outset;
   width: 60%;
   font-size: 0.5em;
   border-radius: 100% 100% 4px 4px;
-  margin-top: 20%;
+  margin-top: 30%;
   position: relative;
   background-color: var(--color, gray);
   border: 4px outset var(--color-secondary, lightgray);
   border-bottom: none;
   padding-top: 10%;
+  line-height: 1;
   text-align: center;
   color: rgba(black, 0.6);
 
