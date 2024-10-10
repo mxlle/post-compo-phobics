@@ -26,6 +26,7 @@ $color-map: (
 $color-list: $red, $blue, $green, $yellow, $purple, $orange, $hotpink, $cyan;
 
 $symbol-font-family: "NotoSansSymbols", sans-serif;
+$emoji-font-family: "EmojiFont", sans-serif;
 
 @mixin phobia-colors {
   @each $colorName in $color-list {
@@ -119,7 +120,7 @@ $border-style: outset;
     top: 0;
     left: 50%;
     transform: translate(-50%, -75%);
-    font-family: "EmojiFont", sans-serif;
+    font-family: $emoji-font-family;
   }
 
   @include phobia-colors;
@@ -198,6 +199,7 @@ $border-style: outset;
       font-size: 0.6em;
       transform: rotate(90deg);
       left: 1px;
+      font-family: $emoji-font-family;
 
       + .#{$PLATE} {
         transform: rotate(-90deg);
