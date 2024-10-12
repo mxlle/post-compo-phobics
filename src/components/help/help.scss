@@ -16,6 +16,12 @@
   text-align: left;
   color: theme.$text-tertiary;
 
+  grid-row: span 2;
+
+  @media (orientation: portrait) {
+    grid-row: auto;
+  }
+
   h3 {
     &.#{$WELCOME} {
       font-family: theme.$font-family-special;

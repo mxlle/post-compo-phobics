@@ -14,15 +14,17 @@ import { PubSubEvent, pubSubService } from "../../utils/pub-sub-service";
 import { handlePokiCommercial, pokiSdk } from "../../poki-integration";
 import { getOnboardingData, increaseOnboardingStepIfApplicable, isOnboarding, OnboardingData, wasOnboarding } from "../../logic/onboarding";
 import { getMiniHelpContent } from "../help/help";
-import { getOnboardingArrow } from "../onboarding/onboarding-components";
+import { Direction, getOnboardingArrow } from "../onboarding/onboarding-components";
 import { calculateScore } from "../../logic/score";
 import initDragDrop from "../../utils/drag-drop";
 import { CssClass } from "../../utils/css-class";
+import { getWaitingAreaElement } from "./waiting-area";
 
 let mainContainer: HTMLElement | undefined;
 let gameFieldElem: HTMLElement | undefined;
 let startButton: HTMLElement | undefined;
 let miniHelp: HTMLElement | undefined;
+let waitingArea: HTMLElement | undefined;
 let onboardingArrow: HTMLElement | undefined;
 let clickedCell: PlacedPerson | undefined;
 let lastClickedCell: Cell | undefined;
@@ -96,7 +98,7 @@ export async function startNewGame() {
     globals.gameFieldData = getGameFieldData();
   }
 
-  globals.placedPersons = placePersonsInitially(globals.gameFieldData);
+  placePersonsInitially(globals.gameFieldData);
 
   if (!gameFieldElem) {
     gameFieldElem = generateGameFieldElement(globals.gameFieldData);
@@ -104,7 +106,7 @@ export async function startNewGame() {
     await requestAnimationFrameWithTimeout(TIMEOUT_BETWEEN_GAMES);
   }
 
-  await initializePersonsOnGameField(globals.placedPersons);
+  await initializePersonsOnGameField();
 
   addOnboardingArrowIfApplicable();
 
@@ -123,6 +125,8 @@ function appendGameField() {
     });
     document.body.append(mainContainer);
   }
+
+  attachWaitingArea(globals.gameFieldData.length);
 
   mainContainer.append(gameFieldElem);
 
@@ -218,6 +222,14 @@ function updateMiniHelp(cell?: Cell) {
 
   miniHelp = getMiniHelpContent(cell);
   mainContainer?.append(miniHelp);
+}
+
+function attachWaitingArea(columnCount: number) {
+  if (!waitingArea) {
+    waitingArea = getWaitingAreaElement(columnCount);
+  }
+
+  mainContainer?.append(waitingArea);
 }
 
 function updateState(gameFieldData: Cell[][], placedPersons: PlacedPerson[], skipWinCheck = false): boolean {
@@ -328,9 +340,20 @@ function getElementCell(gameFieldData: GameFieldData, el: HTMLElement): Cell | u
   }
 }
 
-export async function initializePersonsOnGameField(persons: PlacedPerson[]) {
-  for (let i = 0; i < persons.length; i++) {
-    const person = persons[i];
+export async function initializePersonsOnGameField() {
+  const waitingPersons = globals.waitingPersons;
+  const sittingPersons = globals.placedPersons;
+
+  for (let i = 0; i < waitingPersons.length; i++) {
+    const person = waitingPersons[i];
+    const cellElement = waitingArea?.children[0]?.children[i] as HTMLElement;
+    cellElement.innerHTML = "";
+    cellElement.append(person.personElement);
+    await requestAnimationFrameWithTimeout(TIMEOUT_CELL_APPEAR);
+  }
+
+  for (let i = 0; i < sittingPersons.length; i++) {
+    const person = sittingPersons[i];
     const cellElement = getCellElement(person);
     cellElement.innerHTML = "";
     updateCellOccupancy(person, cellElement, getCellElement, true);
@@ -340,11 +363,11 @@ export async function initializePersonsOnGameField(persons: PlacedPerson[]) {
 
 function addOnboardingArrowIfApplicable() {
   const onboardingData = getOnboardingData();
+  const waitingLength = onboardingData?.waitingPersons.length;
 
-  if (onboardingData?.arrow) {
-    onboardingArrow = getOnboardingArrow(onboardingData.arrow.direction);
-    const cell = globals.gameFieldData[onboardingData.arrow.row][onboardingData.arrow.column];
-    const cellElement = getCellElement(cell);
+  if (waitingLength) {
+    onboardingArrow = getOnboardingArrow(Direction.LEFT);
+    const cellElement = waitingArea?.children[0]?.children[waitingLength - 1] as HTMLElement;
     cellElement.append(onboardingArrow);
   }
 }
@@ -353,8 +376,8 @@ function removeOnboardingArrowIfApplicable() {
   if (!onboardingArrow) {
     return;
   }
-  const onboardingData = getOnboardingData();
-  const hasOnboardingCellPerson = onboardingData?.arrow && hasPerson(globals.placedPersons, onboardingData.arrow);
+
+  const hasOnboardingCellPerson = globals.waitingPersons.length;
 
   if (!hasOnboardingCellPerson) {
     onboardingArrow.remove();

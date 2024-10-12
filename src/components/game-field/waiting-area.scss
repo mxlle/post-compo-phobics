@@ -1,0 +1,18 @@
+@use "../../theme";
+@use "../../grid-mixins";
+
+@import "../../utils/css-class";
+
+$rowCount: var(--w-rows, 1);
+$columnCount: var(--w-cols, grid-mixins.$squareCount);
+
+div.waiting-area {
+  grid-template-columns: repeat($columnCount, var(--s-size));
+  grid-template-rows: repeat($rowCount, var(--s-size));
+  margin-bottom: calc(-1rem); // - gap - border
+  border-bottom: none;
+
+  .#{$CELL} {
+    background: theme.$tile-color-2;
+  }
+}

@@ -1,26 +1,37 @@
-import { BasePerson, Cell, CellType, GameFieldData, isChair, isTable, Person, PlacedPerson } from "../types";
+import { BasePerson, Cell, CellType, GameFieldData, isChair, isTable, Person, PlacedPerson, WaitingPerson } from "../types";
 import { getRandomPhobia, getRandomPhobiaExcluding, Phobia } from "../phobia";
 import { getOnboardingData, OnboardingData } from "./onboarding";
 import { globals } from "../globals";
 import { getRandomIntFromInterval, shuffleArray } from "../utils/random-utils";
-import { checkTableStates, getEmptyChairs, getGuestsOnTable, getNeighbors } from "./checks";
+import { getEmptyChairs, getGuestsOnTable, getNeighbors } from "./checks";
 import { baseField } from "./base-field";
 import { createPersonElement } from "../components/game-field/cell-component";
 import { simplifiedCalculateParViaChains } from "./par";
 
-export function placePersonsInitially(gameFieldData: GameFieldData): PlacedPerson[] {
+export function placePersonsInitially(gameFieldData: GameFieldData): void {
   let onboardingData: OnboardingData | undefined = getOnboardingData();
 
   let placedPersons: PlacedPerson[];
+  let waitingPersons: WaitingPerson[];
 
   if (onboardingData) {
+    waitingPersons = applyWaitingPersons(onboardingData);
     placedPersons = applySeatedCharacters(onboardingData);
   } else {
     const charactersForGame = generateCharactersForGame(gameFieldData);
-    placedPersons = randomlyApplyCharactersOnBoard(gameFieldData, charactersForGame, globals.settings.minInitialPanic);
+    const splitIndex = globals.settings.minInitialPanic;
+    const waiting = charactersForGame.slice(0, splitIndex);
+    const sitting = charactersForGame.slice(splitIndex);
+    waitingPersons = waiting.map((character): WaitingPerson => {
+      return {
+        ...character,
+        personElement: createPersonElement(character),
+      };
+    });
+    placedPersons = randomlyApplyCharactersOnBoard(gameFieldData, sitting);
 
     //const time = performance.now();
-    const par = simplifiedCalculateParViaChains(placedPersons);
+    const par = simplifiedCalculateParViaChains(placedPersons) + waiting.length;
     // const par = calculatePar(gameFieldData, [...placedPersons]);
     // console.info("PAR CALCULATION TOOK", performance.now() - time);
     console.info("FINAL PAR", par);
@@ -31,7 +42,8 @@ export function placePersonsInitially(gameFieldData: GameFieldData): PlacedPerso
     };
   }
 
-  return placedPersons;
+  globals.waitingPersons = waitingPersons;
+  globals.placedPersons = placedPersons;
 }
 
 export function getGameFieldData(): GameFieldData {
@@ -186,12 +198,7 @@ function generatePerson(chanceForBigFear: number, chanceForSmallFear: number): P
   };
 }
 
-function randomlyApplyCharactersOnBoard(
-  gameFieldData: GameFieldData,
-  characters: Person[],
-  minInitialPanic: number,
-  iteration: number = 0,
-): PlacedPerson[] {
+function randomlyApplyCharactersOnBoard(gameFieldData: GameFieldData, characters: Person[]): PlacedPerson[] {
   const placedPersons: PlacedPerson[] = [];
   const copyOfCharacters = [...characters];
   const allChairs = gameFieldData.flat().filter(isChair);
@@ -207,22 +214,15 @@ function randomlyApplyCharactersOnBoard(
     placedPersons.push({ ...person, row, column, tableIndex });
   });
 
-  checkTableStates(gameFieldData, placedPersons);
-  const numAfraid = placedPersons.filter((person) => person.hasPanic).length;
-
-  if ((numAfraid < minInitialPanic && iteration < 10) || (numAfraid === 0 && iteration < 50)) {
-    console.info("not afraid enough, reshuffling");
-
-    return randomlyApplyCharactersOnBoard(gameFieldData, characters, minInitialPanic, iteration + 1);
-  }
+  // checkTableStates(gameFieldData, placedPersons);
 
   return placedPersons;
 }
 
 function applySeatedCharacters(onboardingData: OnboardingData): PlacedPerson[] {
-  const { getTableIndex, characters } = onboardingData;
+  const { getTableIndex, sittingPersons } = onboardingData;
 
-  return characters.map((character): PlacedPerson => {
+  return sittingPersons.map((character): PlacedPerson => {
     const relatedCellType = onboardingData.field[character.row][character.column];
 
     return {
@@ -232,6 +232,15 @@ function applySeatedCharacters(onboardingData: OnboardingData): PlacedPerson[] {
       afraidOf: [],
       makesAfraid: [],
       tableIndex: isChair(relatedCellType) ? getTableIndex(character.row, character.column) : undefined,
+      personElement: createPersonElement(character),
+    };
+  });
+}
+
+function applyWaitingPersons(onboardingData: OnboardingData): WaitingPerson[] {
+  return onboardingData.waitingPersons.map((character): WaitingPerson => {
+    return {
+      ...character,
       personElement: createPersonElement(character),
     };
   });

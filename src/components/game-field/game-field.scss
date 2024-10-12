@@ -5,7 +5,8 @@
 
 $border-style: outset;
 
-.#{$FIELD} {
+.#{$FIELD},
+.waiting-area {
   --t: #{$tile-color-1};
   position: relative;
   margin: 0 auto;

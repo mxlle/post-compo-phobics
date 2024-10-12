@@ -49,6 +49,10 @@ export interface CellPositionWithTableIndex extends CellPosition {
 
 export interface PlacedPerson extends Person, CellPositionWithTableIndex {}
 
+export interface WaitingPerson extends BasePerson {
+  personElement: HTMLElement;
+}
+
 export interface PersonWithPosition extends BasePerson, CellPosition {}
 
 export type GameFieldData = Cell[][];
