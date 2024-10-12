@@ -1,7 +1,7 @@
 @use "../../grid-mixins";
 
 @use "../../theme";
-@import "../../names";
+@import "../../utils/css-class";
 
 .#{$HELP} {
   display: flex;
@@ -17,7 +17,7 @@
   color: theme.$text-tertiary;
 
   h3 {
-    &.#{$HI} {
+    &.#{$WELCOME} {
       font-family: theme.$font-family-special;
       font-size: 1.6em;
       color: theme.$text-primary;

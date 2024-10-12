@@ -33,7 +33,7 @@ export function getMiniHelpContent(cell?: Cell): HTMLElement {
     const exampleHeading = createElement({
       tag: "h3",
       text: getTranslation(TranslationKey.WELCOME),
-      cssClass: CssClass.HI,
+      cssClass: CssClass.WELCOME,
     });
 
     const goalText = getOnboardingData() ? getTranslation(TranslationKey.GOAL) : getTranslation(TranslationKey.GOAL_2);
