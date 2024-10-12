@@ -2,7 +2,7 @@ import "./index.scss";
 
 import { createButton, createElement } from "./utils/html-utils";
 import { PubSubEvent, pubSubService } from "./utils/pub-sub-service";
-import { initializeEmptyGameField, startNewGame } from "./components/game-field/game-field";
+import { startNewGame } from "./components/game-field/game-field";
 import { initAudio, togglePlayer } from "./audio/music-control";
 import { getLocalStorageItem, LocalStorageKey } from "./utils/local-storage";
 import { initPoki } from "./poki-integration";
@@ -48,11 +48,7 @@ function init() {
 
   document.body.append(header);
 
-  if (isOnboarding()) {
-    void startNewGame();
-  } else {
-    void initializeEmptyGameField();
-  }
+  void startNewGame();
 
   pubSubService.subscribe(PubSubEvent.NEW_GAME, () => {
     void startNewGame();
