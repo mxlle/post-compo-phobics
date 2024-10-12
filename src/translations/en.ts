@@ -3,7 +3,7 @@ import { TranslationKey } from "./i18n";
 export const enTranslations: Record<TranslationKey, string> = {
   [TranslationKey.INFO_TRISKAIDEKAPHOBIA]: "never exactly 13 at a table",
   [TranslationKey.TRISKAIDEKAPHOBIA]: "Triskaidekaphobia",
-  [TranslationKey.WELCOME]: "Welcome to the Society of Chromophobics",
+  [TranslationKey.WELCOME]: "Welcome to the Society of Multiphobics",
   [TranslationKey.GOAL]: "🏁 Seat all persons at the tables without triggering any phobias.",
   [TranslationKey.GOAL_2]: "🏁 What a mess! Re-sort the persons at the tables until all phobias are resolved.",
   [TranslationKey.START_GAME]: "Start game",
