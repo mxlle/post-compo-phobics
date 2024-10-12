@@ -14,7 +14,7 @@ import { createWinScreen } from "./components/win-screen/win-screen";
 let scoreElement: HTMLElement;
 let currentScore = 0;
 
-const initializeMuted = getLocalStorageItem(LocalStorageKey.MUTED) === "true";
+const initializeMuted = getLocalStorageItem(LocalStorageKey.MUTED) !== "false";
 
 function init() {
   const header = createElement({
