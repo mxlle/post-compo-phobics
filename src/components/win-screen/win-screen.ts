@@ -49,7 +49,7 @@ function getConfirmText(isComplete: boolean) {
     return isComplete || globals.isWon ? getTranslation(TranslationKey.CONTINUE) : getTranslation(TranslationKey.NEW_GAME);
   }
 
-  return getTranslation(TranslationKey.NEW_GAME) + " " + difficultyEmoji[globals.difficulty];
+  return `${getTranslation(TranslationKey.NEW_GAME)} <span class="emoji-font">${difficultyEmoji[globals.difficulty]}</span>`;
 }
 
 function getWinScreenContent(score: number, isComplete: boolean) {
@@ -62,9 +62,9 @@ function getWinScreenContent(score: number, isComplete: boolean) {
   });
 
   if (isComplete || globals.isWon) {
-    const scoreText = isOnboarding() ? "" : "<br/>" + score + "⭐️";
+    const scoreText = isOnboarding() ? "" : `<br/>${score}<span class="emoji-font">⭐️</span>`;
 
-    winContentElem.innerHTML = getTranslation(TranslationKey.WIN) + scoreText;
+    winContentElem.innerHTML = `<span>${getTranslation(TranslationKey.WIN)} <span class="emoji-font">🎉</span>${scoreText}</span>`;
   } else {
     winContentElem.innerHTML = getTranslation(TranslationKey.NEW_GAME);
   }
@@ -79,20 +79,21 @@ function getWinScreenContent(score: number, isComplete: boolean) {
     const inner = createElement({});
 
     const btn = createButton({
-      text: difficultyEmoji[difficulty] + " " + getDifficultyText(difficulty),
       onClick: () => {
         setDifficulty(difficulty);
         updateConfirmText(isComplete);
         winDialog?.close(true);
       },
     });
+    btn.innerHTML = `<span class="emoji-font">${difficultyEmoji[difficulty]}</span> ${getDifficultyText(difficulty)}`;
 
     const stats = getDifficultyStats(difficulty);
 
     const high = createElement({
       cssClass: "high",
-      text: `${getTranslation(TranslationKey.HIGHSCORE)} ${stats.highscore}⭐ – ${getTranslation(TranslationKey.AVERAGE)} ${stats.average}⭐️`,
     });
+
+    high.innerHTML = `${getTranslation(TranslationKey.HIGHSCORE)} ${stats.highscore}<span class="emoji-font">⭐️</span> – ${getTranslation(TranslationKey.AVERAGE)} ${stats.average}<span class="emoji-font">⭐️</span>`;
 
     inner.append(btn, high);
     difficultyElement.append(inner);

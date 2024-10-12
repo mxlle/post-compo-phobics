@@ -40,9 +40,9 @@ export function createDialog(innerElement: HTMLElement, submitButtonText?: strin
     });
     buttons.appendChild(cancelButton);
     submitButton = createButton({
-      text: submitButtonText,
       onClick: () => closeDialog(true),
     });
+    submitButton.innerHTML = submitButtonText;
     submitButton.classList.add("prm");
     buttons.appendChild(submitButton);
     dialog.appendChild(buttons);
@@ -84,7 +84,7 @@ export function createDialog(innerElement: HTMLElement, submitButtonText?: strin
       dialogContent.appendChild(newInnerElement);
     },
     changeSubmitText: (newText: string) => {
-      if (submitButton) submitButton.innerText = newText;
+      if (submitButton) submitButton.innerHTML = newText;
     },
   };
 }

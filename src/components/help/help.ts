@@ -95,11 +95,11 @@ export function getMiniHelpContent(cell?: Cell): HTMLElement {
 
       const helpTexts = [
         getTranslation(TranslationKey.INFO_TABLE, tableIndex + 1),
-        getTranslation(TranslationKey.INFO_TABLE_OCCUPANCY, occupancy, numChairs),
+        getTranslation(TranslationKey.INFO_TABLE_OCCUPANCY, occupancy, numChairs) + " <span class='emoji-font'>🪑</span>",
       ];
 
       if (occupancy === 13) {
-        helpTexts.push("😱😱😱");
+        helpTexts.push("<span class='emoji-font'>😱😱😱</span>");
         helpTexts.push(getTranslation(TranslationKey.INFO_TRISKAIDEKAPHOBIA));
         helpCellElement.classList.add(CssClass.T13A);
       }
