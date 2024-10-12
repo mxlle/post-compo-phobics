@@ -38,13 +38,13 @@ export interface OnboardingData {
 
 type BaseFieldIndex = IntRange<0, 9>;
 
-type ShortCharacterDefinition = [
-  nameIndex: PhobiaIndex,
-  fearIndex: PhobiaIndex | -1,
-  smallFearIndex: PhobiaIndex | -1,
-  rowIndex: BaseFieldIndex,
-  columnIndex: BaseFieldIndex,
-];
+type ShortCharacterDefinition = {
+  nameI: PhobiaIndex;
+  fearI?: PhobiaIndex;
+  smallFearI?: PhobiaIndex;
+  row: BaseFieldIndex;
+  column: BaseFieldIndex;
+};
 
 // a 4 by 4 grid
 const onboardingField = (() => {
@@ -108,8 +108,8 @@ export function increaseOnboardingStepIfApplicable() {
 
 function getOnboardingDataForIntro(): OnboardingData {
   const short: ShortCharacterDefinition[] = [
-    [0, -1, 1, 0, 0],
-    [1, -1, -1, 1, 3],
+    { row: 0, column: 0, nameI: 0, smallFearI: 1 },
+    { row: 1, column: 3, nameI: 1 },
   ];
 
   return {
@@ -130,11 +130,11 @@ function getOnboardingDataForIntro(): OnboardingData {
 
 function getOnboardingDataForBothPhobias(): OnboardingData {
   const short: ShortCharacterDefinition[] = [
-    [0, 1, 2, 0, 3],
-    [1, -1, -1, 2, 0],
-    [2, 1, -1, 2, 4],
-    [3, -1, -1, 4, 6],
-    [4, -1, -1, 3, 2],
+    { row: 0, column: 3, nameI: 0, fearI: 1, smallFearI: 2 },
+    { row: 2, column: 0, nameI: 1 },
+    { row: 2, column: 4, nameI: 2, fearI: 1 },
+    { row: 4, column: 6, nameI: 3 },
+    { row: 3, column: 2, nameI: 4 },
   ];
 
   return {
@@ -155,13 +155,13 @@ function getOnboardingDataForBothPhobias(): OnboardingData {
 
 function getOnboardingDataForResort(): OnboardingData {
   const short: ShortCharacterDefinition[] = [
-    [0, 1, 2, 0, 3],
-    [1, -1, -1, 2, 2],
-    [2, 1, -1, 2, 6],
-    [2, -1, 0, 3, 6],
-    [3, -1, -1, 4, 4],
-    [4, -1, -1, 3, 0],
-    [4, -1, -1, 4, 2],
+    { row: 0, column: 3, nameI: 0, fearI: 1, smallFearI: 2 },
+    { row: 2, column: 2, nameI: 1 },
+    { row: 2, column: 6, nameI: 2, fearI: 1 },
+    { row: 3, column: 6, nameI: 2, smallFearI: 0 },
+    { row: 4, column: 4, nameI: 3 },
+    { row: 3, column: 0, nameI: 4 },
+    { row: 4, column: 2, nameI: 4 },
   ];
 
   return {
@@ -187,33 +187,38 @@ function getOnboardingDataForResort(): OnboardingData {
  * 1st not at a table, all tables without panic
  */
 function getOnboardingDataForTriskaidekaphobia(): OnboardingData {
-  // there are 9 different emojis in the onboarding, so the nameIndex is 0-8, same for the fears, we then repeat some
   const onboardingCharacters: ShortCharacterDefinition[] = [
-    [0, 1, 4, 0, 3],
-    [1, -1, -1, 1, 0],
-    [1, -1, -1, 2, 0],
-    [2, -1, -1, 3, 0],
-    [2, -1, -1, 4, 0],
-    [3, -1, -1, 5, 0],
-    [3, -1, -1, 6, 0],
-    [1, -1, -1, 1, 2],
-    [1, -1, -1, 2, 2],
-    [2, -1, -1, 3, 2],
-    [2, -1, -1, 4, 2],
-    [3, -1, -1, 5, 2],
-    [3, -1, -1, 6, 2],
-    [4, -1, -1, 1, 5],
-    [4, -1, -1, 2, 5],
-    [5, -1, -1, 3, 5],
-    [5, -1, -1, 4, 5],
-    [6, -1, -1, 5, 5],
-    [6, -1, -1, 6, 5],
-    [4, -1, -1, 1, 7],
-    [4, -1, -1, 2, 7],
-    [5, -1, -1, 3, 7],
-    [5, -1, -1, 4, 7],
-    [6, -1, -1, 5, 7],
-    [6, -1, -1, 6, 7],
+    { row: 0, column: 3, nameI: 0, fearI: 1, smallFearI: 4 },
+    // type 1
+    { row: 1, column: 0, nameI: 1 },
+    { row: 2, column: 0, nameI: 1 },
+    { row: 1, column: 2, nameI: 1 },
+    { row: 2, column: 2, nameI: 1 },
+    // type 2
+    { row: 3, column: 0, nameI: 2 },
+    { row: 4, column: 0, nameI: 2 },
+    { row: 3, column: 2, nameI: 2 },
+    { row: 4, column: 2, nameI: 2 },
+    // type 3
+    { row: 5, column: 0, nameI: 3 },
+    { row: 6, column: 0, nameI: 3 },
+    { row: 5, column: 2, nameI: 3 },
+    { row: 6, column: 2, nameI: 3 },
+    // type 4
+    { row: 1, column: 5, nameI: 4 },
+    { row: 2, column: 5, nameI: 4 },
+    { row: 1, column: 7, nameI: 4 },
+    { row: 2, column: 7, nameI: 4 },
+    // type 5
+    { row: 3, column: 5, nameI: 5 },
+    { row: 4, column: 5, nameI: 5 },
+    { row: 3, column: 7, nameI: 5 },
+    { row: 4, column: 7, nameI: 5 },
+    // type 6
+    { row: 5, column: 5, nameI: 6 },
+    { row: 6, column: 5, nameI: 6 },
+    { row: 5, column: 7, nameI: 6 },
+    { row: 6, column: 7, nameI: 6 },
   ];
 
   return {
@@ -238,17 +243,17 @@ function getPersonsWithPositionFromShortDescription(short: ShortCharacterDefinit
     return PHOBIAS[newIndex];
   };
 
-  return short.map(([nameIndex, fearIndex, smallFearIndex, rowIndex, columnIndex]) => {
-    const name = getOEmoji(nameIndex);
-    const fear = fearIndex !== -1 ? getOEmoji(fearIndex) : undefined;
-    const smallFear = smallFearIndex !== -1 ? getOEmoji(smallFearIndex) : undefined;
+  return short.map(({ nameI, fearI, smallFearI, row, column }: ShortCharacterDefinition) => {
+    const name = getOEmoji(nameI);
+    const fear = fearI !== undefined ? getOEmoji(fearI) : undefined;
+    const smallFear = smallFearI !== undefined ? getOEmoji(smallFearI) : undefined;
 
     return {
       name,
       fear,
       smallFear,
-      row: rowIndex,
-      column: columnIndex,
+      row,
+      column,
     };
   });
 }
