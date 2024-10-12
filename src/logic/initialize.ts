@@ -50,6 +50,8 @@ export function getGameFieldData(): GameFieldData {
   if (tableHeight % 2 === 0) {
     const topValue = (tableHeight / 2 - 1) * -100;
     document.body.style.setProperty("--table-top", topValue.toString() + "%");
+  } else {
+    document.body.style.removeProperty("--table-top");
   }
 
   const gameField: GameFieldData = [];

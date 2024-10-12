@@ -289,8 +289,9 @@ $border-style: outset;
           content: "13";
           display: grid;
           place-items: center;
-          font-family: $font-family-special;
           color: $danger-color-contrast;
+          text-shadow: 2px 2px black;
+          padding-right: calc(0.05 * var(--s-size));
         }
 
         .#{$PLATE} {

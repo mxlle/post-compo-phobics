@@ -100,6 +100,7 @@ export function getMiniHelpContent(cell?: Cell): HTMLElement {
 
       if (occupancy === 13) {
         helpTexts.push("😱😱😱");
+        helpTexts.push(getTranslation(TranslationKey.INFO_TRISKAIDEKAPHOBIA));
         helpCellElement.classList.add(CssClass.T13A);
       }
 

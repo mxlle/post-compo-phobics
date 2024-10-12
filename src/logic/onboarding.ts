@@ -10,7 +10,8 @@ import { getRandomIntFromInterval } from "../utils/random-utils";
 export const enum OnboardingStep {
   INTRO = 0,
   BIG_FEAR = 1,
-  TRISKAIDEKAPHOBIA = 2,
+  RESORT = 2,
+  TRISKAIDEKAPHOBIA = 3,
 }
 
 export function isOnboarding() {
@@ -48,10 +49,10 @@ type ShortCharacterDefinition = [
 const onboardingField = (() => {
   const { _, T, c } = getCellTypesWithoutPrefix();
   return [
-    [_, c, T, c],
-    [_, _, _, _],
     [_, _, _, _],
     [_, c, T, c],
+    [_, c, T, c],
+    [_, _, _, _],
   ];
 })();
 
@@ -77,6 +78,8 @@ export function getOnboardingData(): OnboardingData | undefined {
       return getOnboardingDataForIntro();
     case OnboardingStep.BIG_FEAR:
       return getOnboardingDataForBothPhobias();
+    case OnboardingStep.RESORT:
+      return getOnboardingDataForResort();
     case OnboardingStep.TRISKAIDEKAPHOBIA:
       return getOnboardingDataForTriskaidekaphobia();
     default:
@@ -104,21 +107,20 @@ export function increaseOnboardingStepIfApplicable() {
 
 function getOnboardingDataForIntro(): OnboardingData {
   const short: ShortCharacterDefinition[] = [
-    [0, 1, -1, 1, 0],
-    [1, -1, -1, 0, 3],
-    [2, -1, -1, 3, 3],
+    [0, -1, 1, 0, 0],
+    [1, -1, -1, 1, 3],
   ];
 
   return {
     field: onboardingField,
     characters: getPersonsWithPositionFromShortDescription(short),
-    tableHeight: 1,
-    isTableMiddle: (rowIndex) => rowIndex === 0 || rowIndex === 3,
-    getTableIndex: (row, _column) => {
-      return row < 2 ? 0 : 1;
+    tableHeight: 2,
+    isTableMiddle: (rowIndex) => rowIndex === 1,
+    getTableIndex: (_row, _column) => {
+      return 0;
     },
     arrow: {
-      row: 1,
+      row: 0,
       column: 0,
       direction: Direction.UP,
     },
@@ -146,6 +148,33 @@ function getOnboardingDataForBothPhobias(): OnboardingData {
       row: 0,
       column: 3,
       direction: Direction.LEFT,
+    },
+  };
+}
+
+function getOnboardingDataForResort(): OnboardingData {
+  const short: ShortCharacterDefinition[] = [
+    [0, 1, 2, 0, 3],
+    [1, -1, -1, 2, 2],
+    [2, 1, -1, 2, 6],
+    [2, -1, 0, 3, 6],
+    [3, -1, -1, 4, 4],
+    [4, -1, -1, 3, 0],
+    [4, -1, -1, 4, 2],
+  ];
+
+  return {
+    field: mediumField,
+    characters: getPersonsWithPositionFromShortDescription(short),
+    tableHeight: 3,
+    isTableMiddle: (rowIndex) => rowIndex === 3,
+    getTableIndex: (_row, column) => {
+      return column < 3 ? 0 : 1;
+    },
+    arrow: {
+      row: 0,
+      column: 3,
+      direction: Direction.RIGHT,
     },
   };
 }

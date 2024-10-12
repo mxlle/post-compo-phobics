@@ -13,9 +13,9 @@
     transform: translate(100%, 0) rotate(180deg);
   }
 
-  //&.#{$RIGHT} {
-  //  transform: translate(-100%, 0);
-  //}
+  &.#{$RIGHT} {
+    transform: translate(-100%, 0);
+  }
 
   &.#{$UP} {
     transform: translate(0, 100%) rotate(270deg);
