@@ -108,7 +108,7 @@ export async function startNewGame() {
 
   addOnboardingArrowIfApplicable();
 
-  updateState(globals.gameFieldData, globals.placedPersons);
+  updateState(globals.gameFieldData, globals.placedPersons, true);
 }
 
 function appendGameField() {
@@ -132,6 +132,7 @@ function appendGameField() {
 function cellClickHandler(rowIndex: number, columnIndex: number) {
   if (!hasMadeFirstMove) {
     hasMadeFirstMove = true;
+    console.debug("First move made");
     if (process.env.POKI_ENABLED === "true") pokiSdk.gameplayStart();
   }
 
@@ -234,6 +235,7 @@ function updateState(gameFieldData: Cell[][], placedPersons: PlacedPerson[], ski
       addStartButton(isOnboarding() ? TranslationKey.CONTINUE : TranslationKey.NEW_GAME);
     }, 300);
 
+    console.debug("Game won, score", score);
     if (process.env.POKI_ENABLED === "true") pokiSdk.gameplayStop();
   }
 
