@@ -73,8 +73,8 @@ export function getMiniHelpContent(cell?: Cell): HTMLElement {
 
     // const phobias = [
     //   showTriskaidekaphobia ? getTranslation(TranslationKey.TRISKAIDEKAPHOBIA) + " [13]" : "",
-    //   fear ? getTranslation(TranslationKey.BIG_FEAR, fearName + " " + PhobiaSymbolMap[fear]) : "",
     //   smallFear ? getTranslation(TranslationKey.SMALL_FEAR, smallFearName + " " + PhobiaSymbolMap[smallFear]) : "",
+    //   fear ? getTranslation(TranslationKey.BIG_FEAR, fearName + " " + PhobiaSymbolMap[fear]) : "",
     // ];
     //
     // const filterPhobias = phobias.filter(Boolean);
@@ -145,16 +145,16 @@ function getSatisfactionStats(person: PlacedPerson): HTMLElement {
       explainText: getTranslation(TranslationKey.INFO_TRISKAIDEKAPHOBIA),
     },
     {
-      phobia: person.fear,
-      satisfied: noBigFear,
-      explainText: getTranslation(TranslationKey.INFO_BIG_FEAR, '<span class="svg"></span>'),
-      svg: PhobiaSvgMap[person.fear],
-    },
-    {
       phobia: person.smallFear,
       satisfied: noSmallFear,
       explainText: getTranslation(TranslationKey.INFO_SMALL_FEAR, '<span class="svg"></span>'),
       svg: PhobiaSvgMap[person.smallFear],
+    },
+    {
+      phobia: person.fear,
+      satisfied: noBigFear,
+      explainText: getTranslation(TranslationKey.INFO_BIG_FEAR, '<span class="svg"></span>'),
+      svg: PhobiaSvgMap[person.fear],
     },
     { phobia: CellType.CHAIR, satisfied: hasTable, explainText: getTranslation(TranslationKey.INFO_FOMO) },
   ];

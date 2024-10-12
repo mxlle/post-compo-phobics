@@ -47,21 +47,28 @@
       }
 
       .fear {
+        right: -0.125rem; // border width
+        bottom: -0.125rem; // border width
+
         &::after {
-          content: "A ―";
+          content: "― B";
           position: absolute;
-          left: 0.25rem;
+          right: 0.25rem;
           font-size: 1.2rem;
           bottom: 0;
           white-space: nowrap;
-          transform: translateX(-100%);
+          transform: translateX(100%);
           padding: 0.5rem 0;
         }
 
-        &.small:after {
-          content: "― B";
-          right: 0.25rem;
-          transform: translateX(100%);
+        &.small {
+          left: -0.125rem; // border width
+
+          &::after {
+            content: "A ―";
+            left: -0.125rem;
+            transform: translateX(-100%);
+          }
         }
       }
     }
@@ -130,10 +137,9 @@
   display: contents;
 
   > span {
-    display: inline-grid;
+    display: inline-flex;
     align-items: center;
-    grid-auto-flow: column;
-    grid-auto-columns: max-content;
+    flex-wrap: wrap;
     gap: 0.25em;
   }
 

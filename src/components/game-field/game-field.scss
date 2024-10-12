@@ -63,7 +63,7 @@ $border-style: outset;
   width: 60%;
   font-size: 0.5em;
   border-radius: 100% 100% 4px 4px;
-  margin-top: 1em;
+  margin-top: 0.95em;
   position: relative;
   background-color: var(--color, gray);
   border: 4px outset var(--color-secondary, lightgray);
@@ -308,7 +308,7 @@ $border-style: outset;
 
 .fear {
   position: absolute;
-  left: 0;
+  right: 0;
   bottom: 0;
   display: grid;
   place-items: center;
@@ -324,8 +324,7 @@ $border-style: outset;
 
   &.small {
     font-size: 0.4em;
-    right: 0;
-    left: auto;
+    left: 0;
   }
 
   svg {
