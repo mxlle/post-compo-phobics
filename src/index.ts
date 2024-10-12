@@ -6,7 +6,7 @@ import { startNewGame } from "./components/game-field/game-field";
 import { initAudio, togglePlayer } from "./audio/music-control";
 import { getLocalStorageItem, LocalStorageKey } from "./utils/local-storage";
 import { initPoki } from "./poki-integration";
-import { isOnboarding } from "./logic/onboarding";
+import { getOnboardingData } from "./logic/onboarding";
 import { globals } from "./globals";
 import { getTranslation, TranslationKey } from "./translations/i18n";
 import { createWinScreen } from "./components/win-screen/win-screen";
@@ -55,13 +55,19 @@ function init() {
   });
 
   pubSubService.subscribe(PubSubEvent.UPDATE_SCORE, ({ score, moves, par }) => {
-    if (isOnboarding() || !globals.metaData) {
-      scoreElement.textContent = "";
-      return;
+    let scoreText = `${getTranslation(TranslationKey.MOVES)}: ${moves}`;
+    let onboardingData = getOnboardingData();
+    let parValue = onboardingData?.par ?? par;
+
+    if (onboardingData?.par || globals.metaData) {
+      scoreText += ` | Par: ${parValue}`;
     }
 
-    currentScore = score;
-    const scoreText = `${getTranslation(TranslationKey.MOVES)}: ${moves} | Par: ${par} | ${formatNumber(score)} <span class="emoji-font">⭐️</span>`;
+    if (!onboardingData) {
+      currentScore = score;
+      scoreText += ` | ${formatNumber(score)} <span class="emoji-font">⭐️</span>`;
+    }
+
     scoreElement.innerHTML = scoreText;
   });
 }

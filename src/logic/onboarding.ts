@@ -28,6 +28,7 @@ export interface OnboardingData {
   tableHeight: number;
   isTableMiddle: (rowIndex: number) => boolean;
   getTableIndex: (row: number, column: number) => number;
+  par?: number;
   arrow?: {
     row: number;
     column: number;
@@ -176,6 +177,7 @@ function getOnboardingDataForResort(): OnboardingData {
       column: 3,
       direction: Direction.RIGHT,
     },
+    par: 2,
   };
 }
 
@@ -225,6 +227,7 @@ function getOnboardingDataForTriskaidekaphobia(): OnboardingData {
       column: 3,
       direction: Direction.LEFT,
     },
+    par: 3,
   };
 }
 
