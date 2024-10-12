@@ -4,6 +4,7 @@ import { globals } from "../globals";
 import { LocalStorageKey, setLocalStorageItem } from "../utils/local-storage";
 import { Direction } from "../components/onboarding/onboarding-components";
 import { baseField } from "./base-field";
+// @ts-ignore
 import type { IntRange } from "type-fest";
 import { getRandomIntFromInterval } from "../utils/random-utils";
 

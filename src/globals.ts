@@ -1,5 +1,5 @@
 import { GameFieldData, GameMetaData, PlacedPerson, Settings } from "./types";
-import { getLocalStorageItem, LocalStorageKey } from "./utils/local-storage";
+import { getLocalStorageItem, LocalStorageKey, setLocalStorageItem } from "./utils/local-storage";
 import { Difficulty, difficultySettings } from "./logic/difficulty";
 
 interface GameGlobals {
@@ -45,4 +45,10 @@ function getNumFromParam(param: string, fallback: number) {
   num = isNaN(num) ? fallback : num;
 
   return num;
+}
+
+export function setDifficulty(difficulty: Difficulty) {
+  globals.settings = difficultySettings[difficulty];
+  globals.difficulty = difficulty;
+  setLocalStorageItem(LocalStorageKey.DIFFICULTY, difficulty.toString());
 }

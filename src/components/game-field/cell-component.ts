@@ -12,7 +12,6 @@ import {
 import { createElement } from "../../utils/html-utils";
 import { getNearestTableCell, isHappy } from "../../logic/checks";
 import { globals } from "../../globals";
-import { getCellElement } from "./game-field";
 import { CssClass } from "../../utils/css-class";
 import { PhobiaSvgMap } from "../../phobia";
 
@@ -52,7 +51,12 @@ export function createCellElement(cell: Cell, isInMiddle: boolean = false, isOnT
   return cellElem;
 }
 
-export function updateCellOccupancy(cell: CellPositionWithTableIndex, cellElement: HTMLElement, skipUpdatePanic: boolean = false): void {
+export function updateCellOccupancy(
+  cell: CellPositionWithTableIndex,
+  cellElement: HTMLElement,
+  getCellElement: (cell: CellPositionWithTableIndex) => HTMLElement,
+  skipUpdatePanic: boolean = false,
+): void {
   const person: PlacedPerson | undefined = findPerson(globals.placedPersons, cell);
 
   if (person && hasPerson(globals.placedPersons, cell)) {

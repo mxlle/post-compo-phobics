@@ -176,8 +176,8 @@ function cellClickHandler(rowIndex: number, columnIndex: number) {
       tableIndex: clickedCell.tableIndex,
     };
     movePerson(clickedCell, cell);
-    updateCellOccupancy(prevCell, clickedCellElement);
-    updateCellOccupancy(cell, getCellElement(cell));
+    updateCellOccupancy(prevCell, clickedCellElement, getCellElement);
+    updateCellOccupancy(cell, getCellElement(cell), getCellElement);
     removeOnboardingArrowIfApplicable();
     moves++;
     const hasWon = updateState(globals.gameFieldData, globals.placedPersons);
@@ -190,7 +190,7 @@ function cellClickHandler(rowIndex: number, columnIndex: number) {
   document.body.classList.toggle(CssClass.SELECTING, !!clickedCell);
 }
 
-export function getCellElement(cell: CellPositionWithTableIndex): HTMLElement {
+function getCellElement(cell: CellPositionWithTableIndex): HTMLElement {
   return cellElements[cell.row]?.[cell.column];
 }
 
@@ -318,7 +318,7 @@ export function generateGameFieldElement(gameFieldData: GameFieldData) {
 }
 
 function getPersonElement(dragEl: HTMLElement): HTMLElement {
-  return [...dragEl.children].find((el) => el.classList.contains(CssClass.PERSON)) as HTMLElement;
+  return Array.from(dragEl.children).find((el) => el.classList.contains(CssClass.PERSON)) as HTMLElement;
 }
 
 function getElementCell(gameFieldData: GameFieldData, el: HTMLElement): Cell | undefined {
@@ -333,7 +333,7 @@ export async function initializePersonsOnGameField(persons: PlacedPerson[]) {
     const person = persons[i];
     const cellElement = getCellElement(person);
     cellElement.innerHTML = "";
-    updateCellOccupancy(person, cellElement, true);
+    updateCellOccupancy(person, cellElement, getCellElement, true);
     await requestAnimationFrameWithTimeout(TIMEOUT_CELL_APPEAR);
   }
 }

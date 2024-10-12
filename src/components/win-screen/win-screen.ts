@@ -5,15 +5,8 @@ import { createButton, createElement } from "../../utils/html-utils";
 import { getTranslation, TranslationKey } from "../../translations/i18n";
 import { newGame } from "../../logic/game-logic";
 import { getOnboardingData, increaseOnboardingStepIfApplicable, isOnboarding } from "../../logic/onboarding";
-import {
-  difficulties,
-  difficultyEmoji,
-  getDifficultyStats,
-  getDifficultyText,
-  setDifficulty,
-  setDifficultyStats,
-} from "../../logic/difficulty";
-import { globals } from "../../globals";
+import { difficulties, difficultyEmoji, getDifficultyStats, getDifficultyText, setDifficultyStats } from "../../logic/difficulty";
+import { globals, setDifficulty } from "../../globals";
 
 let winDialog: Dialog | undefined;
 let difficultyElement: HTMLElement | undefined;
