@@ -61,8 +61,8 @@ function init() {
     }
 
     currentScore = score;
-    const scoreText = `${getTranslation(TranslationKey.MOVES)}: ${moves} | Par: ${par} | ${formatNumber(score)}⭐️`;
-    scoreElement.textContent = scoreText;
+    const scoreText = `${getTranslation(TranslationKey.MOVES)}: ${moves} | Par: ${par} | ${formatNumber(score)} <span class="emoji-font">⭐️</span>`;
+    scoreElement.innerHTML = scoreText;
   });
 }
 

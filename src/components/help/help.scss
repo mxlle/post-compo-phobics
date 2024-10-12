@@ -122,12 +122,20 @@
   grid-template-columns: repeat(2, auto);
   grid-auto-rows: 1fr;
   gap: 0.5rem;
-  align-items: end;
+  align-items: center;
   line-height: 1;
 }
 
 .#{$STAT} {
   display: contents;
+
+  > span {
+    display: inline-grid;
+    align-items: center;
+    grid-auto-flow: column;
+    grid-auto-columns: max-content;
+    gap: 0.25em;
+  }
 
   > :first-child {
     font-size: 1.4em;
@@ -148,7 +156,7 @@
     font-size: 1em;
     width: 1.3em;
     height: 1.2em;
-    margin-top: 0.4em;
+    margin-top: 0.5em;
 
     &::before {
       font-size: 1em;

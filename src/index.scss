@@ -26,8 +26,10 @@ body {
   }
 }
 
-.emoji-font {
+.emoji-font,
+.icon-btn {
   font-family: "EmojiFont", sans-serif;
+  vertical-align: middle;
 }
 
 .score {
@@ -132,7 +134,7 @@ button.icon-btn {
   place-items: center;
   border: none;
   border-radius: 50%;
-  padding: 0.5rem;
+  padding: 0.15rem 0.5rem 0; // to balance emoji issue
   font-size: 0.9em;
   line-height: 1;
   color: $text-secondary;
