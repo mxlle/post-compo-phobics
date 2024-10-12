@@ -120,8 +120,9 @@
 .#{$STATS_GRID} {
   display: grid;
   grid-template-columns: repeat(2, auto);
+  grid-auto-rows: 1fr;
   gap: 0.5rem;
-  align-items: center;
+  align-items: end;
   line-height: 1;
 }
 
@@ -140,5 +141,17 @@
 
   &.#{$BAD} {
     color: theme.$danger-color-contrast;
+  }
+
+  .svg {
+    display: inline-grid;
+    font-size: 1em;
+    width: 1.3em;
+    height: 1.2em;
+    margin-top: 0.4em;
+
+    &::before {
+      font-size: 1em;
+    }
   }
 }

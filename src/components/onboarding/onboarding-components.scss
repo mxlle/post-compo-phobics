@@ -24,13 +24,13 @@
   //&.#{$DOWN} {
   //  transform: translate(0, -100%) rotate(90deg);
   //}
-}
 
-svg {
-  color: theme.$main-color;
-  width: 75%;
-  height: 75%;
-  animation: point 1.2s infinite;
+  svg {
+    color: theme.$main-color;
+    width: 75%;
+    height: 75%;
+    animation: point 1.2s infinite;
+  }
 }
 
 @keyframes point {

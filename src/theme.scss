@@ -99,3 +99,38 @@ $table-border: var(--table-border, $table-border-dark);
     opacity: 0.5;
   }
 }
+
+$red: red;
+$blue: blue;
+$green: green;
+$yellow: yellow;
+$purple: purple;
+$orange: orange;
+$hotpink: hotpink;
+$cyan: cyan;
+
+$color-map: (
+  red: $red,
+  blue: #0052c0,
+  green: $green,
+  yellow: #ffd500,
+  purple: #9300cb,
+  orange: #ff9100,
+  hotpink: $hotpink,
+  cyan: $cyan,
+);
+
+$color-list: $red, $blue, $green, $yellow, $purple, $orange, $hotpink, $cyan;
+
+$emoji-font-family: "EmojiFont", sans-serif;
+
+@mixin phobia-colors {
+  @each $colorName in $color-list {
+    &.#{$colorName} {
+      $color: map-get($color-map, $colorName);
+      --color: #{$color};
+      --color-secondary: #{rgba($color, 0.5)};
+      --color-tertiary: #{rgba($color, 0.3)};
+    }
+  }
+}

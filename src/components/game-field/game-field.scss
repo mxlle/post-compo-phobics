@@ -3,42 +3,6 @@
 @import "../../theme";
 @import "../../names";
 
-$red: red;
-$blue: blue;
-$green: green;
-$yellow: yellow;
-$purple: purple;
-$orange: orange;
-$hotpink: hotpink;
-$cyan: cyan;
-
-$color-map: (
-  red: $red,
-  blue: #0052c0,
-  green: $green,
-  yellow: #ffd500,
-  purple: #9300cb,
-  orange: #ff9100,
-  hotpink: $hotpink,
-  cyan: $cyan,
-);
-
-$color-list: $red, $blue, $green, $yellow, $purple, $orange, $hotpink, $cyan;
-
-$symbol-font-family: "NotoSansSymbols", sans-serif;
-$emoji-font-family: "EmojiFont", sans-serif;
-
-@mixin phobia-colors {
-  @each $colorName in $color-list {
-    &.#{$colorName} {
-      $color: map-get($color-map, $colorName);
-      --color: #{$color};
-      --color-secondary: #{rgba($color, 0.5)};
-      --color-tertiary: #{rgba($color, 0.3)};
-    }
-  }
-}
-
 $border-style: outset;
 
 .#{$FIELD} {
@@ -99,16 +63,15 @@ $border-style: outset;
   width: 60%;
   font-size: 0.5em;
   border-radius: 100% 100% 4px 4px;
-  margin-top: 30%;
+  margin-top: 1em;
   position: relative;
   background-color: var(--color, gray);
   border: 4px outset var(--color-secondary, lightgray);
   border-bottom: none;
-  padding-top: 10%;
+  padding-top: 0.25em;
   line-height: 1;
   text-align: center;
   color: rgba(black, 0.6);
-  font-family: $symbol-font-family;
 
   &::before {
     content: "😊";
@@ -121,6 +84,11 @@ $border-style: outset;
     left: 50%;
     transform: translate(-50%, -75%);
     font-family: $emoji-font-family;
+  }
+
+  svg {
+    height: 85%;
+    width: 100%;
   }
 
   @include phobia-colors;
@@ -351,7 +319,6 @@ $border-style: outset;
   z-index: 2;
   width: 1.2em;
   height: 1.2em;
-  font-family: $symbol-font-family;
 
   @include phobia-colors;
 
@@ -359,6 +326,11 @@ $border-style: outset;
     font-size: 0.4em;
     right: 0;
     left: auto;
+  }
+
+  svg {
+    width: 90%;
+    height: 90%;
   }
 
   // overlay a cross over the fear icon

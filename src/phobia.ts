@@ -1,6 +1,16 @@
 import { getRandomItem } from "./utils/array-utils";
 import { isGermanLanguage } from "./translations/i18n";
 
+// import svgs
+import heart from "./assets/svgs/heart.svg";
+import tree from "./assets/svgs/tree.svg";
+import cloud from "./assets/svgs/cloud.svg";
+import sun from "./assets/svgs/sun.svg";
+import moon from "./assets/svgs/moon.svg";
+import fire from "./assets/svgs/fire.svg";
+import carbon from "./assets/svgs/carbon.svg";
+import waterDrop from "./assets/svgs/water-drop.svg";
+
 export const PHOBIAS = ["red", "green", "blue", "yellow", "purple", "orange", "hotpink", "cyan"] as const;
 
 export type Indices<T extends readonly any[]> = Exclude<Partial<T>["length"], T["length"]>;
@@ -20,15 +30,15 @@ const PhobiaNameMap: Record<Phobia, string> = {
   cyan: "Glaucophobia",
 };
 
-export const PhobiaSymbolMap: Record<Phobia, string> = {
-  red: "♥︎\u{FE0E}",
-  green: "♣︎\u{FE0E}",
-  blue: "☁︎\u{FE0E}",
-  yellow: "☀︎\u{FE0E}",
-  purple: "☂︎\u{FE0E}",
-  orange: "♠︎\u{FE0E}",
-  hotpink: "★\u{FE0E}",
-  cyan: "♦︎\u{FE0E}",
+export const PhobiaSvgMap: Record<Phobia, SVGElement> = {
+  red: heart(),
+  green: tree(),
+  blue: cloud(),
+  yellow: sun(),
+  purple: moon(),
+  orange: fire(),
+  hotpink: carbon(),
+  cyan: waterDrop(),
 };
 
 export function getPhobiaName(phobia: Phobia | undefined): string {

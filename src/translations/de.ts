@@ -23,7 +23,7 @@ const deTranslations: Record<TranslationKey, string> = {
   [TranslationKey.SMALL_FEAR]: "Kleine {0}",
   [TranslationKey.INFO_BIG_FEAR]: "keine {0} am selben Tisch (A)",
   [TranslationKey.INFO_SMALL_FEAR]: "keine {0} daneben oder gegenüber (B)",
-  [TranslationKey.INFO_FOMO]: "einem Sitzplatz zugewiesen 🍽️",
+  [TranslationKey.INFO_FOMO]: "einem Sitzplatz zugewiesen",
   [TranslationKey.INFO_PHOBIAS]: "Phobien: {0}",
   [TranslationKey.INFO_PLACEHOLDER]: "Wähle eine Person aus, um mehr über sie zu erfahren.",
   [TranslationKey.INFO_CHAIR]: "Ein Stuhl. Jemand kann hier sitzen.",

@@ -14,7 +14,7 @@ import { getNearestTableCell, isHappy } from "../../logic/checks";
 import { globals } from "../../globals";
 import { getCellElement } from "./game-field";
 import { CssClass } from "../../utils/css-class";
-import { PhobiaSymbolMap } from "../../phobia";
+import { PhobiaSvgMap } from "../../phobia";
 
 export function createCellElement(cell: Cell, isInMiddle: boolean = false, isOnTheRightOfATable: boolean = false): HTMLElement {
   const cellElem = createElement({
@@ -88,18 +88,21 @@ export function createPersonElement(person: BasePerson): HTMLElement {
   const personTextElem = createElement({
     tag: "span",
     cssClass: CssClass.EMOJI + " " + person.name,
-    text: PhobiaSymbolMap[person.name],
   });
+
+  personTextElem.append(PhobiaSvgMap[person.name].cloneNode(true));
 
   personElem.append(personTextElem);
 
   if (person.fear) {
-    const fearElem = createElement({ cssClass: `fear ${person.fear}`, text: PhobiaSymbolMap[person.fear] });
+    const fearElem = createElement({ cssClass: `fear ${person.fear}` });
+    fearElem.append(PhobiaSvgMap[person.fear].cloneNode(true));
     personElem.append(fearElem);
   }
 
   if (person.smallFear) {
-    const smallFearElem = createElement({ cssClass: `fear small ${person.smallFear}`, text: PhobiaSymbolMap[person.smallFear] });
+    const smallFearElem = createElement({ cssClass: `fear small ${person.smallFear}` });
+    smallFearElem.append(PhobiaSvgMap[person.smallFear].cloneNode(true));
     personElem.append(smallFearElem);
   }
 

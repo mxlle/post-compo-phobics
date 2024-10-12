@@ -3,12 +3,11 @@ import "./help.scss";
 import { createElement } from "../../utils/html-utils";
 import { getTranslation, TranslationKey } from "../../translations/i18n";
 import { Cell, CellType, findPerson, isChair, isEmpty, isTable, PlacedPerson } from "../../types";
-import { getPhobiaName, Phobia, PhobiaSymbolMap } from "../../phobia";
+import { Phobia, PhobiaSvgMap } from "../../phobia";
 import { createCellElement, createPersonElement } from "../game-field/cell-component";
 import { getChairsAtTable, getGuestsOnTable } from "../../logic/checks";
 import { globals } from "../../globals";
 import { getOnboardingData } from "../../logic/onboarding";
-import { baseField } from "../../logic/base-field";
 
 import { CssClass } from "../../utils/css-class";
 
@@ -16,6 +15,7 @@ interface HappyStat {
   phobia: Phobia | CellType.CHAIR | "😱";
   satisfied: boolean;
   explainText: string;
+  svg?: SVGElement;
 }
 
 export function getMiniHelpContent(cell?: Cell): HTMLElement {
@@ -64,26 +64,27 @@ export function getMiniHelpContent(cell?: Cell): HTMLElement {
     const personElement = createPersonElement(person);
     helpCellElement.append(personElement);
     helpCellElement.classList.toggle(CssClass.HAS_PERSON, true);
-    const { fear, smallFear } = person;
 
-    const fearName = getPhobiaName(fear);
-    const smallFearName = getPhobiaName(smallFear);
-    const showTriskaidekaphobia = globals.gameFieldData.length === baseField.length;
+    // const { fear, smallFear } = person;
 
-    const phobias = [
-      showTriskaidekaphobia ? getTranslation(TranslationKey.TRISKAIDEKAPHOBIA) + " [13]" : "",
-      fear ? getTranslation(TranslationKey.BIG_FEAR, fearName + " " + PhobiaSymbolMap[fear]) : "",
-      smallFear ? getTranslation(TranslationKey.SMALL_FEAR, smallFearName + " " + PhobiaSymbolMap[smallFear]) : "",
-    ];
+    // const fearName = getPhobiaName(fear);
+    // const smallFearName = getPhobiaName(smallFear);
+    // const showTriskaidekaphobia = globals.gameFieldData.length === baseField.length;
 
-    const filterPhobias = phobias.filter(Boolean);
-
-    if (filterPhobias.length !== 0) {
-      helpText.innerHTML = getTranslation(
-        TranslationKey.INFO_PHOBIAS,
-        "<ul>" + filterPhobias.map((text) => `<li>${text}</li>`).join("") + "</ul>",
-      );
-    }
+    // const phobias = [
+    //   showTriskaidekaphobia ? getTranslation(TranslationKey.TRISKAIDEKAPHOBIA) + " [13]" : "",
+    //   fear ? getTranslation(TranslationKey.BIG_FEAR, fearName + " " + PhobiaSymbolMap[fear]) : "",
+    //   smallFear ? getTranslation(TranslationKey.SMALL_FEAR, smallFearName + " " + PhobiaSymbolMap[smallFear]) : "",
+    // ];
+    //
+    // const filterPhobias = phobias.filter(Boolean);
+    //
+    // if (filterPhobias.length !== 0) {
+    //   helpText.innerHTML = getTranslation(
+    //     TranslationKey.INFO_PHOBIAS,
+    //     "<ul>" + filterPhobias.map((text) => `<li>${text}</li>`).join("") + "</ul>",
+    //   );
+    // }
   } else {
     helpCellElement = createCellElement(cell, true);
 
@@ -143,25 +144,40 @@ function getSatisfactionStats(person: PlacedPerson): HTMLElement {
       satisfied: !isTriskaidekaphobia,
       explainText: getTranslation(TranslationKey.INFO_TRISKAIDEKAPHOBIA),
     },
-    { phobia: person.fear, satisfied: noBigFear, explainText: getTranslation(TranslationKey.INFO_BIG_FEAR, PhobiaSymbolMap[person.fear]) },
+    {
+      phobia: person.fear,
+      satisfied: noBigFear,
+      explainText: getTranslation(TranslationKey.INFO_BIG_FEAR, '<span class="svg"></span>'),
+      svg: PhobiaSvgMap[person.fear],
+    },
     {
       phobia: person.smallFear,
       satisfied: noSmallFear,
-      explainText: getTranslation(TranslationKey.INFO_SMALL_FEAR, PhobiaSymbolMap[person.smallFear]),
+      explainText: getTranslation(TranslationKey.INFO_SMALL_FEAR, '<span class="svg"></span>'),
+      svg: PhobiaSvgMap[person.smallFear],
     },
     { phobia: CellType.CHAIR, satisfied: hasTable, explainText: getTranslation(TranslationKey.INFO_FOMO) },
   ];
 
   stats
     .filter(({ phobia }) => !!phobia)
-    .forEach(({ satisfied, explainText }) => {
+    .forEach(({ phobia, satisfied, explainText, svg }) => {
       const stat = createElement({
         cssClass: `${CssClass.STAT} ${satisfied !== undefined ? (satisfied ? CssClass.GOOD : CssClass.BAD) : ""}`,
       });
 
       const elems = [satisfied !== undefined ? (satisfied ? "✔" : "X") : "?", explainText];
 
+      if (phobia === CellType.CHAIR) {
+        elems[1] += ' <span class="emoji-font">🍽️</span>';
+      }
+
       stat.innerHTML = elems.map((content) => `<span>${content}</span>`).join("");
+
+      if (svg) {
+        stat.querySelector(".svg")?.append(svg.cloneNode(true));
+        stat.querySelector(".svg")?.classList.add(CssClass.EMOJI, phobia);
+      }
 
       statsGrid.append(stat);
     });
