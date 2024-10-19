@@ -442,6 +442,12 @@ function removeOnboardingArrowIfApplicable() {
 }
 
 export async function cleanGameField(gameFieldData: GameFieldData) {
+  for (let i = 0; i < globals.waitingPersons.length; i++) {
+    const person = globals.waitingPersons[i];
+    person.personElement.remove();
+    await requestAnimationFrameWithTimeout(TIMEOUT_CELL_APPEAR);
+  }
+
   const allCells = gameFieldData.flat();
 
   for (let i = 0; i < allCells.length; i++) {
@@ -459,12 +465,6 @@ export async function cleanGameField(gameFieldData: GameFieldData) {
         await requestAnimationFrameWithTimeout(TIMEOUT_CELL_APPEAR);
       }
     }
-  }
-
-  for (let i = 0; i < globals.waitingPersons.length; i++) {
-    const person = globals.waitingPersons[i];
-    person.personElement.remove();
-    await requestAnimationFrameWithTimeout(TIMEOUT_CELL_APPEAR);
   }
 }
 
