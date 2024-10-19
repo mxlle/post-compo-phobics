@@ -168,7 +168,9 @@ function cellClickHandler(cell: Cell) {
     updateMiniHelp();
     lastClickedCell = undefined;
   } else {
-    updateMiniHelp(cell);
+    if (!selectedPerson) {
+      updateMiniHelp(cell);
+    }
     lastClickedCell = cell;
   }
 
