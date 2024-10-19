@@ -211,7 +211,7 @@ main {
       pointer-events: none;
     }
 
-    + .#{$ARROW} {
+    .#{$ARROW} {
       display: none;
     }
   }
@@ -394,6 +394,10 @@ body {
         content: "🤔";
       }
     }
+  }
+
+  .#{$ARROW} {
+    display: none;
   }
 }
 

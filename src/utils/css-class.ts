@@ -21,6 +21,7 @@ export const enum CssClass {
   DOWN = "down",
   LEFT = "left",
   RIGHT = "right",
+  AUTO = "auto",
   ARROW = "arrow",
 
   // help

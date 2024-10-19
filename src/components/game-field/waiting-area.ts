@@ -18,7 +18,7 @@ export function getWaitingAreaElement(count: number, cellClickHandler: () => voi
 
   for (let col = 0; col < lengthWithBuffer; col++) {
     const cell = createElement({
-      cssClass: `${CssClass.CELL} ${col >= visibleCount ? "outside" : ""}`,
+      cssClass: `${CssClass.CELL} ${col >= visibleCount ? "outside outer" : ""}`,
       onClick: () => cellClickHandler(),
     });
     cell.style.setProperty("--index", col.toString());

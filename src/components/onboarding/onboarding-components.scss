@@ -17,8 +17,15 @@
     transform: translate(-100%, 0);
   }
 
-  &.#{$UP} {
+  &.#{$UP},
+  &.#{$AUTO} {
     transform: translate(0, 100%) rotate(270deg);
+  }
+
+  @media (orientation: portrait) {
+    &.#{$AUTO} {
+      transform: translate(100%, 0) rotate(180deg);
+    }
   }
 
   //&.#{$DOWN} {

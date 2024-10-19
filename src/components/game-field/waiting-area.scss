@@ -28,13 +28,12 @@ div.waiting-area {
   }
 
   .#{$CELL} {
-    background: theme.$tile-color-2;
+    background: none;
     height: var(--s-size);
     width: var(--s-size);
     flex-shrink: 0;
 
-    &:nth-child(n + 9) {
-      background: none;
+    &.outer {
       position: absolute;
       bottom: $padding;
       transform: translateY($translateValueOutside);

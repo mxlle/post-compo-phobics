@@ -420,7 +420,7 @@ function addOnboardingArrowIfApplicable() {
   const waitingLength = onboardingData?.waitingPersons.length;
 
   if (waitingLength) {
-    onboardingArrow = getOnboardingArrow(Direction.LEFT);
+    onboardingArrow = getOnboardingArrow(Direction.AUTO);
     const cellElement = waitingArea?.children[0]?.children[waitingLength - 1] as HTMLElement;
     cellElement.append(onboardingArrow);
   }
