@@ -30,7 +30,7 @@ import { Direction, getOnboardingArrow } from "../onboarding/onboarding-componen
 import { calculateScore } from "../../logic/score";
 import initDragDrop from "../../utils/drag-drop";
 import { CssClass } from "../../utils/css-class";
-import { getWaitingAreaElement, resetWaitlist, updateWaitlistCount } from "./waiting-area";
+import { getWaitingAreaElement, resetWaitlist, setDoorCount, updateWaitlistCount } from "./waiting-area";
 
 let mainContainer: HTMLElement | undefined;
 let gameFieldElem: HTMLElement | undefined;
@@ -406,7 +406,10 @@ export async function initializePersonsOnGameField() {
     const cellElement = waitingArea?.children[i] as HTMLElement;
     cellElement.innerHTML = "";
     cellElement.append(person.personElement);
-    await requestAnimationFrameWithTimeout(TIMEOUT_CELL_APPEAR);
+    setDoorCount(i + 1);
+    if (i < globals.gameFieldData.length) {
+      await requestAnimationFrameWithTimeout(TIMEOUT_CELL_APPEAR);
+    }
   }
 
   for (let i = 0; i < sittingPersons.length; i++) {
@@ -443,10 +446,13 @@ function removeOnboardingArrowIfApplicable() {
 }
 
 export async function cleanGameField(gameFieldData: GameFieldData) {
-  for (let i = 0; i < globals.waitingPersons.length; i++) {
+  for (let i = globals.waitingPersons.length - 1; i >= 0; i--) {
     const person = globals.waitingPersons[i];
     person.personElement.remove();
-    await requestAnimationFrameWithTimeout(TIMEOUT_CELL_APPEAR);
+    setDoorCount(i);
+    if (i < gameFieldData.length) {
+      await requestAnimationFrameWithTimeout(TIMEOUT_CELL_APPEAR);
+    }
   }
 
   resetWaitlist();

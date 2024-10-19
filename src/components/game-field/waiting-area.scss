@@ -22,6 +22,11 @@ div.waiting-area {
   background: theme.$tile-color-alpha;
   height: min-content;
   overflow: hidden;
+  transition: opacity 1s;
+
+  &:not(.has_waiting_person) {
+    opacity: 0.5;
+  }
 
   @media (orientation: portrait) {
     flex-direction: row;
@@ -32,6 +37,17 @@ div.waiting-area {
     height: var(--s-size);
     width: var(--s-size);
     flex-shrink: 0;
+
+    &.door {
+      order: -1;
+      grid-template-columns: 1fr auto;
+
+      .count {
+        font-family: monospace;
+        font-variant-numeric: tabular-nums;
+        font-size: 0.5em;
+      }
+    }
 
     &.outer {
       position: absolute;
