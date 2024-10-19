@@ -1,8 +1,19 @@
 import "./game-field.scss";
 
 import { createButton, createElement } from "../../utils/html-utils";
-import { movePerson, newGame } from "../../logic/game-logic";
-import { Cell, CellPositionWithTableIndex, findPerson, GameFieldData, hasPerson, isSameCell, isTable, PlacedPerson } from "../../types";
+import { movePerson, newGame, placePersonOnField } from "../../logic/game-logic";
+import {
+  Cell,
+  CellPositionWithTableIndex,
+  findPerson,
+  GameFieldData,
+  hasPerson,
+  isPlacedPerson,
+  isSameCell,
+  isTable,
+  PlacedPerson,
+  WaitingPerson,
+} from "../../types";
 import { createWinScreen } from "../win-screen/win-screen";
 import { createCellElement, updateCellOccupancy, updatePersonPanicState } from "./cell-component";
 import { getTranslation, TranslationKey } from "../../translations/i18n";
@@ -26,7 +37,7 @@ let startButton: HTMLElement | undefined;
 let miniHelp: HTMLElement | undefined;
 let waitingArea: HTMLElement | undefined;
 let onboardingArrow: HTMLElement | undefined;
-let selectedPerson: PlacedPerson | undefined;
+let selectedPerson: PlacedPerson | WaitingPerson | undefined;
 let lastClickedCell: Cell | undefined;
 let hasMadeFirstMove = false;
 let moves: number = 0;
@@ -163,62 +174,83 @@ function cellClickHandler(cell: Cell) {
   const person = findPerson(globals.placedPersons, cell);
 
   if (selectedPerson) {
-    if (isSameCell(selectedPerson, cell)) {
-      resetSelection(cell);
+    if (isPlacedPerson(selectedPerson) && isSameCell(selectedPerson, cell)) {
+      resetSelection();
       updateStateForSelection(globals.placedPersons, selectedPerson); // todo - selectedPerson is not defined
       return;
     }
 
     if (person) {
-      selectedPerson.personElement.classList.remove(CssClass.SELECTED);
-      selectedPerson = person;
-      updateStateForSelection(globals.placedPersons, selectedPerson);
+      selectPerson(person);
       return;
     }
 
     performMove(selectedPerson, cell);
   } else {
-    selectedPerson = person;
-    updateStateForSelection(globals.placedPersons, selectedPerson);
+    selectPerson(person);
   }
 
   document.body.classList.toggle(CssClass.SELECTING, !!selectedPerson);
 }
 
-function performMove(person: PlacedPerson, targetCell: Cell) {
-  const previousCellElement = getCellElement(person);
-  const prevCell = {
-    row: person.row,
-    column: person.column,
-    tableIndex: person.tableIndex,
-  };
-  movePerson(person, targetCell);
-  updateCellOccupancy(prevCell, previousCellElement, getCellElement);
+function selectPerson(person: PlacedPerson | WaitingPerson) {
+  if (selectedPerson) {
+    selectedPerson.personElement.classList.remove(CssClass.SELECTED);
+  }
+
+  selectedPerson = person;
+  updateStateForSelection(globals.placedPersons, selectedPerson);
+}
+
+function waitingAreaCellClickHandler(index: number) {
+  const waitingPerson = globals.waitingPersons.find((p) => p.index === index);
+
+  if (!waitingPerson) {
+    resetSelection();
+
+    return;
+  }
+
+  selectPerson(waitingPerson);
+}
+
+function performMove(person: PlacedPerson | WaitingPerson, targetCell: Cell) {
+  if (isPlacedPerson(person)) {
+    const previousCellElement = getCellElement(person);
+    const prevCell = {
+      row: person.row,
+      column: person.column,
+      tableIndex: person.tableIndex,
+    };
+    movePerson(person, targetCell);
+    updateCellOccupancy(prevCell, previousCellElement, getCellElement);
+  } else {
+    placePersonOnField(person, targetCell);
+  }
+
   updateCellOccupancy(targetCell, getCellElement(targetCell), getCellElement);
   removeOnboardingArrowIfApplicable();
   moves++;
   const hasWon = updateState(globals.gameFieldData, globals.placedPersons);
-  resetSelection(targetCell, !hasWon);
+  updateMiniHelp(targetCell);
+  resetSelection(!hasWon);
 }
 
 function getCellElement(cell: CellPositionWithTableIndex): HTMLElement {
   return cellElements[cell.row]?.[cell.column];
 }
 
-function resetSelection(cell: Cell, keepMiniHelp = false) {
+function resetSelection(keepMiniHelp = false) {
   if (selectedPerson) {
+    selectedPerson.personElement.classList.remove(CssClass.SELECTED);
     selectedPerson = undefined;
-  }
-
-  const person = findPerson(globals.placedPersons, cell);
-
-  if (person) {
-    person.personElement.classList.remove(CssClass.SELECTED);
   }
 
   document.body.classList.remove(CssClass.SELECTING);
 
-  updateMiniHelp(keepMiniHelp ? cell : undefined);
+  if (!keepMiniHelp) {
+    updateMiniHelp(undefined);
+  }
 }
 
 function updateMiniHelp(cell?: Cell) {
@@ -233,7 +265,7 @@ function updateMiniHelp(cell?: Cell) {
 
 function attachWaitingArea(columnCount: number) {
   if (!waitingArea) {
-    waitingArea = getWaitingAreaElement(columnCount);
+    waitingArea = getWaitingAreaElement(columnCount, waitingAreaCellClickHandler);
   }
 
   mainContainer?.append(waitingArea);
@@ -438,7 +470,7 @@ export async function updatePanicStates(gameFieldData: GameFieldData, placedPers
   });
 }
 
-export function updateStateForSelection(placedPersons: PlacedPerson[], selectedPerson: PlacedPerson | undefined) {
+export function updateStateForSelection(placedPersons: PlacedPerson[], selectedPerson: PlacedPerson | WaitingPerson | undefined) {
   placedPersons.forEach((person) => {
     person.personElement.classList.remove(CssClass.SCARY, CssClass.SCARED, CssClass.SELECTED);
   });
@@ -448,6 +480,10 @@ export function updateStateForSelection(placedPersons: PlacedPerson[], selectedP
   }
 
   selectedPerson.personElement.classList.add(CssClass.SELECTED);
+
+  if (!isPlacedPerson(selectedPerson)) {
+    return;
+  }
 
   selectedPerson.afraidOf.forEach((afraidOf) => {
     afraidOf.personElement.classList.add(CssClass.SCARY);

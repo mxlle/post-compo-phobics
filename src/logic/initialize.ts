@@ -22,9 +22,10 @@ export function placePersonsInitially(gameFieldData: GameFieldData): void {
     const splitIndex = globals.settings.minInitialPanic;
     const waiting = charactersForGame.slice(0, splitIndex);
     const sitting = charactersForGame.slice(splitIndex);
-    waitingPersons = waiting.map((character): WaitingPerson => {
+    waitingPersons = waiting.map((character, index): WaitingPerson => {
       return {
         ...character,
+        index,
         personElement: createPersonElement(character),
       };
     });
@@ -238,9 +239,10 @@ function applySeatedCharacters(onboardingData: OnboardingData): PlacedPerson[] {
 }
 
 function applyWaitingPersons(onboardingData: OnboardingData): WaitingPerson[] {
-  return onboardingData.waitingPersons.map((character): WaitingPerson => {
+  return onboardingData.waitingPersons.map((character, index): WaitingPerson => {
     return {
       ...character,
+      index,
       personElement: createPersonElement(character),
     };
   });

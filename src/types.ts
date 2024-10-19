@@ -50,7 +50,12 @@ export interface CellPositionWithTableIndex extends CellPosition {
 export interface PlacedPerson extends Person, CellPositionWithTableIndex {}
 
 export interface WaitingPerson extends BasePerson {
+  index: number;
   personElement: HTMLElement;
+}
+
+export function isPlacedPerson(person: BasePerson): person is PlacedPerson {
+  return "row" in person && "hasPanic" in person;
 }
 
 export interface PersonWithPosition extends BasePerson, CellPosition {}

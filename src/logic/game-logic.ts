@@ -1,5 +1,6 @@
-import { Cell, PlacedPerson } from "../types";
+import { Cell, PlacedPerson, WaitingPerson } from "../types";
 import { PubSubEvent, pubSubService } from "../utils/pub-sub-service";
+import { globals } from "../globals";
 
 export function newGame() {
   pubSubService.publish(PubSubEvent.NEW_GAME);
@@ -9,4 +10,20 @@ export function movePerson(person: PlacedPerson, toCell: Cell) {
   person.column = toCell.column;
   person.row = toCell.row;
   person.tableIndex = toCell.tableIndex;
+}
+
+export function placePersonOnField(person: WaitingPerson, targetCell: Cell): void {
+  const placedPerson: PlacedPerson = {
+    ...person,
+    hasPanic: false,
+    triskaidekaphobia: false,
+    afraidOf: [],
+    makesAfraid: [],
+    row: targetCell.row,
+    column: targetCell.column,
+    tableIndex: targetCell.tableIndex,
+  };
+
+  globals.waitingPersons = globals.waitingPersons.filter((p) => p.index !== person.index);
+  globals.placedPersons.push(placedPerson);
 }
