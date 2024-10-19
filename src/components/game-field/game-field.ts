@@ -6,6 +6,7 @@ import {
   Cell,
   CellPositionWithTableIndex,
   findPerson,
+  findPersonFromElement,
   GameFieldData,
   hasPerson,
   isPlacedPerson,
@@ -141,6 +142,8 @@ function appendGameField() {
 
   mainContainer.append(gameFieldElem);
 
+  setupDragDrop();
+
   updateMiniHelp();
 }
 
@@ -153,6 +156,8 @@ function checkForFirstMove() {
 }
 
 function cellClickHandler(cell: Cell) {
+  console.debug("Cell clicked", cell);
+
   checkForFirstMove();
 
   const cellHasPerson = hasPerson(globals.placedPersons, cell);
@@ -189,8 +194,6 @@ function cellClickHandler(cell: Cell) {
   } else {
     selectPerson(person);
   }
-
-  document.body.classList.toggle(CssClass.SELECTING, !!selectedPerson);
 }
 
 function selectPerson(person: PlacedPerson | WaitingPerson) {
@@ -200,6 +203,7 @@ function selectPerson(person: PlacedPerson | WaitingPerson) {
 
   selectedPerson = person;
   updateStateForSelection(globals.placedPersons, selectedPerson);
+  document.body.classList.toggle(CssClass.SELECTING, true);
 }
 
 function waitingAreaCellClickHandler(index: number) {
@@ -215,6 +219,8 @@ function waitingAreaCellClickHandler(index: number) {
 }
 
 function performMove(person: PlacedPerson | WaitingPerson, targetCell: Cell) {
+  console.debug("Performing move", person, targetCell);
+
   if (isPlacedPerson(person)) {
     const previousCellElement = getCellElement(person);
     const prevCell = {
@@ -276,7 +282,7 @@ function updateState(gameFieldData: Cell[][], placedPersons: PlacedPerson[], ski
   void updatePanicStates(gameFieldData, placedPersons, panickedTableCells);
   const score = calculateScore(placedPersons, moves);
   pubSubService.publish(PubSubEvent.UPDATE_SCORE, { score, moves, par: globals.metaData?.minMoves });
-  const { hasWon } = getHappyStats(placedPersons);
+  const { hasWon } = getHappyStats(placedPersons, globals.waitingPersons);
 
   if (hasWon && !skipWinCheck) {
     globals.isWon = true;
@@ -328,48 +334,49 @@ export function generateGameFieldElement(gameFieldData: GameFieldData) {
     cellElements.push(rowElements);
   });
 
-  initDragDrop(
-    gameField,
-    CssClass.HAS_PERSON,
-    CssClass.CELL,
-    (dragEl) => {
-      const cell = getElementCell(gameFieldData, dragEl);
-      const person = findPerson(globals.placedPersons, cell);
-      updateStateForSelection(globals.placedPersons, person);
-      updateMiniHelp(cell);
-      document.body.classList.toggle(CssClass.SELECTING, true);
-      selectedPerson = undefined; // todo - improve logic (needed because later faking a click)
-      gameField.classList.add(CssClass.IS_DRAGGING);
-      const personEl = getPersonElement(dragEl);
-      personEl.classList.add(CssClass.IS_DRAGGED);
-      return personEl.cloneNode(true) as HTMLElement;
-    },
-    (dragEl, dropEl, isTouch) => {
-      gameField.classList.remove(CssClass.IS_DRAGGING);
-      const dropCell = getElementCell(gameFieldData, dropEl);
-      const dragCell = getElementCell(gameFieldData, dragEl);
-      const personEl = getPersonElement(dragEl);
-      personEl.classList.remove(CssClass.IS_DRAGGED);
-      if (!isTable(dropCell) && !hasPerson(globals.placedPersons, dropCell)) {
-        dragEl.click();
-        dropEl.click();
-      } else if (isTouch && dropCell === dragCell) {
-        dragEl.click();
-      }
-    },
-    (dragEl) => {
-      gameField.classList.remove(CssClass.IS_DRAGGING);
-      const personEl = getPersonElement(dragEl);
-      personEl.classList.remove(CssClass.IS_DRAGGED);
-      dragEl.click();
-    },
-  );
-
   return gameField;
 }
 
-function getPersonElement(dragEl: HTMLElement): HTMLElement {
-  return Array.from(dragEl.children).find((el) => el.classList.contains(CssClass.PERSON)) as HTMLElement;
+function setupDragDrop() {
+  initDragDrop(mainContainer, CssClass.PERSON, CssClass.CELL, createOverlayOnDragStart, onDrop, onDragCancel);
+
+  function createOverlayOnDragStart(personElement: HTMLElement) {
+    const person = findPersonFromElement(globals.placedPersons, globals.waitingPersons, personElement);
+
+    console.debug("Dragging", person);
+
+    selectPerson(person);
+    // updateMiniHelp(cell); // todo - allow person as param
+    mainContainer.classList.add(CssClass.IS_DRAGGING);
+    personElement.classList.add(CssClass.IS_DRAGGED);
+    const personElementClone = personElement.cloneNode(true) as HTMLElement;
+    personElementClone.setAttribute("style", `width: ${personElement.offsetWidth}px; height: ${personElement.offsetHeight}px`);
+
+    return personElementClone;
+  }
+
+  function onDrop(personElement: HTMLElement, dropEl: HTMLElement, _isTouch: boolean) {
+    const person = findPersonFromElement(globals.placedPersons, globals.waitingPersons, personElement);
+    mainContainer.classList.remove(CssClass.IS_DRAGGING);
+    const dropCell = getElementCell(globals.gameFieldData, dropEl);
+    personElement.classList.remove(CssClass.IS_DRAGGED);
+
+    console.debug("Dropped", person, dropCell);
+
+    if (dropCell && !isTable(dropCell) && !hasPerson(globals.placedPersons, dropCell)) {
+      performMove(person, dropCell);
+    } else {
+      onDragCancel(personElement);
+    }
+  }
+
+  function onDragCancel(personElement: HTMLElement) {
+    console.debug("Drag cancelled");
+
+    mainContainer.classList.remove(CssClass.IS_DRAGGING);
+    personElement.classList.remove(CssClass.IS_DRAGGED);
+    // personElement.click();
+  }
 }
 
 function getElementCell(gameFieldData: GameFieldData, el: HTMLElement): Cell | undefined {

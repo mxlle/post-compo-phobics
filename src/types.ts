@@ -93,6 +93,18 @@ export function findPerson(placedPersons: PlacedPerson[], cell: CellPosition): P
   return placedPersons.find((p) => isSameCell(p, cell));
 }
 
+export function findPersonFromElement(
+  placedPersons: PlacedPerson[],
+  waitingPersons: WaitingPerson[],
+  element: HTMLElement,
+): PlacedPerson | WaitingPerson | undefined {
+  const person = placedPersons.find((p) => p.personElement === element);
+  if (person) {
+    return person;
+  }
+  return waitingPersons.find((p) => p.personElement === element);
+}
+
 export function isSameCell(cell1: CellPosition, cell2: CellPosition) {
   return cell1.row === cell2.row && cell1.column === cell2.column;
 }

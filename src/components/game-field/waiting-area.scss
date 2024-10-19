@@ -15,4 +15,12 @@ div.waiting-area {
   .#{$CELL} {
     background: theme.$tile-color-2;
   }
+
+  .#{$PERSON} {
+    .#{$EMOJI} {
+      &::before {
+        content: "😟";
+      }
+    }
+  }
 }

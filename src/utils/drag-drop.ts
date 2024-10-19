@@ -17,8 +17,8 @@ const getOverlayPosition = (e: any, element?: HTMLElement) => {
   e = e.touches?.[0] ?? e;
   const referenceElement = element ?? e.target;
   return {
-    left: `${e.pageX - referenceElement.offsetWidth / 4}px`,
-    top: `${e.pageY - referenceElement.offsetHeight / 4}px`,
+    left: `${e.pageX - referenceElement.offsetWidth / 2}px`,
+    top: `${e.pageY - referenceElement.offsetHeight / 2}px`,
   };
 };
 

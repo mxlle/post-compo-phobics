@@ -8,6 +8,7 @@ import {
   isSameCell,
   isTable,
   PlacedPerson,
+  WaitingPerson,
 } from "../types";
 
 export function checkTableStates(gameFieldData: GameFieldData, placedPersons: PlacedPerson[]) {
@@ -93,10 +94,10 @@ export function getEmptyChairs(gameFieldData: GameFieldData, placedPersons: Plac
   return gameFieldData.flat().filter((cell) => isEmptyChair(placedPersons, cell));
 }
 
-export function getHappyStats(persons: PlacedPerson[]) {
+export function getHappyStats(persons: PlacedPerson[], waitingPersons: WaitingPerson[]) {
   const happyGuestList = getHappyGuests(persons);
   const happyGuests = happyGuestList.length;
-  const totalGuests = persons.length;
+  const totalGuests = persons.length + waitingPersons.length;
   const hasWon = happyGuests === totalGuests;
 
   return {

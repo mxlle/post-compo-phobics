@@ -5,6 +5,26 @@
 
 $border-style: outset;
 
+main {
+  @include grid-mixins.board-tile-grid-variables;
+
+  &.#{$IS_DRAGGING} {
+    cursor: grabbing;
+
+    .#{$CELL} {
+      cursor: grabbing !important;
+
+      &:not(.#{$HAS_PERSON}):not(.#{$TABLE}):hover::after {
+        content: "";
+        position: absolute;
+        height: 100%;
+        width: 100%;
+        background: rgba($success-color-light, 0.1);
+      }
+    }
+  }
+}
+
 .#{$FIELD},
 .waiting-area {
   --t: #{$tile-color-1};
@@ -15,7 +35,6 @@ $border-style: outset;
   border: calc(var(--s-size) / 4) solid $tile-color-alpha;
 
   @include grid-mixins.board-tile-grid;
-  @include grid-mixins.board-tile-grid-variables;
 
   .row {
     display: contents;
@@ -41,20 +60,6 @@ $border-style: outset;
     left: 50%;
     transform: translate(-50%, -50%);
     z-index: 6;
-  }
-
-  &.#{$IS_DRAGGING} {
-    .#{$CELL} {
-      cursor: grabbing !important;
-
-      &:not(.#{$HAS_PERSON}):not(.#{$TABLE}):hover::after {
-        content: "";
-        position: absolute;
-        height: 100%;
-        width: 100%;
-        background: rgba($success-color-light, 0.1);
-      }
-    }
   }
 }
 
@@ -104,6 +109,7 @@ $border-style: outset;
   // height: 100%;
 
   .#{$PERSON} {
+    cursor: grab;
     border: 0.125rem dotted transparent;
     position: relative;
     display: grid;
@@ -216,8 +222,6 @@ $border-style: outset;
   }
 
   &.#{$HAS_PERSON} {
-    cursor: grab;
-
     .#{$EMOJI} {
       z-index: 1;
     }
@@ -302,8 +306,7 @@ $border-style: outset;
     }
   }
 
-  span,
-  .#{$PERSON} {
+  span {
     pointer-events: none;
   }
 }
@@ -374,6 +377,7 @@ body {
 .drag-overlay {
   opacity: 0.8;
   transform: scale(1.25);
+  font-size: grid-mixins.$font-size;
 
   @media (max-width: 600px) {
     transform: scale(2.5);
