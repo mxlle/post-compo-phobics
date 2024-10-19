@@ -19,10 +19,9 @@ export function placePersonsInitially(gameFieldData: GameFieldData): void {
     placedPersons = applySeatedCharacters(onboardingData);
   } else {
     const minWaitingPersons = globals.settings.minInitialPanic;
-    const maxWaitingPersons = gameFieldData.length;
     const charactersForGame = generateCharactersForGame(gameFieldData);
-    placedPersons = randomlyApplyCharactersOnBoard(gameFieldData, charactersForGame, maxWaitingPersons);
-    const unhappyPersons = placedPersons.filter((p) => p.hasPanic).slice(0, maxWaitingPersons);
+    placedPersons = randomlyApplyCharactersOnBoard(gameFieldData, charactersForGame, minWaitingPersons);
+    const unhappyPersons = placedPersons.filter((p) => p.hasPanic);
     const happyPersons = placedPersons.filter((p) => !p.hasPanic);
     waitingPersons = unhappyPersons.map(transformPlacedPersonToWaitingPerson);
     const missingPersons = minWaitingPersons - waitingPersons.length;
@@ -200,7 +199,7 @@ function generatePerson(chanceForBigFear: number, chanceForSmallFear: number, id
 function randomlyApplyCharactersOnBoard(
   gameFieldData: GameFieldData,
   characters: Person[],
-  maxInitialPanic: number,
+  minInitialPanic: number,
   iteration = 0,
 ): PlacedPerson[] {
   const placedPersons: PlacedPerson[] = [];
@@ -222,13 +221,13 @@ function randomlyApplyCharactersOnBoard(
 
   const numAfraid = placedPersons.filter((person) => person.hasPanic).length;
 
-  if ((numAfraid > maxInitialPanic && iteration < 10) || (numAfraid === 0 && iteration < 50)) {
-    console.debug("too afraid or no one afraid, reshuffling");
+  if ((numAfraid < minInitialPanic && iteration < 10) || (numAfraid === 0 && iteration < 50)) {
+    console.debug("not afraid enough, reshuffling");
 
-    const recursionResult = randomlyApplyCharactersOnBoard(gameFieldData, characters, maxInitialPanic, iteration + 1);
+    const recursionResult = randomlyApplyCharactersOnBoard(gameFieldData, characters, minInitialPanic, iteration + 1);
     const recursionAfraid = recursionResult.filter((person) => person.hasPanic).length;
 
-    if (recursionAfraid < numAfraid) {
+    if (recursionAfraid > numAfraid) {
       return recursionResult;
     }
 

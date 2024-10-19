@@ -72,13 +72,11 @@ body {
 }
 
 main {
-  overflow: auto;
+  overflow: hidden auto;
   display: grid;
   padding: 1rem;
   gap: 1rem;
-  grid-template-columns: minmax(min-content, 1fr) minmax(min-content, 600px);
-  grid-template-rows: min-content auto;
-  grid-auto-flow: column;
+  grid-template-columns: min-content minmax(min-content, 1fr) minmax(min-content, 600px);
 
   @media (orientation: portrait) {
     grid-template-columns: 1fr;

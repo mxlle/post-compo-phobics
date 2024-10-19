@@ -1,12 +1,12 @@
 $squareCount: var(--s-cnt, 11);
-$buffer: 2rem; // = 2 * margin
-$bufferLandscape: 3rem; // = 2 * margin
+$buffer: 3rem; // = 2 * margin + 1 * gap
+$bufferLandscape: 4rem; // = 2 * margin + 2 * gap
 $headerHeight: 3rem;
 $mini-help-width: min(20rem, 33vw);
 // $maxWidth: 40rem + $buffer + $totalGap;
 $totalSizeLandscape: calc(min(calc(100vw - $mini-help-width - $bufferLandscape), calc(100vh - $headerHeight)) - $buffer);
 $totalSizePortrait: calc(min(100vw, calc(100vh - $headerHeight)) - $buffer);
-$squareSizeLandscape: calc(#{$totalSizeLandscape} / calc(#{$squareCount} + 1.75));
+$squareSizeLandscape: calc(#{$totalSizeLandscape} / calc(#{$squareCount} + 0.5));
 $squareSizePortrait: calc(#{$totalSizePortrait} / calc(#{$squareCount} + 0.5));
 $font-size: calc(0.6 * var(--s-size));
 

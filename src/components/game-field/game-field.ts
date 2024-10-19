@@ -30,7 +30,7 @@ import { Direction, getOnboardingArrow } from "../onboarding/onboarding-componen
 import { calculateScore } from "../../logic/score";
 import initDragDrop from "../../utils/drag-drop";
 import { CssClass } from "../../utils/css-class";
-import { getWaitingAreaElement } from "./waiting-area";
+import { getWaitingAreaElement, resetWaitlist, updateWaitlistCount } from "./waiting-area";
 
 let mainContainer: HTMLElement | undefined;
 let gameFieldElem: HTMLElement | undefined;
@@ -209,9 +209,8 @@ function selectPerson(person: PlacedPerson | WaitingPerson) {
   document.body.classList.toggle(CssClass.SELECTING, true);
 }
 
-function waitingAreaCellClickHandler(cellElement: HTMLElement) {
-  const personElement = cellElement.children[0] as HTMLElement;
-  const waitingPerson = globals.waitingPersons.find((p) => p.personElement === personElement);
+function waitingAreaCellClickHandler() {
+  const waitingPerson = globals.waitingPersons[0];
 
   if (!waitingPerson || waitingPerson === selectedPerson) {
     resetSelection();
@@ -236,6 +235,7 @@ function performMove(person: PlacedPerson | WaitingPerson, targetCell: Cell) {
     updateCellOccupancy(prevCell, previousCellElement, getCellElement);
   } else {
     selectedPerson = placePersonOnField(person, targetCell);
+    updateWaitlistCount();
   }
 
   updateCellOccupancy(targetCell, getCellElement(targetCell), getCellElement);
@@ -274,9 +274,7 @@ function updateMiniHelp(cellOrPerson?: Cell | PlacedPerson | WaitingPerson) {
 }
 
 function attachWaitingArea(columnCount: number) {
-  if (!waitingArea) {
-    waitingArea = getWaitingAreaElement(columnCount, waitingAreaCellClickHandler);
-  }
+  waitingArea = getWaitingAreaElement(columnCount, waitingAreaCellClickHandler);
 
   mainContainer?.append(waitingArea);
 }
@@ -402,7 +400,7 @@ export async function initializePersonsOnGameField() {
 
   for (let i = 0; i < waitingPersons.length; i++) {
     const person = waitingPersons[i];
-    const cellElement = waitingArea?.children[0]?.children[i] as HTMLElement;
+    const cellElement = waitingArea?.children[i] as HTMLElement;
     cellElement.innerHTML = "";
     cellElement.append(person.personElement);
     await requestAnimationFrameWithTimeout(TIMEOUT_CELL_APPEAR);
@@ -448,6 +446,8 @@ export async function cleanGameField(gameFieldData: GameFieldData) {
     await requestAnimationFrameWithTimeout(TIMEOUT_CELL_APPEAR);
   }
 
+  resetWaitlist();
+
   const allCells = gameFieldData.flat();
 
   for (let i = 0; i < allCells.length; i++) {
@@ -475,10 +475,7 @@ export async function updatePanicStates(
   waitingPersons: WaitingPerson[],
 ) {
   placedPersons.forEach((person) => {
-    person.personElement.classList.remove(CssClass.PANIC, CssClass.P_T13A, CssClass.SCARY, CssClass.SCARED);
-  });
-  waitingPersons.forEach((person) => {
-    person.personElement.classList.remove(CssClass.PANIC);
+    person.personElement.classList.remove(CssClass.PANIC, CssClass.P_T13A, CssClass.SCARY, CssClass.SCARED, CssClass.NEXT);
   });
 
   gameFieldData
@@ -500,9 +497,7 @@ export async function updatePanicStates(
     cellElement.classList.add(CssClass.T13A);
   });
 
-  waitingPersons.forEach((person) => {
-    person.personElement.classList.add(CssClass.PANIC);
-  });
+  waitingPersons[0]?.personElement.classList.add(CssClass.NEXT);
 }
 
 export function updateStateForSelection(placedPersons: PlacedPerson[], selectedPerson: PlacedPerson | WaitingPerson | undefined) {
