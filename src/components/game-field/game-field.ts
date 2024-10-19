@@ -100,6 +100,8 @@ export async function startNewGame() {
       console.debug("Was onboarding, removing game field");
       gameFieldElem.remove();
       gameFieldElem = undefined;
+      waitingArea.remove();
+      waitingArea = undefined;
       globals.gameFieldData = [];
     }
   }
