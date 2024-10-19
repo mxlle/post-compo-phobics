@@ -21,7 +21,7 @@ export function placePersonsInitially(gameFieldData: GameFieldData): void {
     const minWaitingPersons = globals.settings.minInitialPanic;
     const maxWaitingPersons = gameFieldData.length;
     const charactersForGame = generateCharactersForGame(gameFieldData);
-    placedPersons = randomlyApplyCharactersOnBoard(gameFieldData, charactersForGame);
+    placedPersons = randomlyApplyCharactersOnBoard(gameFieldData, charactersForGame, maxWaitingPersons);
     const unhappyPersons = placedPersons.filter((p) => p.hasPanic).slice(0, maxWaitingPersons);
     const happyPersons = placedPersons.filter((p) => !p.hasPanic);
     waitingPersons = unhappyPersons.map(transformPlacedPersonToWaitingPerson);
@@ -197,7 +197,12 @@ function generatePerson(chanceForBigFear: number, chanceForSmallFear: number, id
   };
 }
 
-function randomlyApplyCharactersOnBoard(gameFieldData: GameFieldData, characters: Person[]): PlacedPerson[] {
+function randomlyApplyCharactersOnBoard(
+  gameFieldData: GameFieldData,
+  characters: Person[],
+  maxInitialPanic: number,
+  iteration = 0,
+): PlacedPerson[] {
   const placedPersons: PlacedPerson[] = [];
   const copyOfCharacters = [...characters];
   const allChairs = gameFieldData.flat().filter(isChair);
@@ -214,6 +219,21 @@ function randomlyApplyCharactersOnBoard(gameFieldData: GameFieldData, characters
   });
 
   checkTableStates(gameFieldData, placedPersons);
+
+  const numAfraid = placedPersons.filter((person) => person.hasPanic).length;
+
+  if ((numAfraid > maxInitialPanic && iteration < 10) || (numAfraid === 0 && iteration < 50)) {
+    console.debug("too afraid or no one afraid, reshuffling");
+
+    const recursionResult = randomlyApplyCharactersOnBoard(gameFieldData, characters, maxInitialPanic, iteration + 1);
+    const recursionAfraid = recursionResult.filter((person) => person.hasPanic).length;
+
+    if (recursionAfraid < numAfraid) {
+      return recursionResult;
+    }
+
+    console.debug("recursion did not improve, keeping current state");
+  }
 
   return placedPersons;
 }
