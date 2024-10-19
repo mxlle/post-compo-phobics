@@ -26,7 +26,7 @@ let startButton: HTMLElement | undefined;
 let miniHelp: HTMLElement | undefined;
 let waitingArea: HTMLElement | undefined;
 let onboardingArrow: HTMLElement | undefined;
-let clickedCell: PlacedPerson | undefined;
+let selectedPerson: PlacedPerson | undefined;
 let lastClickedCell: Cell | undefined;
 let hasMadeFirstMove = false;
 let moves: number = 0;
@@ -72,7 +72,7 @@ export async function startNewGame() {
   globals.isWon = false;
   startButton?.remove();
   hasMadeFirstMove = false;
-  clickedCell = undefined;
+  selectedPerson = undefined;
   lastClickedCell = undefined;
   moves = 0;
   updateMiniHelp();
@@ -133,16 +133,20 @@ function appendGameField() {
   updateMiniHelp();
 }
 
-function cellClickHandler(rowIndex: number, columnIndex: number) {
+function checkForFirstMove() {
   if (!hasMadeFirstMove) {
     hasMadeFirstMove = true;
     console.debug("First move made");
     if (process.env.POKI_ENABLED === "true") pokiSdk.gameplayStart();
   }
+}
 
-  const cell = globals.gameFieldData[rowIndex][columnIndex];
+function cellClickHandler(cell: Cell) {
+  checkForFirstMove();
 
-  if (!hasPerson(globals.placedPersons, cell) && lastClickedCell && isSameCell(cell, lastClickedCell)) {
+  const cellHasPerson = hasPerson(globals.placedPersons, cell);
+
+  if (!cellHasPerson && lastClickedCell && isSameCell(cell, lastClickedCell)) {
     updateMiniHelp();
     lastClickedCell = undefined;
   } else {
@@ -150,36 +154,36 @@ function cellClickHandler(rowIndex: number, columnIndex: number) {
     lastClickedCell = cell;
   }
 
-  if (!hasPerson(globals.placedPersons, cell)) {
-    if (!clickedCell || isTable(cell)) {
+  if (!cellHasPerson) {
+    if (!selectedPerson || isTable(cell)) {
       return;
     }
   }
 
   const person = findPerson(globals.placedPersons, cell);
 
-  if (clickedCell) {
-    const clickedCellElement = getCellElement(clickedCell);
+  if (selectedPerson) {
+    const clickedCellElement = getCellElement(selectedPerson);
 
-    if (isSameCell(clickedCell, cell)) {
+    if (isSameCell(selectedPerson, cell)) {
       resetSelection(cell);
-      updateStateForSelection(globals.placedPersons, clickedCell);
+      updateStateForSelection(globals.placedPersons, selectedPerson);
       return;
     }
 
     if (person) {
-      clickedCell.personElement.classList.remove(CssClass.SELECTED);
-      clickedCell = person;
-      updateStateForSelection(globals.placedPersons, clickedCell);
+      selectedPerson.personElement.classList.remove(CssClass.SELECTED);
+      selectedPerson = person;
+      updateStateForSelection(globals.placedPersons, selectedPerson);
       return;
     }
 
     const prevCell = {
-      row: clickedCell.row,
-      column: clickedCell.column,
-      tableIndex: clickedCell.tableIndex,
+      row: selectedPerson.row,
+      column: selectedPerson.column,
+      tableIndex: selectedPerson.tableIndex,
     };
-    movePerson(clickedCell, cell);
+    movePerson(selectedPerson, cell);
     updateCellOccupancy(prevCell, clickedCellElement, getCellElement);
     updateCellOccupancy(cell, getCellElement(cell), getCellElement);
     removeOnboardingArrowIfApplicable();
@@ -187,11 +191,11 @@ function cellClickHandler(rowIndex: number, columnIndex: number) {
     const hasWon = updateState(globals.gameFieldData, globals.placedPersons);
     resetSelection(cell, !hasWon);
   } else {
-    clickedCell = person;
-    updateStateForSelection(globals.placedPersons, clickedCell);
+    selectedPerson = person;
+    updateStateForSelection(globals.placedPersons, selectedPerson);
   }
 
-  document.body.classList.toggle(CssClass.SELECTING, !!clickedCell);
+  document.body.classList.toggle(CssClass.SELECTING, !!selectedPerson);
 }
 
 function getCellElement(cell: CellPositionWithTableIndex): HTMLElement {
@@ -199,8 +203,8 @@ function getCellElement(cell: CellPositionWithTableIndex): HTMLElement {
 }
 
 function resetSelection(cell: Cell, keepMiniHelp = false) {
-  if (clickedCell) {
-    clickedCell = undefined;
+  if (selectedPerson) {
+    selectedPerson = undefined;
   }
 
   const person = findPerson(globals.placedPersons, cell);
@@ -279,7 +283,7 @@ export function generateGameFieldElement(gameFieldData: GameFieldData) {
       const cellElement = createCellElement(cell, isInMiddle, isOnTheRightOfATable);
 
       cellElement.addEventListener("click", () => {
-        cellClickHandler(rowIndex, columnIndex);
+        cellClickHandler(cell);
       });
 
       rowElem.append(cellElement);
@@ -299,7 +303,7 @@ export function generateGameFieldElement(gameFieldData: GameFieldData) {
       updateStateForSelection(globals.placedPersons, person);
       updateMiniHelp(cell);
       document.body.classList.toggle(CssClass.SELECTING, true);
-      clickedCell = undefined; // todo - improve logic (needed because later faking a click)
+      selectedPerson = undefined; // todo - improve logic (needed because later faking a click)
       gameField.classList.add(CssClass.IS_DRAGGING);
       const personEl = getPersonElement(dragEl);
       personEl.classList.add(CssClass.IS_DRAGGED);
