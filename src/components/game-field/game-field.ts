@@ -460,6 +460,12 @@ export async function cleanGameField(gameFieldData: GameFieldData) {
       }
     }
   }
+
+  for (let i = 0; i < globals.waitingPersons.length; i++) {
+    const person = globals.waitingPersons[i];
+    person.personElement.remove();
+    await requestAnimationFrameWithTimeout(TIMEOUT_CELL_APPEAR);
+  }
 }
 
 export async function updatePanicStates(
