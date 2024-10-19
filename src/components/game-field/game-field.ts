@@ -163,11 +163,9 @@ function cellClickHandler(cell: Cell) {
   const person = findPerson(globals.placedPersons, cell);
 
   if (selectedPerson) {
-    const clickedCellElement = getCellElement(selectedPerson);
-
     if (isSameCell(selectedPerson, cell)) {
       resetSelection(cell);
-      updateStateForSelection(globals.placedPersons, selectedPerson);
+      updateStateForSelection(globals.placedPersons, selectedPerson); // todo - selectedPerson is not defined
       return;
     }
 
@@ -178,24 +176,29 @@ function cellClickHandler(cell: Cell) {
       return;
     }
 
-    const prevCell = {
-      row: selectedPerson.row,
-      column: selectedPerson.column,
-      tableIndex: selectedPerson.tableIndex,
-    };
-    movePerson(selectedPerson, cell);
-    updateCellOccupancy(prevCell, clickedCellElement, getCellElement);
-    updateCellOccupancy(cell, getCellElement(cell), getCellElement);
-    removeOnboardingArrowIfApplicable();
-    moves++;
-    const hasWon = updateState(globals.gameFieldData, globals.placedPersons);
-    resetSelection(cell, !hasWon);
+    performMove(selectedPerson, cell);
   } else {
     selectedPerson = person;
     updateStateForSelection(globals.placedPersons, selectedPerson);
   }
 
   document.body.classList.toggle(CssClass.SELECTING, !!selectedPerson);
+}
+
+function performMove(person: PlacedPerson, targetCell: Cell) {
+  const previousCellElement = getCellElement(person);
+  const prevCell = {
+    row: person.row,
+    column: person.column,
+    tableIndex: person.tableIndex,
+  };
+  movePerson(person, targetCell);
+  updateCellOccupancy(prevCell, previousCellElement, getCellElement);
+  updateCellOccupancy(targetCell, getCellElement(targetCell), getCellElement);
+  removeOnboardingArrowIfApplicable();
+  moves++;
+  const hasWon = updateState(globals.gameFieldData, globals.placedPersons);
+  resetSelection(targetCell, !hasWon);
 }
 
 function getCellElement(cell: CellPositionWithTableIndex): HTMLElement {
