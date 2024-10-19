@@ -205,6 +205,7 @@ function selectPerson(person: PlacedPerson | WaitingPerson) {
 
   selectedPerson = person;
   updateStateForSelection(globals.placedPersons, selectedPerson);
+  updateMiniHelp(person);
   document.body.classList.toggle(CssClass.SELECTING, true);
 }
 
@@ -234,14 +235,14 @@ function performMove(person: PlacedPerson | WaitingPerson, targetCell: Cell) {
     movePerson(person, targetCell);
     updateCellOccupancy(prevCell, previousCellElement, getCellElement);
   } else {
-    placePersonOnField(person, targetCell);
+    selectedPerson = placePersonOnField(person, targetCell);
   }
 
   updateCellOccupancy(targetCell, getCellElement(targetCell), getCellElement);
   removeOnboardingArrowIfApplicable();
   moves++;
   const hasWon = updateState(globals.gameFieldData, globals.placedPersons, globals.waitingPersons);
-  updateMiniHelp(targetCell);
+  updateMiniHelp(selectedPerson);
   resetSelection(!hasWon);
 }
 
@@ -262,13 +263,13 @@ function resetSelection(keepMiniHelp = false) {
   }
 }
 
-function updateMiniHelp(cell?: Cell) {
+function updateMiniHelp(cellOrPerson?: Cell | PlacedPerson | WaitingPerson) {
   if (miniHelp) {
     miniHelp.remove();
     miniHelp = undefined;
   }
 
-  miniHelp = getMiniHelpContent(cell);
+  miniHelp = getMiniHelpContent(cellOrPerson);
   mainContainer?.append(miniHelp);
 }
 

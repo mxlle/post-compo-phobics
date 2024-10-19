@@ -15,10 +15,14 @@ import { globals } from "../../globals";
 import { CssClass } from "../../utils/css-class";
 import { PhobiaSvgMap } from "../../phobia";
 
-export function createCellElement(cell: Cell, isInMiddle: boolean = false, isOnTheRightOfATable: boolean = false): HTMLElement {
+export function createCellElement(cell: Cell | undefined, isInMiddle: boolean = false, isOnTheRightOfATable: boolean = false): HTMLElement {
   const cellElem = createElement({
     cssClass: CssClass.CELL,
   });
+
+  if (!cell) {
+    return cellElem;
+  }
 
   if (isTable(cell)) {
     cellElem.classList.add(CssClass.TABLE);

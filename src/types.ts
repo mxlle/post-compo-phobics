@@ -54,6 +54,10 @@ export interface WaitingPerson extends BasePerson {
   personElement: HTMLElement;
 }
 
+export function isBasePerson(potentialPerson: unknown): potentialPerson is BasePerson {
+  return typeof potentialPerson === "object" && potentialPerson !== null && "name" in potentialPerson;
+}
+
 export function isPlacedPerson(person: BasePerson): person is PlacedPerson {
   return "row" in person && "hasPanic" in person;
 }

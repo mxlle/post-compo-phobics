@@ -2,7 +2,7 @@ import "./help.scss";
 
 import { createElement } from "../../utils/html-utils";
 import { getTranslation, TranslationKey } from "../../translations/i18n";
-import { Cell, CellType, findPerson, isChair, isEmpty, isTable, PlacedPerson } from "../../types";
+import { Cell, CellType, isBasePerson, isChair, isEmpty, isPlacedPerson, isTable, PlacedPerson, WaitingPerson } from "../../types";
 import { Phobia, PhobiaSvgMap } from "../../phobia";
 import { createCellElement, createPersonElement } from "../game-field/cell-component";
 import { getChairsAtTable, getGuestsOnTable } from "../../logic/checks";
@@ -17,10 +17,9 @@ interface HappyStat {
   svg?: SVGElement;
 }
 
-export function getMiniHelpContent(cell?: Cell): HTMLElement {
+export function getMiniHelpContent(cellOrPerson?: Cell | PlacedPerson | WaitingPerson): HTMLElement {
   // const name = (cell?.person?.name ?? cell?.type ?? "<?>") || "[ ]";
-  const isEmptyState = !cell;
-  const person = cell ? findPerson(globals.placedPersons, cell) : undefined;
+  const isEmptyState = !cellOrPerson;
 
   const miniHelpContent = createElement({
     cssClass: CssClass.HELP,
@@ -56,11 +55,11 @@ export function getMiniHelpContent(cell?: Cell): HTMLElement {
   let helpCellElement: HTMLElement | undefined;
   let statsElem: HTMLElement | undefined;
 
-  if (person) {
-    statsElem = getSatisfactionStats(person);
+  if (isBasePerson(cellOrPerson)) {
+    statsElem = getSatisfactionStats(cellOrPerson);
 
-    helpCellElement = createCellElement(cell);
-    const personElement = createPersonElement(person);
+    helpCellElement = createCellElement(undefined);
+    const personElement = createPersonElement(cellOrPerson);
     helpCellElement.append(personElement);
     helpCellElement.classList.toggle(CssClass.HAS_PERSON, true);
 
@@ -85,10 +84,10 @@ export function getMiniHelpContent(cell?: Cell): HTMLElement {
     //   );
     // }
   } else {
-    helpCellElement = createCellElement(cell, true);
+    helpCellElement = createCellElement(cellOrPerson, true);
 
-    if (isTable(cell)) {
-      const tableIndex = cell.tableIndex ?? 0;
+    if (isTable(cellOrPerson)) {
+      const tableIndex = cellOrPerson.tableIndex ?? 0;
       const numChairs = getChairsAtTable(globals.gameFieldData, tableIndex).length;
       const occupancy = getGuestsOnTable(globals.placedPersons, tableIndex).length;
 
@@ -106,7 +105,11 @@ export function getMiniHelpContent(cell?: Cell): HTMLElement {
       helpText.innerHTML = helpTexts.map((text) => `<p>${text}</p>`).join("");
     } else {
       helpText.innerHTML = getTranslation(
-        isChair(cell.type) ? TranslationKey.INFO_CHAIR : isEmpty(cell) ? TranslationKey.INFO_EMPTY : TranslationKey.INFO_DECOR,
+        isChair(cellOrPerson.type)
+          ? TranslationKey.INFO_CHAIR
+          : isEmpty(cellOrPerson)
+            ? TranslationKey.INFO_EMPTY
+            : TranslationKey.INFO_DECOR,
       );
     }
   }
@@ -124,11 +127,18 @@ export function getMiniHelpContent(cell?: Cell): HTMLElement {
   return miniHelpContent;
 }
 
-function getSatisfactionStats(person: PlacedPerson): HTMLElement {
-  const isTriskaidekaphobia = person.triskaidekaphobia;
-  const hasTable = person.tableIndex !== undefined;
-  const noBigFear = !hasTable ? undefined : person.afraidOf.filter((otherCell) => person.fear === otherCell.name).length === 0;
-  const noSmallFear = !hasTable ? undefined : person.afraidOf.filter((otherCell) => person.smallFear === otherCell.name).length === 0;
+function getSatisfactionStats(person: PlacedPerson | WaitingPerson): HTMLElement {
+  let isTriskaidekaphobia = false;
+  let hasTable = false;
+  let noBigFear = undefined;
+  let noSmallFear = undefined;
+
+  if (isPlacedPerson(person)) {
+    isTriskaidekaphobia = person.triskaidekaphobia;
+    hasTable = person.tableIndex !== undefined;
+    noBigFear = !hasTable ? undefined : person.afraidOf.filter((otherCell) => person.fear === otherCell.name).length === 0;
+    noSmallFear = !hasTable ? undefined : person.afraidOf.filter((otherCell) => person.smallFear === otherCell.name).length === 0;
+  }
 
   const satisfactionStats = createElement({
     cssClass: CssClass.STATS,

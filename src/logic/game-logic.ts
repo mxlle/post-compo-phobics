@@ -12,7 +12,7 @@ export function movePerson(person: PlacedPerson, toCell: Cell) {
   person.tableIndex = toCell.tableIndex;
 }
 
-export function placePersonOnField(person: WaitingPerson, targetCell: Cell): void {
+export function placePersonOnField(person: WaitingPerson, targetCell: Cell): PlacedPerson {
   const placedPerson: PlacedPerson = {
     ...person,
     hasPanic: false,
@@ -26,6 +26,8 @@ export function placePersonOnField(person: WaitingPerson, targetCell: Cell): voi
 
   globals.waitingPersons = globals.waitingPersons.filter((p) => p.id !== person.id);
   globals.placedPersons.push(placedPerson);
+
+  return placedPerson;
 }
 
 export function transformPlacedPersonToWaitingPerson(person: PlacedPerson): WaitingPerson {
