@@ -30,6 +30,7 @@ export interface Cell extends CellPosition {
 }
 
 export interface BasePerson {
+  id: number;
   name: Phobia;
   fear: Phobia | undefined;
   smallFear: Phobia | undefined;
@@ -50,7 +51,6 @@ export interface CellPositionWithTableIndex extends CellPosition {
 export interface PlacedPerson extends Person, CellPositionWithTableIndex {}
 
 export interface WaitingPerson extends BasePerson {
-  index: number;
   personElement: HTMLElement;
 }
 

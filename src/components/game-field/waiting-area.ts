@@ -5,7 +5,7 @@ import { CssClass } from "../../utils/css-class";
 
 let waitingAreaElement: HTMLElement;
 
-export function getWaitingAreaElement(count: number, cellClickHandler: (index: number) => void, rowCount: number = 1): HTMLElement {
+export function getWaitingAreaElement(count: number, cellClickHandler: (cell: HTMLElement) => void, rowCount: number = 1): HTMLElement {
   if (!waitingAreaElement) {
     waitingAreaElement = createElement({
       cssClass: "waiting-area",
@@ -18,11 +18,11 @@ export function getWaitingAreaElement(count: number, cellClickHandler: (index: n
     });
 
     for (let col = 0; col < count; col++) {
-      const column = createElement({
+      const cell = createElement({
         cssClass: CssClass.CELL,
-        onClick: () => cellClickHandler(col),
+        onClick: () => cellClickHandler(cell),
       });
-      rowElement.append(column);
+      rowElement.append(cell);
     }
 
     waitingAreaElement.append(rowElement);

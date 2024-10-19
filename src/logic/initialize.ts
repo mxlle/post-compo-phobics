@@ -3,10 +3,10 @@ import { getRandomPhobia, getRandomPhobiaExcluding, Phobia } from "../phobia";
 import { getOnboardingData, OnboardingData } from "./onboarding";
 import { globals } from "../globals";
 import { getRandomIntFromInterval, shuffleArray } from "../utils/random-utils";
-import { getEmptyChairs, getGuestsOnTable, getNeighbors } from "./checks";
+import { checkTableStates, getEmptyChairs, getGuestsOnTable, getNeighbors } from "./checks";
 import { baseField } from "./base-field";
 import { createPersonElement } from "../components/game-field/cell-component";
-import { simplifiedCalculateParViaChains } from "./par";
+import { transformPlacedPersonToWaitingPerson } from "./game-logic";
 
 export function placePersonsInitially(gameFieldData: GameFieldData): void {
   let onboardingData: OnboardingData | undefined = getOnboardingData();
@@ -18,24 +18,20 @@ export function placePersonsInitially(gameFieldData: GameFieldData): void {
     waitingPersons = applyWaitingPersons(onboardingData);
     placedPersons = applySeatedCharacters(onboardingData);
   } else {
+    const minWaitingPersons = globals.settings.minInitialPanic;
+    const maxWaitingPersons = gameFieldData.length;
     const charactersForGame = generateCharactersForGame(gameFieldData);
-    const splitIndex = globals.settings.minInitialPanic;
-    const waiting = charactersForGame.slice(0, splitIndex);
-    const sitting = charactersForGame.slice(splitIndex);
-    waitingPersons = waiting.map((character, index): WaitingPerson => {
-      return {
-        ...character,
-        index,
-        personElement: createPersonElement(character),
-      };
-    });
-    placedPersons = randomlyApplyCharactersOnBoard(gameFieldData, sitting);
+    placedPersons = randomlyApplyCharactersOnBoard(gameFieldData, charactersForGame);
+    const unhappyPersons = placedPersons.filter((p) => p.hasPanic).slice(0, maxWaitingPersons);
+    const happyPersons = placedPersons.filter((p) => !p.hasPanic);
+    waitingPersons = unhappyPersons.map(transformPlacedPersonToWaitingPerson);
+    const missingPersons = minWaitingPersons - waitingPersons.length;
+    if (missingPersons > 0) {
+      waitingPersons.push(...happyPersons.slice(0, missingPersons).map(transformPlacedPersonToWaitingPerson));
+    }
+    placedPersons = placedPersons.filter((p) => waitingPersons.every((wp) => wp.id !== p.id));
 
-    //const time = performance.now();
-    const par = simplifiedCalculateParViaChains(placedPersons) + waiting.length;
-    // const par = calculatePar(gameFieldData, [...placedPersons]);
-    // console.info("PAR CALCULATION TOOK", performance.now() - time);
-    console.info("FINAL PAR", par);
+    const par = waitingPersons.length;
 
     globals.metaData = {
       minMoves: par,
@@ -106,8 +102,9 @@ function generateCharactersForGame(gameField: GameFieldData, iteration: number =
   const amount = getRandomIntFromInterval(minAmount, maxAmount);
   const characters: Person[] = [];
 
+  let id = 0;
   while (characters.length < amount) {
-    const newPerson = generatePerson(chanceForBigFear, chanceForSmallFear);
+    const newPerson = generatePerson(chanceForBigFear, chanceForSmallFear, id++);
     const chair = findValidChair(gameField, placedPersons, newPerson);
 
     if (chair) {
@@ -168,7 +165,7 @@ export function isTriggeringPhobia(placedPersons: PlacedPerson[], cell: Cell, pe
   return false;
 }
 
-function generatePerson(chanceForBigFear: number, chanceForSmallFear: number): Person {
+function generatePerson(chanceForBigFear: number, chanceForSmallFear: number, id: number): Person {
   const name = getRandomPhobia();
   let fear: Phobia | undefined;
   let smallFear: Phobia | undefined;
@@ -184,6 +181,7 @@ function generatePerson(chanceForBigFear: number, chanceForSmallFear: number): P
   }
 
   const basePerson: BasePerson = {
+    id,
     name,
     fear,
     smallFear,
@@ -215,7 +213,7 @@ function randomlyApplyCharactersOnBoard(gameFieldData: GameFieldData, characters
     placedPersons.push({ ...person, row, column, tableIndex });
   });
 
-  // checkTableStates(gameFieldData, placedPersons);
+  checkTableStates(gameFieldData, placedPersons);
 
   return placedPersons;
 }
@@ -239,10 +237,9 @@ function applySeatedCharacters(onboardingData: OnboardingData): PlacedPerson[] {
 }
 
 function applyWaitingPersons(onboardingData: OnboardingData): WaitingPerson[] {
-  return onboardingData.waitingPersons.map((character, index): WaitingPerson => {
+  return onboardingData.waitingPersons.map((character): WaitingPerson => {
     return {
       ...character,
-      index,
       personElement: createPersonElement(character),
     };
   });

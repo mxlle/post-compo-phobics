@@ -124,7 +124,7 @@ export async function startNewGame() {
 
   addOnboardingArrowIfApplicable();
 
-  updateState(globals.gameFieldData, globals.placedPersons, true);
+  updateState(globals.gameFieldData, globals.placedPersons, globals.waitingPersons, true);
 }
 
 function appendGameField() {
@@ -208,10 +208,11 @@ function selectPerson(person: PlacedPerson | WaitingPerson) {
   document.body.classList.toggle(CssClass.SELECTING, true);
 }
 
-function waitingAreaCellClickHandler(index: number) {
-  const waitingPerson = globals.waitingPersons.find((p) => p.index === index);
+function waitingAreaCellClickHandler(cellElement: HTMLElement) {
+  const personElement = cellElement.children[0] as HTMLElement;
+  const waitingPerson = globals.waitingPersons.find((p) => p.personElement === personElement);
 
-  if (!waitingPerson) {
+  if (!waitingPerson || waitingPerson === selectedPerson) {
     resetSelection();
 
     return;
@@ -239,7 +240,7 @@ function performMove(person: PlacedPerson | WaitingPerson, targetCell: Cell) {
   updateCellOccupancy(targetCell, getCellElement(targetCell), getCellElement);
   removeOnboardingArrowIfApplicable();
   moves++;
-  const hasWon = updateState(globals.gameFieldData, globals.placedPersons);
+  const hasWon = updateState(globals.gameFieldData, globals.placedPersons, globals.waitingPersons);
   updateMiniHelp(targetCell);
   resetSelection(!hasWon);
 }
@@ -279,12 +280,18 @@ function attachWaitingArea(columnCount: number) {
   mainContainer?.append(waitingArea);
 }
 
-function updateState(gameFieldData: Cell[][], placedPersons: PlacedPerson[], skipWinCheck = false): boolean {
+function updateState(
+  gameFieldData: Cell[][],
+  placedPersons: PlacedPerson[],
+  waitingPersons: WaitingPerson[],
+  skipWinCheck = false,
+): boolean {
   const panickedTableCells = checkTableStates(gameFieldData, placedPersons);
-  void updatePanicStates(gameFieldData, placedPersons, panickedTableCells);
+  void updatePanicStates(gameFieldData, placedPersons, panickedTableCells, waitingPersons);
   const score = calculateScore(placedPersons, moves);
   pubSubService.publish(PubSubEvent.UPDATE_SCORE, { score, moves, par: globals.metaData?.minMoves });
-  const { hasWon } = getHappyStats(placedPersons, globals.waitingPersons);
+  const { hasWon } = getHappyStats(placedPersons, waitingPersons);
+  waitingArea?.classList.toggle(CssClass.HAS_WAITING_PERSON, waitingPersons.length > 0);
 
   if (hasWon && !skipWinCheck) {
     globals.isWon = true;
@@ -454,9 +461,17 @@ export async function cleanGameField(gameFieldData: GameFieldData) {
   }
 }
 
-export async function updatePanicStates(gameFieldData: GameFieldData, placedPersons: PlacedPerson[], panickedTableCells: Cell[]) {
+export async function updatePanicStates(
+  gameFieldData: GameFieldData,
+  placedPersons: PlacedPerson[],
+  panickedTableCells: Cell[],
+  waitingPersons: WaitingPerson[],
+) {
   placedPersons.forEach((person) => {
     person.personElement.classList.remove(CssClass.PANIC, CssClass.P_T13A, CssClass.SCARY, CssClass.SCARED);
+  });
+  waitingPersons.forEach((person) => {
+    person.personElement.classList.remove(CssClass.PANIC);
   });
 
   gameFieldData
@@ -467,7 +482,7 @@ export async function updatePanicStates(gameFieldData: GameFieldData, placedPers
       cellElement.classList.remove(CssClass.T13A);
     });
 
-  await requestAnimationFrameWithTimeout(50); // to trigger restart of tremble animation
+  await requestAnimationFrameWithTimeout(150); // to trigger restart of tremble animation
 
   placedPersons.forEach((person) => {
     updatePersonPanicState(person);
@@ -476,6 +491,10 @@ export async function updatePanicStates(gameFieldData: GameFieldData, placedPers
   panickedTableCells.forEach((cell) => {
     const cellElement = getCellElement(cell);
     cellElement.classList.add(CssClass.T13A);
+  });
+
+  waitingPersons.forEach((person) => {
+    person.personElement.classList.add(CssClass.PANIC);
   });
 }
 

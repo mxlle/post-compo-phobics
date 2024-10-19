@@ -24,6 +24,16 @@ export function placePersonOnField(person: WaitingPerson, targetCell: Cell): voi
     tableIndex: targetCell.tableIndex,
   };
 
-  globals.waitingPersons = globals.waitingPersons.filter((p) => p.index !== person.index);
+  globals.waitingPersons = globals.waitingPersons.filter((p) => p.id !== person.id);
   globals.placedPersons.push(placedPerson);
+}
+
+export function transformPlacedPersonToWaitingPerson(person: PlacedPerson): WaitingPerson {
+  return {
+    id: person.id,
+    name: person.name,
+    fear: person.fear,
+    smallFear: person.smallFear,
+    personElement: person.personElement,
+  };
 }

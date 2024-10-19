@@ -7,7 +7,6 @@ import { Phobia, PhobiaSvgMap } from "../../phobia";
 import { createCellElement, createPersonElement } from "../game-field/cell-component";
 import { getChairsAtTable, getGuestsOnTable } from "../../logic/checks";
 import { globals } from "../../globals";
-import { getOnboardingData } from "../../logic/onboarding";
 
 import { CssClass } from "../../utils/css-class";
 
@@ -36,7 +35,7 @@ export function getMiniHelpContent(cell?: Cell): HTMLElement {
       cssClass: CssClass.WELCOME,
     });
 
-    const goalText = getOnboardingData() ? getTranslation(TranslationKey.GOAL) : getTranslation(TranslationKey.GOAL_2);
+    const goalText = getTranslation(TranslationKey.GOAL);
 
     const helpTexts = [goalText, getTranslation(TranslationKey.INFO_PLACEHOLDER)];
 

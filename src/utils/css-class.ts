@@ -3,6 +3,7 @@ export const enum CssClass {
   SELECTING = "selecting",
   SELECTED = "selected",
   PANIC = "panic",
+  HAS_WAITING_PERSON = "has_waiting_person",
   SCARED = "scared",
   SCARY = "scary",
   T13A = "t13a",

@@ -235,21 +235,22 @@ function getPersonsFromIndexedDefinitions(
 ): { waitingPersons: BasePerson[]; sittingPersons: PersonWithPosition[] } {
   const cesar = getRandomIntFromInterval(0, PHOBIAS.length - 1);
 
-  const waitingPersons = waiting.map((definition) => mapping(cesar, definition));
-  const sittingPersons = sitting.map((definition) => {
+  const waitingPersons = waiting.map((definition, index) => mapping(cesar, definition, index));
+  const sittingPersons = sitting.map((definition, index) => {
     const { row, column, ...rest } = definition;
-    return { ...mapping(cesar, rest), row, column };
+    return { ...mapping(cesar, rest, index), row, column };
   });
 
   return { waitingPersons, sittingPersons };
 }
 
-function mapping(cesar: number, { nameI, fearI, smallFearI }: IndexedPersonDefinition): BasePerson {
+function mapping(cesar: number, { nameI, fearI, smallFearI }: IndexedPersonDefinition, id: number): BasePerson {
   const name = getCesarEmoji(cesar, nameI);
   const fear = fearI !== undefined ? getCesarEmoji(cesar, fearI) : undefined;
   const smallFear = smallFearI !== undefined ? getCesarEmoji(cesar, smallFearI) : undefined;
 
   return {
+    id,
     name,
     fear,
     smallFear,
