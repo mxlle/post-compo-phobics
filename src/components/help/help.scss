@@ -46,9 +46,19 @@
         display: none;
       }
 
-      .#{$EMOJI} {
-        &::before {
-          content: "🤔";
+      .#{$PERSON} {
+        border-color: transparent;
+
+        .#{$EMOJI} {
+          animation: none;
+        }
+      }
+
+      .#{$NEXT} {
+        .#{$EMOJI} {
+          &::before {
+            content: "🤩";
+          }
         }
       }
 
@@ -161,6 +171,10 @@
 
   &.#{$BAD} {
     color: theme.$danger-color-contrast;
+
+    > :first-child {
+      animation: stat-scale-pulse 2s;
+    }
   }
 
   .svg {
@@ -173,5 +187,17 @@
     &::before {
       font-size: 1em;
     }
+  }
+}
+
+@keyframes stat-scale-pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.5);
+  }
+  100% {
+    transform: scale(1);
   }
 }

@@ -124,7 +124,7 @@ export async function startNewGame() {
 
   addOnboardingArrowIfApplicable();
 
-  updateState(globals.gameFieldData, globals.placedPersons, globals.waitingPersons, true);
+  await updateState(globals.gameFieldData, globals.placedPersons, globals.waitingPersons, true);
 }
 
 function appendGameField() {
@@ -192,7 +192,7 @@ function cellClickHandler(cell: Cell) {
       return;
     }
 
-    performMove(selectedPerson, cell);
+    void performMove(selectedPerson, cell);
   } else {
     selectPerson(person);
   }
@@ -221,7 +221,7 @@ function waitingAreaCellClickHandler() {
   selectPerson(waitingPerson);
 }
 
-function performMove(person: PlacedPerson | WaitingPerson, targetCell: Cell) {
+async function performMove(person: PlacedPerson | WaitingPerson, targetCell: Cell) {
   console.debug("Performing move", person, targetCell);
 
   if (isPlacedPerson(person)) {
@@ -241,9 +241,10 @@ function performMove(person: PlacedPerson | WaitingPerson, targetCell: Cell) {
   updateCellOccupancy(targetCell, getCellElement(targetCell), getCellElement);
   removeOnboardingArrowIfApplicable();
   moves++;
-  const hasWon = updateState(globals.gameFieldData, globals.placedPersons, globals.waitingPersons);
-  updateMiniHelp(selectedPerson);
-  resetSelection(!hasWon);
+  const previousSelectedPerson = selectedPerson;
+  resetSelection(true);
+  const hasWon = await updateState(globals.gameFieldData, globals.placedPersons, globals.waitingPersons);
+  updateMiniHelp(hasWon ? undefined : previousSelectedPerson);
 }
 
 function getCellElement(cell: CellPositionWithTableIndex): HTMLElement {
@@ -279,14 +280,14 @@ function attachWaitingArea(columnCount: number) {
   mainContainer?.append(waitingArea);
 }
 
-function updateState(
+async function updateState(
   gameFieldData: Cell[][],
   placedPersons: PlacedPerson[],
   waitingPersons: WaitingPerson[],
   skipWinCheck = false,
-): boolean {
+): Promise<boolean> {
   const panickedTableCells = checkTableStates(gameFieldData, placedPersons);
-  void updatePanicStates(gameFieldData, placedPersons, panickedTableCells, waitingPersons);
+  await updatePanicStates(gameFieldData, placedPersons, panickedTableCells, waitingPersons);
   const score = calculateScore(placedPersons, moves);
   pubSubService.publish(PubSubEvent.UPDATE_SCORE, { score, moves, par: globals.metaData?.minMoves });
   const { hasWon } = getHappyStats(placedPersons, waitingPersons);
@@ -372,7 +373,7 @@ function setupDragDrop() {
     console.debug("Dropped", person, dropCell);
 
     if (dropCell && !isTable(dropCell) && !hasPerson(globals.placedPersons, dropCell)) {
-      performMove(person, dropCell);
+      void performMove(person, dropCell);
     } else {
       onDragCancel(personElement);
     }

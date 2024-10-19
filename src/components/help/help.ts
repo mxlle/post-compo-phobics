@@ -4,7 +4,7 @@ import { createElement } from "../../utils/html-utils";
 import { getTranslation, TranslationKey } from "../../translations/i18n";
 import { Cell, CellType, isBasePerson, isChair, isEmpty, isPlacedPerson, isTable, PlacedPerson, WaitingPerson } from "../../types";
 import { Phobia, PhobiaSvgMap } from "../../phobia";
-import { createCellElement, createPersonElement } from "../game-field/cell-component";
+import { createCellElement } from "../game-field/cell-component";
 import { getChairsAtTable, getGuestsOnTable } from "../../logic/checks";
 import { globals } from "../../globals";
 
@@ -59,9 +59,11 @@ export function getMiniHelpContent(cellOrPerson?: Cell | PlacedPerson | WaitingP
     statsElem = getSatisfactionStats(cellOrPerson);
 
     helpCellElement = createCellElement(undefined);
-    const personElement = createPersonElement(cellOrPerson);
+    const personElement = cellOrPerson.personElement.cloneNode(true) as HTMLElement;
+    personElement.classList.remove(CssClass.SELECTED);
     helpCellElement.append(personElement);
     helpCellElement.classList.toggle(CssClass.HAS_PERSON, true);
+    helpCellElement.classList.toggle(CssClass.CHAIR, isPlacedPerson(cellOrPerson) && cellOrPerson.tableIndex !== undefined);
 
     // const { fear, smallFear } = person;
 
