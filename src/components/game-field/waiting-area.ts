@@ -3,6 +3,7 @@ import { createElement } from "../../utils/html-utils";
 import "./waiting-area.scss";
 import { CssClass } from "../../utils/css-class";
 import { globals } from "../../globals";
+import { sleep } from "../../utils/promise-utils";
 
 let waitingAreaElement: HTMLElement;
 let doorCountElement: HTMLElement;
@@ -55,11 +56,17 @@ export function setDoorCount(count = globals.waitingPersons.length): void {
 }
 
 export function updateWaitlistCount(): void {
+  waitingAreaElement.classList.toggle("walking", true);
+
   waitlistHandledCount++;
 
   waitingAreaElement?.children[visibleCount + waitlistHandledCount - 1]?.classList.remove("outside");
   waitingAreaElement?.style.setProperty("--removed-count", waitlistHandledCount.toString());
   setDoorCount();
+
+  sleep(1000).then(() => {
+    waitingAreaElement.classList.toggle("walking", false);
+  });
 }
 
 function formatNumber(num: number): string {

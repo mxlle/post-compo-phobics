@@ -34,6 +34,17 @@ div.waiting-area {
     }
   }
 
+  &.walking {
+    .#{$PERSON}.#{$NEXT} {
+      border-color: transparent;
+    }
+
+    .#{$EMOJI} {
+      transform-origin: center bottom;
+      animation: walk-in-place 0.2s infinite;
+    }
+  }
+
   @media (orientation: portrait) {
     flex-direction: row;
   }
@@ -131,5 +142,17 @@ div.waiting-area {
       opacity: 0.75;
       filter: grayscale(0.5);
     }
+  }
+}
+
+@keyframes walk-in-place {
+  0% {
+    transform: rotate(1deg);
+  }
+  50% {
+    transform: rotate(-1deg);
+  }
+  100% {
+    transform: rotate(1deg);
   }
 }
