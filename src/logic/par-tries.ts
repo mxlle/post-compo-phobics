@@ -160,7 +160,7 @@ function resolveTableConstraints(
 }
 
 function getEmptyField(gameFieldData: GameFieldData, placedPersons: PlacedPerson[]): Cell {
-  const emptyFields = gameFieldData.flat().filter((c) => isEmpty(c) && !hasPerson(placedPersons, c));
+  const emptyFields = gameFieldData.allCells.filter((c) => isEmpty(c) && !hasPerson(placedPersons, c));
   return emptyFields[0];
 }
 
@@ -242,7 +242,7 @@ function innerParCalc(
   });
 
   const emptyChairs = getEmptyChairs(gameFieldData, placedPersons);
-  const emptyFields = gameFieldData.flat().filter((c) => isEmpty(c) && !hasPerson(placedPersons, c));
+  const emptyFields = gameFieldData.allCells.filter((c) => isEmpty(c) && !hasPerson(placedPersons, c));
 
   // intelligent solution to find the smallest number of required moves
   let par = 1000;

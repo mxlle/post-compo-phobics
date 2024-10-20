@@ -15,7 +15,7 @@ import { globals } from "../../globals";
 import { CssClass } from "../../utils/css-class";
 import { hasTablePhobia, PhobiaSvgMap } from "../../phobia";
 
-export function createCellElement(cell: Cell | undefined, isInMiddle: boolean = false, isOnTheRightOfATable: boolean = false): HTMLElement {
+export function createCellElement(cell: Cell | undefined, isOnTheRightOfATable: boolean = false): HTMLElement {
   const cellElem = createElement({
     cssClass: CssClass.CELL,
   });
@@ -26,10 +26,6 @@ export function createCellElement(cell: Cell | undefined, isInMiddle: boolean = 
 
   if (isTable(cell)) {
     cellElem.classList.add(CssClass.TABLE);
-
-    if (isInMiddle) {
-      cellElem.classList.add(CssClass.MIDDLE);
-    }
 
     const plateElem1 = createElement({
       cssClass: CssClass.PLATE,

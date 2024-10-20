@@ -18,7 +18,7 @@ export interface Settings {
   minInitialPanic: number;
 }
 
-interface CellPosition {
+export interface CellPosition {
   row: number;
   column: number;
 }
@@ -46,6 +46,19 @@ export interface CellPositionWithTableIndex extends CellPosition {
   tableIndex?: number;
 }
 
+export interface TableAssignment {
+  tableIndex: number;
+  firstTableCell: Cell;
+  tableCells: Cell[];
+  chairCells: Cell[];
+}
+
+export interface GameFieldData {
+  allCells: Cell[];
+  field: Cell[][];
+  tableAssignments: TableAssignment[];
+}
+
 export interface PlacedPerson extends Person, CellPositionWithTableIndex {}
 
 export interface WaitingPerson extends BasePerson {
@@ -61,8 +74,6 @@ export function isPlacedPerson(person: BasePerson): person is PlacedPerson {
 }
 
 export interface PersonWithPosition extends BasePerson, CellPosition {}
-
-export type GameFieldData = Cell[][];
 
 export interface GameData {
   gameFieldData: GameFieldData;

@@ -26,8 +26,6 @@ export interface OnboardingData {
   field: CellType[][];
   waitingPersons: BasePerson[];
   sittingPersons: PersonWithPosition[];
-  tableHeight: number;
-  isTableMiddle: (rowIndex: number) => boolean;
   getTableIndex: (row: number, column: number) => number;
   par?: number;
 }
@@ -115,8 +113,6 @@ function getOnboardingDataForIntro(): OnboardingData {
     field: onboardingField,
     waitingPersons,
     sittingPersons,
-    tableHeight: 2,
-    isTableMiddle: (rowIndex) => rowIndex === 1,
     getTableIndex: (_row, _column) => {
       return 0;
     },
@@ -139,8 +135,6 @@ function getOnboardingDataForBothPhobias(): OnboardingData {
     field: mediumField,
     waitingPersons,
     sittingPersons,
-    tableHeight: 3,
-    isTableMiddle: (rowIndex) => rowIndex === 3,
     getTableIndex: (_row, column) => {
       return column < 3 ? 0 : 1;
     },
@@ -165,8 +159,6 @@ function getOnboardingDataForResort(): OnboardingData {
     field: mediumField,
     waitingPersons,
     sittingPersons,
-    tableHeight: 3,
-    isTableMiddle: (rowIndex) => rowIndex === 3,
     getTableIndex: (_row, column) => {
       return column < 3 ? 0 : 1;
     },
@@ -216,8 +208,6 @@ function getOnboardingDataForTriskaidekaphobia(): OnboardingData {
     field: baseField,
     waitingPersons,
     sittingPersons,
-    tableHeight: 8,
-    isTableMiddle: (rowIndex: number) => rowIndex === Math.ceil(baseField.length / 2) - 1,
     getTableIndex: (_row, column) => (column > 3 ? 1 : 0),
     par: 3,
   };

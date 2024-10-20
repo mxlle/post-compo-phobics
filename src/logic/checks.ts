@@ -1,9 +1,9 @@
 import {
   Cell,
+  CellPosition,
   CellPositionWithTableIndex,
   GameFieldData,
   isAtTable,
-  isChair,
   isEmptyChair,
   isSameCell,
   isTable,
@@ -15,7 +15,7 @@ import { hasTablePhobia } from "../phobia";
 export function checkTableStates(gameFieldData: GameFieldData, placedPersons: PlacedPerson[]) {
   const panickedTableCells: Cell[] = [];
 
-  for (let tableIndex = 0; tableIndex < 2; tableIndex++) {
+  for (let tableIndex = 0; tableIndex < gameFieldData.tableAssignments.length; tableIndex++) {
     const guests = getGuestsOnTable(placedPersons, tableIndex);
     const isPanic = guests.length === 13;
 
@@ -71,6 +71,20 @@ export function getNeighbors(placedPersons: PlacedPerson[], self: CellPositionWi
   return neighbors;
 }
 
+// get the 4 neighboring cells
+export function getCellNeighbors<C extends CellPosition>(cells: C[], cell: C): C[] {
+  const { row, column } = cell;
+
+  return cells.filter((c) => {
+    const isAbove = c.row === row - 1 && c.column === column;
+    const isBelow = c.row === row + 1 && c.column === column;
+    const isLeft = c.row === row && c.column === column - 1;
+    const isRight = c.row === row && c.column === column + 1;
+
+    return isAbove || isBelow || isLeft || isRight;
+  });
+}
+
 export function getNearestTableCell(gameFieldData: GameFieldData, cell: CellPositionWithTableIndex) {
   const tableIndex = cell.tableIndex;
   const tableCells = getTableCells(gameFieldData, tableIndex);
@@ -94,7 +108,7 @@ export function getHappyGuests(persons: PlacedPerson[]) {
 }
 
 export function getEmptyChairs(gameFieldData: GameFieldData, placedPersons: PlacedPerson[]) {
-  return gameFieldData.flat().filter((cell) => isEmptyChair(placedPersons, cell));
+  return gameFieldData.allCells.filter((cell) => isEmptyChair(placedPersons, cell));
 }
 
 export function getHappyStats(persons: PlacedPerson[], waitingPersons: WaitingPerson[]) {
@@ -111,13 +125,9 @@ export function getHappyStats(persons: PlacedPerson[], waitingPersons: WaitingPe
 }
 
 export function getTableCells(gameFieldData: GameFieldData, tableIndex: number) {
-  return gameFieldData.flat().filter((cell) => isTable(cell) && cell.tableIndex === tableIndex);
+  return gameFieldData.allCells.filter((cell) => isTable(cell) && cell.tableIndex === tableIndex);
 }
 
 export function getGuestsOnTable(placedPersons: PlacedPerson[], tableIndex: number): PlacedPerson[] {
   return placedPersons.filter((person) => person.tableIndex === tableIndex);
-}
-
-export function getChairsAtTable(gameFieldData: GameFieldData, tableIndex: number) {
-  return gameFieldData.flat().filter((cell) => cell.tableIndex === tableIndex && isChair(cell));
 }

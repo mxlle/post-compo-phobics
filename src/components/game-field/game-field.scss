@@ -150,13 +150,13 @@ main {
     border: none;
     $tableHeight: var(--table-height, 8);
 
-    &.#{$MIDDLE} {
+    &.#{$FIRST} {
       z-index: 2;
 
       &::after {
         content: "";
         position: absolute;
-        top: var(--table-top, auto);
+        top: 0;
         width: 100%;
         height: calc(#{$tableHeight} * 100%);
         background: $table-bg;
@@ -285,7 +285,7 @@ main {
     z-index: 2;
 
     &.#{$TABLE} {
-      &.#{$MIDDLE} {
+      &.#{$FIRST} {
         z-index: 5;
         animation: scary-pulse-table $scary-scale-props;
 

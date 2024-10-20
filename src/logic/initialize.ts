@@ -1,10 +1,10 @@
-import { BasePerson, Cell, CellType, GameFieldData, isChair, isTable, Person, PlacedPerson, WaitingPerson } from "../types";
+import { BasePerson, Cell, GameFieldData, isChair, Person, PlacedPerson, WaitingPerson } from "../types";
 import { getRandomPhobia, getRandomPhobiaExcluding, hasTablePhobia, Phobia, REGULAR_PHOBIAS, TABLE_PHOBIAS } from "../phobia";
 import { getOnboardingData, OnboardingData } from "./onboarding";
 import { globals } from "../globals";
 import { getRandomIntFromInterval, shuffleArray } from "../utils/random-utils";
 import { checkTableStates, getEmptyChairs, getGuestsOnTable, getNeighbors } from "./checks";
-import { baseField } from "./base-field";
+import { baseField, getGameFieldDataFromBaseField } from "./base-field";
 import { createPersonElement } from "../components/game-field/cell-component";
 import { transformPlacedPersonToWaitingPerson } from "./game-logic";
 import { simplifiedCalculateParViaChains } from "./par";
@@ -45,54 +45,16 @@ export function placePersonsInitially(gameFieldData: GameFieldData): void {
 export function getGameFieldData(): GameFieldData {
   let field = baseField;
   let onboardingData: OnboardingData | undefined = getOnboardingData();
-  let tableHeight = 8;
 
   if (onboardingData) {
     field = onboardingData.field;
-    tableHeight = onboardingData.tableHeight;
   }
+
+  const gameFieldData = getGameFieldDataFromBaseField(field);
 
   document.body.style.setProperty("--s-cnt", field.length.toString());
-  document.body.style.setProperty("--table-height", tableHeight.toString());
 
-  if (tableHeight % 2 === 0) {
-    const topValue = (tableHeight / 2 - 1) * -100;
-    document.body.style.setProperty("--table-top", topValue.toString() + "%");
-  } else {
-    document.body.style.removeProperty("--table-top");
-  }
-
-  const gameField: GameFieldData = [];
-  for (let row = 0; row < field.length; row++) {
-    const baseRow = field[row];
-    const rowArray: Cell[] = [];
-    for (let column = 0; column < baseRow.length; column++) {
-      const baseCell = baseRow[column];
-
-      rowArray.push(getGameFieldObject(baseCell, row, column, onboardingData));
-    }
-    gameField.push(rowArray);
-  }
-
-  return gameField;
-}
-
-function getGameFieldObject(type: CellType, row: number, column: number, onboardingData: OnboardingData | undefined): Cell {
-  const obj: Cell = {
-    type,
-    row,
-    column,
-  };
-
-  if (isChair(type) || isTable(type)) {
-    obj.tableIndex = column > 3 ? 1 : 0;
-
-    if (onboardingData) {
-      obj.tableIndex = onboardingData.getTableIndex(row, column);
-    }
-  }
-
-  return obj;
+  return gameFieldData;
 }
 
 function generateCharactersForGame(gameField: GameFieldData, iteration: number = 0): Person[] {
@@ -206,7 +168,7 @@ function randomlyApplyCharactersOnBoard(
 ): PlacedPerson[] {
   const placedPersons: PlacedPerson[] = [];
   const copyOfCharacters = [...characters];
-  const allChairs = gameFieldData.flat().filter(isChair);
+  const allChairs = gameFieldData.allCells.filter(isChair);
   const shuffledRequiredChairs = shuffleArray(allChairs).slice(0, copyOfCharacters.length);
   shuffledRequiredChairs.forEach((chair: Cell) => {
     const person = copyOfCharacters.pop();

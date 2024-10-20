@@ -34,7 +34,7 @@ export const enum CssClass {
   BAD = "bad",
 
   TABLE = "table",
-  MIDDLE = "middle",
+  FIRST = "first",
   PLATE = "plate",
   CHAIR = "chair",
   PERSON = "person",

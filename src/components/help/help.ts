@@ -5,7 +5,7 @@ import { getTranslation, TranslationKey } from "../../translations/i18n";
 import { Cell, CellType, isBasePerson, isChair, isEmpty, isPlacedPerson, isTable, PlacedPerson, WaitingPerson } from "../../types";
 import { hasTablePhobia, Phobia, PhobiaSvgMap } from "../../phobia";
 import { createCellElement } from "../game-field/cell-component";
-import { getChairsAtTable, getGuestsOnTable } from "../../logic/checks";
+import { getGuestsOnTable } from "../../logic/checks";
 import { globals } from "../../globals";
 
 import { CssClass } from "../../utils/css-class";
@@ -65,11 +65,11 @@ export function getMiniHelpContent(cellOrPerson?: Cell | PlacedPerson | WaitingP
     helpCellElement.classList.toggle(CssClass.HAS_PERSON, true);
     helpCellElement.classList.toggle(CssClass.CHAIR, isPlacedPerson(cellOrPerson) && cellOrPerson.tableIndex !== undefined);
   } else {
-    helpCellElement = createCellElement(cellOrPerson, true);
+    helpCellElement = createCellElement(cellOrPerson);
 
     if (isTable(cellOrPerson)) {
       const tableIndex = cellOrPerson.tableIndex ?? 0;
-      const numChairs = getChairsAtTable(globals.gameFieldData, tableIndex).length;
+      const numChairs = globals.gameFieldData.tableAssignments[tableIndex].chairCells.length;
       const occupancy = getGuestsOnTable(globals.placedPersons, tableIndex).length;
 
       const helpTexts = [

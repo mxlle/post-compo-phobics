@@ -24,7 +24,7 @@ import { getGameFieldData, placePersonsInitially } from "../../logic/initialize"
 import { checkTableStates, getHappyStats } from "../../logic/checks";
 import { PubSubEvent, pubSubService } from "../../utils/pub-sub-service";
 import { handlePokiCommercial, pokiSdk } from "../../poki-integration";
-import { getOnboardingData, increaseOnboardingStepIfApplicable, isOnboarding, OnboardingData, wasOnboarding } from "../../logic/onboarding";
+import { getOnboardingData, increaseOnboardingStepIfApplicable, isOnboarding, wasOnboarding } from "../../logic/onboarding";
 import { getMiniHelpContent } from "../help/help";
 import { Direction, getOnboardingArrow } from "../onboarding/onboarding-components";
 import { calculateScore } from "../../logic/score";
@@ -89,7 +89,7 @@ export async function startNewGame() {
   moves = 0;
   updateMiniHelp();
 
-  if (globals.gameFieldData.length && gameFieldElem) {
+  if (globals.gameFieldData && gameFieldElem) {
     // reset old game field
     pubSubService.publish(PubSubEvent.UPDATE_SCORE, { score: 0, moves: 0, par: 0 });
     await cleanGameField(globals.gameFieldData);
@@ -102,13 +102,13 @@ export async function startNewGame() {
       gameFieldElem = undefined;
       waitingArea.remove();
       waitingArea = undefined;
-      globals.gameFieldData = [];
+      globals.gameFieldData = undefined;
     }
   }
 
   console.debug("Starting new game, onboarding step", globals.onboardingStep);
 
-  if (!globals.gameFieldData.length) {
+  if (!globals.gameFieldData) {
     globals.gameFieldData = getGameFieldData();
   }
 
@@ -140,7 +140,7 @@ function appendGameField() {
     document.body.append(mainContainer);
   }
 
-  attachWaitingArea(globals.gameFieldData.length);
+  attachWaitingArea(globals.gameFieldData.field.length);
 
   mainContainer.append(gameFieldElem);
 
@@ -283,7 +283,7 @@ function attachWaitingArea(columnCount: number) {
 }
 
 async function updateState(
-  gameFieldData: Cell[][],
+  gameFieldData: GameFieldData,
   placedPersons: PlacedPerson[],
   waitingPersons: WaitingPerson[],
   skipWinCheck = false,
@@ -316,12 +316,7 @@ export function generateGameFieldElement(gameFieldData: GameFieldData) {
   });
   cellElements.length = 0;
 
-  const onboardingData: OnboardingData | undefined = getOnboardingData();
-  const isTableMiddle = onboardingData
-    ? onboardingData.isTableMiddle
-    : (rowIndex: number) => rowIndex === Math.ceil(gameFieldData.length / 2) - 1;
-
-  gameFieldData.forEach((row, rowIndex) => {
+  gameFieldData.field.forEach((row, rowIndex) => {
     const rowElements: HTMLElement[] = [];
     const rowElem = createElement({
       cssClass: "row",
@@ -329,14 +324,20 @@ export function generateGameFieldElement(gameFieldData: GameFieldData) {
     gameField.append(rowElem);
 
     row.forEach((cell, columnIndex) => {
-      const isInMiddle = isTableMiddle(rowIndex);
-      const leftNeighbor = columnIndex > 0 ? gameFieldData[rowIndex][columnIndex - 1] : undefined;
+      const relatedTableAssignment = gameFieldData.tableAssignments.find((tableAssignment) => tableAssignment.tableCells.includes(cell));
+      const isFirstTableCell = relatedTableAssignment && isSameCell(relatedTableAssignment.firstTableCell, cell);
+      const leftNeighbor = columnIndex > 0 ? gameFieldData.field[rowIndex][columnIndex - 1] : undefined;
       const isOnTheRightOfATable = leftNeighbor ? isTable(leftNeighbor) : false;
-      const cellElement = createCellElement(cell, isInMiddle, isOnTheRightOfATable);
+      const cellElement = createCellElement(cell, isOnTheRightOfATable);
 
       cellElement.addEventListener("click", () => {
         cellClickHandler(cell);
       });
+
+      if (relatedTableAssignment && isFirstTableCell) {
+        cellElement.classList.add(CssClass.FIRST);
+        cellElement.style.setProperty("--table-height", relatedTableAssignment.tableCells.length.toString());
+      }
 
       rowElem.append(cellElement);
       rowElements.push(cellElement);
@@ -393,7 +394,7 @@ function setupDragDrop() {
 function getElementCell(gameFieldData: GameFieldData, el: HTMLElement): Cell | undefined {
   for (const row in cellElements) {
     const column = cellElements[row].indexOf(el);
-    if (column !== -1) return gameFieldData[row][column];
+    if (column !== -1) return gameFieldData.field[row][column];
   }
 }
 
@@ -407,7 +408,7 @@ export async function initializePersonsOnGameField() {
     cellElement.innerHTML = "";
     cellElement.append(person.personElement);
     setDoorCount(i + 1);
-    if (i < globals.gameFieldData.length) {
+    if (i < globals.gameFieldData.field.length) {
       await requestAnimationFrameWithTimeout(TIMEOUT_CELL_APPEAR);
     }
   }
@@ -450,17 +451,15 @@ export async function cleanGameField(gameFieldData: GameFieldData) {
     const person = globals.waitingPersons[i];
     person.personElement.remove();
     setDoorCount(i);
-    if (i < gameFieldData.length) {
+    if (i < gameFieldData.field.length) {
       await requestAnimationFrameWithTimeout(TIMEOUT_CELL_APPEAR);
     }
   }
 
   resetWaitlist();
 
-  const allCells = gameFieldData.flat();
-
-  for (let i = 0; i < allCells.length; i++) {
-    const cell: Cell = allCells[i];
+  for (let i = 0; i < gameFieldData.allCells.length; i++) {
+    const cell: Cell = gameFieldData.allCells[i];
     const cellElement = getCellElement(cell);
     if (isTable(cell)) {
       cellElement.classList.remove(CssClass.T13A, CssClass.HAS_LEFT, CssClass.HAS_RIGHT);
@@ -487,13 +486,10 @@ export async function updatePanicStates(
     person.personElement.classList.remove(CssClass.PANIC, CssClass.P_T13A, CssClass.SCARY, CssClass.SCARED, CssClass.NEXT);
   });
 
-  gameFieldData
-    .flat()
-    .filter(isTable)
-    .forEach((cell) => {
-      const cellElement = getCellElement(cell);
-      cellElement.classList.remove(CssClass.T13A);
-    });
+  gameFieldData.allCells.filter(isTable).forEach((cell) => {
+    const cellElement = getCellElement(cell);
+    cellElement.classList.remove(CssClass.T13A);
+  });
 
   await requestAnimationFrameWithTimeout(150); // to trigger restart of tremble animation
 
