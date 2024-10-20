@@ -12,7 +12,7 @@ import carbon from "./assets/svgs/carbon.svg";
 import waterDrop from "./assets/svgs/water-drop.svg";
 import { BasePerson } from "./types";
 
-export const PHOBIAS = ["red", "green", "blue", "yellow", "purple", "orange", "hotpink", "cyan"] as const;
+export const PHOBIAS = ["green", "red", "blue", "yellow", "purple", "orange", "cyan", "hotpink"] as const;
 
 export type Indices<T extends readonly any[]> = Exclude<Partial<T>["length"], T["length"]>;
 
@@ -21,38 +21,38 @@ export type PhobiaIndex = Indices<typeof PHOBIAS>;
 export type Phobia = (typeof PHOBIAS)[PhobiaIndex];
 
 const PhobiaNameMap: Record<Phobia, string> = {
-  red: "Erythrophobia",
   green: "Chlorophobia",
+  red: "Erythrophobia",
   blue: "Cyanophobia",
   yellow: "Xanthophobia",
   purple: "Porphyrophobia",
   orange: "Chrysophobia",
-  hotpink: "Rhodophobia",
   cyan: "Glaucophobia",
+  hotpink: "Rhodophobia",
 };
 
 export const PhobiaSvgMap: Record<Phobia, SVGElement> = {
-  red: heart(),
   green: tree(),
+  red: heart(),
   blue: cloud(),
   yellow: sun(),
   purple: moon(),
   orange: fire(),
-  hotpink: carbon(),
   cyan: waterDrop(),
+  hotpink: carbon(),
 };
 
 export type PhobiaType = "regular" | "table";
 
-export const PhobiaTypeMap: Record<Phobia, PhobiaType> = {
-  red: "regular",
-  green: "table",
+const PhobiaTypeMap: Record<Phobia, PhobiaType> = {
+  green: "regular",
+  red: "table",
   blue: "regular",
   yellow: "table",
   purple: "regular",
   orange: "table",
-  hotpink: "regular",
-  cyan: "table",
+  cyan: "regular",
+  hotpink: "table",
 };
 
 export function hasTablePhobia(person: BasePerson): boolean {
