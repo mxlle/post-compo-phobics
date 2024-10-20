@@ -26,7 +26,6 @@ export interface OnboardingData {
   field: CellType[][];
   waitingPersons: BasePerson[];
   sittingPersons: PersonWithPosition[];
-  getTableIndex: (row: number, column: number) => number;
   par?: number;
 }
 
@@ -113,9 +112,6 @@ function getOnboardingDataForIntro(): OnboardingData {
     field: onboardingField,
     waitingPersons,
     sittingPersons,
-    getTableIndex: (_row, _column) => {
-      return 0;
-    },
   };
 }
 
@@ -135,9 +131,6 @@ function getOnboardingDataForBothPhobias(): OnboardingData {
     field: mediumField,
     waitingPersons,
     sittingPersons,
-    getTableIndex: (_row, column) => {
-      return column < 3 ? 0 : 1;
-    },
   };
 }
 
@@ -159,13 +152,13 @@ function getOnboardingDataForResort(): OnboardingData {
     field: mediumField,
     waitingPersons,
     sittingPersons,
-    getTableIndex: (_row, column) => {
-      return column < 3 ? 0 : 1;
-    },
     par: 2,
   };
 }
 
+/**
+ * @deprecated not used - because of smaller tables for now
+ */
 function getOnboardingDataForTriskaidekaphobia(): OnboardingData {
   const waiting: IndexedPersonDefinition[] = [{ nameI: 1, phobiaI: 0 }];
 
@@ -208,7 +201,6 @@ function getOnboardingDataForTriskaidekaphobia(): OnboardingData {
     field: baseField,
     waitingPersons,
     sittingPersons,
-    getTableIndex: (_row, column) => (column > 3 ? 1 : 0),
     par: 3,
   };
 }

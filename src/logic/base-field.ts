@@ -28,11 +28,6 @@ export const baseField = (() => {
   ];
 })();
 
-interface BaseTableAssignments {
-  tableIndex: number;
-  tableCells: Cell[];
-}
-
 export function getGameFieldDataFromBaseField(baseField: CellType[][]): GameFieldData {
   const field: Cell[][] = [];
 

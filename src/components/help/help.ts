@@ -112,7 +112,6 @@ function getSatisfactionStats(person: PlacedPerson | WaitingPerson): HTMLElement
   let isTriskaidekaphobia = false;
   let hasTable = false;
   let phobiaNotTriggered = undefined;
-  let noSmallFear = undefined;
 
   if (isPlacedPerson(person)) {
     isTriskaidekaphobia = person.triskaidekaphobia;

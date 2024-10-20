@@ -37,10 +37,9 @@ export function checkTableStates(gameFieldData: GameFieldData, placedPersons: Pl
 
   const otherGuestsInRoom = placedPersons.filter((guest) => guest.tableIndex === undefined);
   otherGuestsInRoom.forEach((guest) => {
-    const afraidOf = getScaryNeighbors(placedPersons, guest);
-    guest.hasPanic = afraidOf.length > 0;
+    guest.hasPanic = false;
     guest.triskaidekaphobia = false;
-    guest.afraidOf = afraidOf;
+    guest.afraidOf = [];
   });
 
   const afraidGuests = placedPersons.filter((guest) => guest.hasPanic);

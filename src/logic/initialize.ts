@@ -17,7 +17,7 @@ export function placePersonsInitially(gameFieldData: GameFieldData): void {
 
   if (onboardingData) {
     waitingPersons = applyWaitingPersons(onboardingData);
-    placedPersons = applySeatedCharacters(onboardingData);
+    placedPersons = applySeatedCharacters(onboardingData, gameFieldData);
   } else {
     const minWaitingPersons = globals.settings.minInitialPanic;
     const charactersForGame = generateCharactersForGame(gameFieldData);
@@ -201,11 +201,11 @@ function randomlyApplyCharactersOnBoard(
   return placedPersons;
 }
 
-function applySeatedCharacters(onboardingData: OnboardingData): PlacedPerson[] {
-  const { getTableIndex, sittingPersons } = onboardingData;
+function applySeatedCharacters(onboardingData: OnboardingData, gameFieldData: GameFieldData): PlacedPerson[] {
+  const { sittingPersons } = onboardingData;
 
   return sittingPersons.map((character): PlacedPerson => {
-    const relatedCellType = onboardingData.field[character.row][character.column];
+    const targetCell = gameFieldData.field[character.row][character.column];
 
     return {
       ...character,
@@ -213,7 +213,7 @@ function applySeatedCharacters(onboardingData: OnboardingData): PlacedPerson[] {
       hasPanic: false,
       afraidOf: [],
       makesAfraid: [],
-      tableIndex: isChair(relatedCellType) ? getTableIndex(character.row, character.column) : undefined,
+      tableIndex: targetCell.tableIndex,
       personElement: createPersonElement(character),
     };
   });
