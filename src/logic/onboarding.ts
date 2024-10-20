@@ -124,10 +124,10 @@ function getOnboardingDataForIntro(): OnboardingData {
 }
 
 function getOnboardingDataForBothPhobias(): OnboardingData {
-  const waiting: IndexedPersonDefinition[] = [{ nameI: 0, phobiaI: 1 }];
+  const waiting: IndexedPersonDefinition[] = [{ nameI: 1, phobiaI: 0 }];
 
   const sitting: IndexedSittingPersonDefinition[] = [
-    { row: 2, column: 0, nameI: 1 },
+    { row: 2, column: 0, nameI: 0 },
     { row: 2, column: 4, nameI: 2, phobiaI: 1 },
     { row: 4, column: 6, nameI: 3 },
     { row: 3, column: 2, nameI: 4 },
@@ -148,12 +148,12 @@ function getOnboardingDataForBothPhobias(): OnboardingData {
 }
 
 function getOnboardingDataForResort(): OnboardingData {
-  const waiting: IndexedPersonDefinition[] = [{ nameI: 0, phobiaI: 1 }];
+  const waiting: IndexedPersonDefinition[] = [{ nameI: 1, phobiaI: 0 }];
 
   const sitting: IndexedSittingPersonDefinition[] = [
-    { row: 2, column: 2, nameI: 1 },
+    { row: 2, column: 2, nameI: 0 },
     { row: 2, column: 6, nameI: 2, phobiaI: 1 },
-    { row: 3, column: 6, nameI: 2 },
+    { row: 3, column: 6, nameI: 2, phobiaI: 1 },
     { row: 4, column: 4, nameI: 3 },
     { row: 3, column: 0, nameI: 4 },
     { row: 4, column: 2, nameI: 4 },
@@ -175,14 +175,14 @@ function getOnboardingDataForResort(): OnboardingData {
 }
 
 function getOnboardingDataForTriskaidekaphobia(): OnboardingData {
-  const waiting: IndexedPersonDefinition[] = [{ nameI: 0, phobiaI: 1 }];
+  const waiting: IndexedPersonDefinition[] = [{ nameI: 1, phobiaI: 0 }];
 
   const sitting: IndexedSittingPersonDefinition[] = [
     // type 1
-    { row: 1, column: 0, nameI: 1 },
-    { row: 2, column: 0, nameI: 1 },
-    { row: 1, column: 2, nameI: 1 },
-    { row: 2, column: 2, nameI: 1 },
+    { row: 1, column: 0, nameI: 0 },
+    { row: 2, column: 0, nameI: 0 },
+    { row: 1, column: 2, nameI: 0 },
+    { row: 2, column: 2, nameI: 0 },
     // type 2
     { row: 3, column: 0, nameI: 2 },
     { row: 4, column: 0, nameI: 2 },
@@ -194,9 +194,9 @@ function getOnboardingDataForTriskaidekaphobia(): OnboardingData {
     { row: 5, column: 2, nameI: 3 },
     { row: 6, column: 2, nameI: 3 },
     // type 4
-    { row: 1, column: 5, nameI: 4 },
+    { row: 1, column: 5, nameI: 4, phobiaI: 1 },
     { row: 2, column: 5, nameI: 4 },
-    { row: 1, column: 7, nameI: 4 },
+    { row: 1, column: 7, nameI: 4, phobiaI: 1 },
     { row: 2, column: 7, nameI: 4 },
     // type 5
     { row: 3, column: 5, nameI: 5 },
