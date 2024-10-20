@@ -7,7 +7,6 @@ import { checkTableStates, getEmptyChairs, getGuestsOnTable, getNeighbors } from
 import { baseField, getGameFieldDataFromBaseField } from "./base-field";
 import { createPersonElement } from "../components/game-field/cell-component";
 import { transformPlacedPersonToWaitingPerson } from "./game-logic";
-import { simplifiedCalculateParViaChains } from "./par";
 
 export function placePersonsInitially(gameFieldData: GameFieldData): void {
   let onboardingData: OnboardingData | undefined = getOnboardingData();
@@ -22,7 +21,6 @@ export function placePersonsInitially(gameFieldData: GameFieldData): void {
     const minWaitingPersons = globals.settings.minInitialPanic;
     const charactersForGame = generateCharactersForGame(gameFieldData);
     placedPersons = randomlyApplyCharactersOnBoard(gameFieldData, charactersForGame, minWaitingPersons);
-    const par = simplifiedCalculateParViaChains(placedPersons);
     const unhappyPersons = placedPersons.filter((p) => p.hasPanic);
     const happyPersons = placedPersons.filter((p) => !p.hasPanic);
     waitingPersons = unhappyPersons.map(transformPlacedPersonToWaitingPerson);
@@ -32,8 +30,10 @@ export function placePersonsInitially(gameFieldData: GameFieldData): void {
     }
     placedPersons = placedPersons.filter((p) => waitingPersons.every((wp) => wp.id !== p.id));
 
+    const par = waitingPersons.length + Math.ceil(placedPersons.length / 5); // todo - make this smarter
+
     globals.metaData = {
-      minMoves: Math.max(par, waitingPersons.length),
+      minMoves: par,
       maxMoves: charactersForGame.length,
     };
   }
