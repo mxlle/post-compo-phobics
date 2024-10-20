@@ -28,12 +28,12 @@ export function getWaitingAreaElement(count: number, cellClickHandler: () => voi
   }
 
   const doorElement = createElement({
-    text: `🚪 `,
-    cssClass: `${CssClass.CELL} door emoji-font`,
+    cssClass: `${CssClass.CELL} door`,
     onClick: () => cellClickHandler(),
   });
+  const doorEmoji = createElement({ tag: "span", cssClass: "emoji-font", text: "🚪" });
   doorCountElement = createElement({ tag: "span", cssClass: "count", text: formatNumber(0) });
-  doorElement.append(doorCountElement);
+  doorElement.append(doorEmoji, doorCountElement);
   waitingAreaElement.append(doorElement);
 
   return waitingAreaElement;
@@ -63,5 +63,7 @@ export function updateWaitlistCount(): void {
 }
 
 function formatNumber(num: number): string {
-  return ("" + (100 + num)).substring(1);
+  return "" + num;
+
+  // return ("" + (100 + num)).substring(1);
 }

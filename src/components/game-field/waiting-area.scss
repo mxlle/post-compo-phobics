@@ -26,6 +26,12 @@ div.waiting-area {
 
   &:not(.has_waiting_person) {
     opacity: 0.5;
+
+    .door {
+      .count {
+        opacity: 0.5;
+      }
+    }
   }
 
   @media (orientation: portrait) {
@@ -40,12 +46,25 @@ div.waiting-area {
 
     &.door {
       order: -1;
-      grid-template-columns: 1fr auto;
+
+      > * {
+        grid-area: 1 / 1;
+      }
+
+      .emoji-font {
+        margin-top: 0.16em;
+        font-size: calc(0.9 * var(--s-size));
+      }
 
       .count {
+        text-shadow: 2px 2px black;
         font-family: monospace;
         font-variant-numeric: tabular-nums;
         font-size: 0.5em;
+        align-self: start;
+        margin-top: 0.4em;
+        color: white;
+        transition: opacity 1s;
       }
     }
 
