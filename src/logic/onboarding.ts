@@ -11,7 +11,7 @@ export const enum OnboardingStep {
   INTRO = 0,
   BIG_FEAR = 1,
   RESORT = 2,
-  TRISKAIDEKAPHOBIA = 3,
+  // TRISKAIDEKAPHOBIA = 3,
 }
 
 export function isOnboarding() {
@@ -77,8 +77,8 @@ export function getOnboardingData(): OnboardingData | undefined {
       return getOnboardingDataForBothPhobias();
     case OnboardingStep.RESORT:
       return getOnboardingDataForResort();
-    case OnboardingStep.TRISKAIDEKAPHOBIA:
-      return getOnboardingDataForTriskaidekaphobia();
+    // case OnboardingStep.TRISKAIDEKAPHOBIA:
+    //   return getOnboardingDataForTriskaidekaphobia();
     default:
       return undefined;
   }
@@ -94,7 +94,7 @@ export function increaseOnboardingStepIfApplicable() {
 
   let step = globals.onboardingStep + 1;
 
-  if (step > OnboardingStep.TRISKAIDEKAPHOBIA) {
+  if (step > OnboardingStep.RESORT) {
     step = -1;
   }
 
