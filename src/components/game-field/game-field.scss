@@ -310,7 +310,7 @@ main {
   }
 }
 
-.fear {
+.phobia {
   position: absolute;
   right: 0;
   bottom: 0;
@@ -326,19 +326,14 @@ main {
 
   @include phobia-colors;
 
-  &.small {
-    font-size: 0.4em;
-    left: 0;
-  }
-
   svg {
     width: 90%;
     height: 90%;
   }
 
-  // overlay a cross over the fear icon
-  &::before {
-    content: "";
+  // overlay a cross over the phobia icon
+  &::before,
+  &::after {
     position: absolute;
     width: 10%;
     height: 100%;
@@ -347,7 +342,15 @@ main {
   }
 
   &::before {
+    content: "";
     transform: rotate(45deg);
+  }
+
+  &.table-phobia {
+    &::after {
+      content: "";
+      transform: rotate(-45deg);
+    }
   }
 }
 

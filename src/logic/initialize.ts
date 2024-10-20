@@ -1,5 +1,5 @@
 import { BasePerson, Cell, CellType, GameFieldData, isChair, isTable, Person, PlacedPerson, WaitingPerson } from "../types";
-import { getRandomPhobia, getRandomPhobiaExcluding, Phobia } from "../phobia";
+import { getRandomPhobia, getRandomPhobiaExcluding, hasTablePhobia, Phobia, REGULAR_PHOBIAS, TABLE_PHOBIAS } from "../phobia";
 import { getOnboardingData, OnboardingData } from "./onboarding";
 import { globals } from "../globals";
 import { getRandomIntFromInterval, shuffleArray } from "../utils/random-utils";
@@ -97,13 +97,13 @@ function getGameFieldObject(type: CellType, row: number, column: number, onboard
 
 function generateCharactersForGame(gameField: GameFieldData, iteration: number = 0): Person[] {
   const placedPersons: PlacedPerson[] = [];
-  const { minAmount, maxAmount, chanceForBigFear, chanceForSmallFear } = globals.settings;
+  const { minAmount, maxAmount, chanceForTablePhobia } = globals.settings;
   const amount = getRandomIntFromInterval(minAmount, maxAmount);
   const characters: Person[] = [];
 
   let id = 0;
   while (characters.length < amount) {
-    const newPerson = generatePerson(chanceForBigFear, chanceForSmallFear, id++);
+    const newPerson = generatePerson(chanceForTablePhobia, id++);
     const chair = findValidChair(gameField, placedPersons, newPerson);
 
     if (chair) {
@@ -142,8 +142,10 @@ export function isTriggeringPhobia(placedPersons: PlacedPerson[], cell: Cell, pe
   const tableGuests = getGuestsOnTable(placedPersons, cell.tableIndex);
 
   for (let guest of tableGuests) {
-    const isAfraidOf = person.fear && guest.name === person.fear;
-    const makesAfraid = guest.fear && guest.fear === person.name;
+    const personHasTablePhobia = hasTablePhobia(person);
+    const guestHasTablePhobia = hasTablePhobia(guest);
+    const isAfraidOf = personHasTablePhobia && person.phobia && guest.name === person.phobia;
+    const makesAfraid = guestHasTablePhobia && guest.phobia && guest.phobia === person.name;
 
     if (isAfraidOf || makesAfraid) {
       return true;
@@ -153,8 +155,10 @@ export function isTriggeringPhobia(placedPersons: PlacedPerson[], cell: Cell, pe
   const neighbors = getNeighbors(placedPersons, cell);
 
   for (let guest of neighbors) {
-    const isAfraidOf = person.smallFear && guest.name === person.smallFear;
-    const makesAfraid = guest.smallFear && guest.smallFear === person.name;
+    const personHasTablePhobia = hasTablePhobia(person);
+    const guestHasTablePhobia = hasTablePhobia(guest);
+    const isAfraidOf = !personHasTablePhobia && person.phobia && guest.name === person.phobia;
+    const makesAfraid = !guestHasTablePhobia && guest.phobia && guest.phobia === person.name;
 
     if (isAfraidOf || makesAfraid) {
       return true;
@@ -164,26 +168,24 @@ export function isTriggeringPhobia(placedPersons: PlacedPerson[], cell: Cell, pe
   return false;
 }
 
-function generatePerson(chanceForBigFear: number, chanceForSmallFear: number, id: number): Person {
-  const name = getRandomPhobia();
-  let fear: Phobia | undefined;
-  let smallFear: Phobia | undefined;
+function generatePerson(chanceForTablePhobia: number, id: number): Person {
+  let name: Phobia;
+  let phobia: Phobia | undefined;
 
-  const fearTypeRandomValue = Math.random();
+  const phobiaTypeRandomValue = Math.random();
 
-  if (fearTypeRandomValue > 1 - chanceForBigFear) {
-    fear = getRandomPhobiaExcluding([name]);
+  if (phobiaTypeRandomValue < chanceForTablePhobia) {
+    name = getRandomPhobia(TABLE_PHOBIAS);
+  } else {
+    name = getRandomPhobia(REGULAR_PHOBIAS);
   }
 
-  if (fearTypeRandomValue < chanceForSmallFear) {
-    smallFear = getRandomPhobiaExcluding([name, fear]);
-  }
+  phobia = getRandomPhobiaExcluding([name]);
 
   const basePerson: BasePerson = {
     id,
     name,
-    fear,
-    smallFear,
+    phobia,
   };
 
   return {

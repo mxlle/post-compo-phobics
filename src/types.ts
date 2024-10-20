@@ -14,8 +14,7 @@ export const enum CellType {
 export interface Settings {
   minAmount: number;
   maxAmount: number;
-  chanceForBigFear: number;
-  chanceForSmallFear: number;
+  chanceForTablePhobia: number;
   minInitialPanic: number;
 }
 
@@ -32,8 +31,7 @@ export interface Cell extends CellPosition {
 export interface BasePerson {
   id: number;
   name: Phobia;
-  fear: Phobia | undefined;
-  smallFear: Phobia | undefined;
+  phobia: Phobia | undefined;
 }
 
 export interface Person extends BasePerson {

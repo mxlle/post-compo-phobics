@@ -10,6 +10,7 @@ import {
   PlacedPerson,
   WaitingPerson,
 } from "../types";
+import { hasTablePhobia } from "../phobia";
 
 export function checkTableStates(gameFieldData: GameFieldData, placedPersons: PlacedPerson[]) {
   const panickedTableCells: Cell[] = [];
@@ -23,9 +24,10 @@ export function checkTableStates(gameFieldData: GameFieldData, placedPersons: Pl
     }
 
     guests.forEach((guest) => {
-      const afraidOf = guests.filter((otherGuest) => otherGuest.name === guest.fear);
-      const alsoAfraidOf = getScaryNeighbors(placedPersons, guest);
-      afraidOf.push(...alsoAfraidOf);
+      const isTablePhobia = hasTablePhobia(guest);
+      const afraidOf = isTablePhobia
+        ? guests.filter((otherGuest) => otherGuest.name === guest.phobia)
+        : getScaryNeighbors(placedPersons, guest);
 
       guest.hasPanic = afraidOf.length > 0;
       guest.triskaidekaphobia = isPanic;
@@ -51,18 +53,19 @@ export function checkTableStates(gameFieldData: GameFieldData, placedPersons: Pl
 
 export function getScaryNeighbors(placedPersons: PlacedPerson[], person: PlacedPerson) {
   const neighbors = getNeighbors(placedPersons, person);
-  return neighbors.filter((neighbor) => neighbor.name === person.smallFear);
+  return neighbors.filter((neighbor) => neighbor.name === person.phobia);
 }
 
-// get all 8 neighbors of a cell, plus the three cells on the other side of the table
+// get the 3 neighbors on the same table
 export function getNeighbors(placedPersons: PlacedPerson[], self: CellPositionWithTableIndex): PlacedPerson[] {
   const { row, column } = self;
 
   const neighbors: PlacedPerson[] = placedPersons.filter((person) => {
-    const isSelf = person.row === row && person.column === column;
     const isOpposite = person.row === row && person.column !== column && person.tableIndex === self.tableIndex;
+    const isAbove = person.row === row - 1 && person.column === column && person.tableIndex === self.tableIndex;
+    const isBelow = person.row === row + 1 && person.column === column && person.tableIndex === self.tableIndex;
 
-    return (!isSelf && Math.abs(person.row - row) <= 1 && Math.abs(person.column - column) <= 1) || isOpposite;
+    return isAbove || isBelow || isOpposite;
   });
 
   return neighbors;

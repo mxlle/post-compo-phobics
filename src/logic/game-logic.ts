@@ -34,8 +34,7 @@ export function transformPlacedPersonToWaitingPerson(person: PlacedPerson): Wait
   return {
     id: person.id,
     name: person.name,
-    fear: person.fear,
-    smallFear: person.smallFear,
+    phobia: person.phobia,
     personElement: person.personElement,
   };
 }

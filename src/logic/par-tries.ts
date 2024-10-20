@@ -57,9 +57,9 @@ export function calculatePar(
 
 // can probably be replaced with getChainsAndSplitToTables
 export function getChains(placedPersons: PlacedPerson[]): PlacedPerson[][] {
-  const personsWithBigFear = placedPersons.filter((p) => p.fear !== undefined);
-  const personsThatTriggerBigFear = placedPersons.filter((p) => personsWithBigFear.some((t) => t.fear === p.name));
-  const personsWithRelevantBigFear = personsWithBigFear.filter((p) => personsThatTriggerBigFear.some((t) => t.name === p.fear));
+  const personsWithBigFear = placedPersons.filter((p) => p.phobia !== undefined);
+  const personsThatTriggerBigFear = placedPersons.filter((p) => personsWithBigFear.some((t) => t.phobia === p.name));
+  const personsWithRelevantBigFear = personsWithBigFear.filter((p) => personsThatTriggerBigFear.some((t) => t.name === p.phobia));
   let involvedPersons = personsWithRelevantBigFear.concat(personsThatTriggerBigFear);
 
   const chains: PlacedPerson[][] = [];
@@ -69,7 +69,7 @@ export function getChains(placedPersons: PlacedPerson[]): PlacedPerson[][] {
     while (relatedPersons.length > 0) {
       const currentPerson = relatedPersons.pop();
       pushCellIfNotInList(currentPerson, chain);
-      relatedPersons.push(...involvedPersons.filter((p) => p.name === currentPerson.fear || p.fear === currentPerson.name));
+      relatedPersons.push(...involvedPersons.filter((p) => p.name === currentPerson.phobia || p.phobia === currentPerson.name));
       involvedPersons = involvedPersons.filter((p) => !relatedPersons.some((t) => isSameCell(t, p)));
     }
     chains.push(chain.sort(sortByName));
@@ -169,7 +169,7 @@ function findValidChair(gameFieldData: GameFieldData, placedPersons: PlacedPerso
   const validEmptyChairs = emptyChairs.filter((c) => {
     const neighbors = getNeighbors(placedPersons, c);
 
-    return neighbors.every((n) => n.smallFear !== person.name && n.name !== person.smallFear);
+    return neighbors.every((n) => n.phobia !== person.name && n.name !== person.phobia);
   });
 
   return validEmptyChairs[0];
@@ -196,7 +196,7 @@ function splitChainIntoTables(chain: PlacedPerson[]): TableSplit {
 
   while (remainingPersons.length > 0) {
     const person = remainingPersons.pop();
-    const oppositePersons = remainingPersons.filter((p) => p.name === person.fear || p.fear === person.name);
+    const oppositePersons = remainingPersons.filter((p) => p.name === person.phobia || p.phobia === person.name);
     const canAddOppositesTo0 = oppositePersons.every((p) => canAddToTable(tables[0], p));
     const canAddPersonTo1 = canAddToTable(tables[1], person);
     if (canAddOppositesTo0 && canAddPersonTo1) {
@@ -213,7 +213,7 @@ function splitChainIntoTables(chain: PlacedPerson[]): TableSplit {
 }
 
 function canAddToTable(table: PlacedPerson[], person: PlacedPerson): boolean {
-  return table.every((t) => t.name !== person.fear && t.fear !== person.name);
+  return table.every((t) => t.name !== person.phobia && t.phobia !== person.name);
 }
 
 function sortByName(a: PlacedPerson, b: PlacedPerson): number {

@@ -36,8 +36,7 @@ type BaseFieldIndex = IntRange<0, 9>;
 
 interface IndexedPersonDefinition {
   nameI: PhobiaIndex;
-  fearI?: PhobiaIndex;
-  smallFearI?: PhobiaIndex;
+  phobiaI?: PhobiaIndex;
 }
 
 interface IndexedSittingPersonDefinition extends IndexedPersonDefinition {
@@ -106,7 +105,7 @@ export function increaseOnboardingStepIfApplicable() {
 }
 
 function getOnboardingDataForIntro(): OnboardingData {
-  const waiting: IndexedPersonDefinition[] = [{ nameI: 0, smallFearI: 1 }];
+  const waiting: IndexedPersonDefinition[] = [{ nameI: 0, phobiaI: 1 }];
 
   const sitting: IndexedSittingPersonDefinition[] = [{ row: 1, column: 3, nameI: 1 }];
 
@@ -125,11 +124,11 @@ function getOnboardingDataForIntro(): OnboardingData {
 }
 
 function getOnboardingDataForBothPhobias(): OnboardingData {
-  const waiting: IndexedPersonDefinition[] = [{ nameI: 0, fearI: 1, smallFearI: 2 }];
+  const waiting: IndexedPersonDefinition[] = [{ nameI: 0, phobiaI: 1 }];
 
   const sitting: IndexedSittingPersonDefinition[] = [
     { row: 2, column: 0, nameI: 1 },
-    { row: 2, column: 4, nameI: 2, fearI: 1 },
+    { row: 2, column: 4, nameI: 2, phobiaI: 1 },
     { row: 4, column: 6, nameI: 3 },
     { row: 3, column: 2, nameI: 4 },
   ];
@@ -149,12 +148,12 @@ function getOnboardingDataForBothPhobias(): OnboardingData {
 }
 
 function getOnboardingDataForResort(): OnboardingData {
-  const waiting: IndexedPersonDefinition[] = [{ nameI: 0, fearI: 1, smallFearI: 2 }];
+  const waiting: IndexedPersonDefinition[] = [{ nameI: 0, phobiaI: 1 }];
 
   const sitting: IndexedSittingPersonDefinition[] = [
     { row: 2, column: 2, nameI: 1 },
-    { row: 2, column: 6, nameI: 2, fearI: 1 },
-    { row: 3, column: 6, nameI: 2, smallFearI: 0 },
+    { row: 2, column: 6, nameI: 2, phobiaI: 1 },
+    { row: 3, column: 6, nameI: 2 },
     { row: 4, column: 4, nameI: 3 },
     { row: 3, column: 0, nameI: 4 },
     { row: 4, column: 2, nameI: 4 },
@@ -175,13 +174,8 @@ function getOnboardingDataForResort(): OnboardingData {
   };
 }
 
-/**
- * 24 characters, 12 at each table
- * 8 with big fear, 10 with small fear, 6 with both
- * 1st not at a table, all tables without panic
- */
 function getOnboardingDataForTriskaidekaphobia(): OnboardingData {
-  const waiting: IndexedPersonDefinition[] = [{ nameI: 0, fearI: 1, smallFearI: 4 }];
+  const waiting: IndexedPersonDefinition[] = [{ nameI: 0, phobiaI: 1 }];
 
   const sitting: IndexedSittingPersonDefinition[] = [
     // type 1
@@ -233,7 +227,7 @@ function getPersonsFromIndexedDefinitions(
   waiting: IndexedPersonDefinition[],
   sitting: IndexedSittingPersonDefinition[],
 ): { waitingPersons: BasePerson[]; sittingPersons: PersonWithPosition[] } {
-  const cesar = getRandomIntFromInterval(0, PHOBIAS.length - 1);
+  const cesar = 2 * getRandomIntFromInterval(0, PHOBIAS.length - 1); // times 2 to keep phobia type
 
   const waitingPersons = waiting.map((definition, index) => mapping(cesar, definition, index));
   const sittingPersons = sitting.map((definition, index) => {
@@ -244,16 +238,14 @@ function getPersonsFromIndexedDefinitions(
   return { waitingPersons, sittingPersons };
 }
 
-function mapping(cesar: number, { nameI, fearI, smallFearI }: IndexedPersonDefinition, id: number): BasePerson {
+function mapping(cesar: number, { nameI, phobiaI }: IndexedPersonDefinition, id: number): BasePerson {
   const name = getCesarEmoji(cesar, nameI);
-  const fear = fearI !== undefined ? getCesarEmoji(cesar, fearI) : undefined;
-  const smallFear = smallFearI !== undefined ? getCesarEmoji(cesar, smallFearI) : undefined;
+  const phobia = phobiaI !== undefined ? getCesarEmoji(cesar, phobiaI) : undefined;
 
   return {
     id,
     name,
-    fear,
-    smallFear,
+    phobia,
   };
 }
 

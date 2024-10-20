@@ -21,29 +21,25 @@ export const difficultySettings: Record<Difficulty, Settings> = {
   [Difficulty.EASY]: {
     minAmount: 15,
     maxAmount: 18,
-    chanceForBigFear: 0.2,
-    chanceForSmallFear: 0.8,
+    chanceForTablePhobia: 0.2,
     minInitialPanic: 3,
   },
   [Difficulty.MEDIUM]: {
     minAmount: 18,
     maxAmount: 21,
-    chanceForBigFear: 0.4,
-    chanceForSmallFear: 0.6,
+    chanceForTablePhobia: 0.3,
     minInitialPanic: 4,
   },
   [Difficulty.HARD]: {
     minAmount: 22,
     maxAmount: 27,
-    chanceForBigFear: 0.6,
-    chanceForSmallFear: 0.7,
+    chanceForTablePhobia: 0.4,
     minInitialPanic: 5,
   },
   [Difficulty.EXTREME]: {
     minAmount: 32,
     maxAmount: 32,
-    chanceForBigFear: 0.7,
-    chanceForSmallFear: 1,
+    chanceForTablePhobia: 0.6,
     minInitialPanic: 6,
   },
 };

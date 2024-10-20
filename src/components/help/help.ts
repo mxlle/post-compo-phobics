@@ -3,7 +3,7 @@ import "./help.scss";
 import { createElement } from "../../utils/html-utils";
 import { getTranslation, TranslationKey } from "../../translations/i18n";
 import { Cell, CellType, isBasePerson, isChair, isEmpty, isPlacedPerson, isTable, PlacedPerson, WaitingPerson } from "../../types";
-import { Phobia, PhobiaSvgMap } from "../../phobia";
+import { hasTablePhobia, Phobia, PhobiaSvgMap } from "../../phobia";
 import { createCellElement } from "../game-field/cell-component";
 import { getChairsAtTable, getGuestsOnTable } from "../../logic/checks";
 import { globals } from "../../globals";
@@ -64,27 +64,6 @@ export function getMiniHelpContent(cellOrPerson?: Cell | PlacedPerson | WaitingP
     helpCellElement.append(personElement);
     helpCellElement.classList.toggle(CssClass.HAS_PERSON, true);
     helpCellElement.classList.toggle(CssClass.CHAIR, isPlacedPerson(cellOrPerson) && cellOrPerson.tableIndex !== undefined);
-
-    // const { fear, smallFear } = person;
-
-    // const fearName = getPhobiaName(fear);
-    // const smallFearName = getPhobiaName(smallFear);
-    // const showTriskaidekaphobia = globals.gameFieldData.length === baseField.length;
-
-    // const phobias = [
-    //   showTriskaidekaphobia ? getTranslation(TranslationKey.TRISKAIDEKAPHOBIA) + " [13]" : "",
-    //   smallFear ? getTranslation(TranslationKey.SMALL_FEAR, smallFearName + " " + PhobiaSymbolMap[smallFear]) : "",
-    //   fear ? getTranslation(TranslationKey.BIG_FEAR, fearName + " " + PhobiaSymbolMap[fear]) : "",
-    // ];
-    //
-    // const filterPhobias = phobias.filter(Boolean);
-    //
-    // if (filterPhobias.length !== 0) {
-    //   helpText.innerHTML = getTranslation(
-    //     TranslationKey.INFO_PHOBIAS,
-    //     "<ul>" + filterPhobias.map((text) => `<li>${text}</li>`).join("") + "</ul>",
-    //   );
-    // }
   } else {
     helpCellElement = createCellElement(cellOrPerson, true);
 
@@ -132,14 +111,13 @@ export function getMiniHelpContent(cellOrPerson?: Cell | PlacedPerson | WaitingP
 function getSatisfactionStats(person: PlacedPerson | WaitingPerson): HTMLElement {
   let isTriskaidekaphobia = false;
   let hasTable = false;
-  let noBigFear = undefined;
+  let phobiaNotTriggered = undefined;
   let noSmallFear = undefined;
 
   if (isPlacedPerson(person)) {
     isTriskaidekaphobia = person.triskaidekaphobia;
     hasTable = person.tableIndex !== undefined;
-    noBigFear = !hasTable ? undefined : person.afraidOf.filter((otherCell) => person.fear === otherCell.name).length === 0;
-    noSmallFear = !hasTable ? undefined : person.afraidOf.filter((otherCell) => person.smallFear === otherCell.name).length === 0;
+    phobiaNotTriggered = !hasTable ? undefined : person.afraidOf.filter((otherCell) => person.phobia === otherCell.name).length === 0;
   }
 
   const satisfactionStats = createElement({
@@ -150,6 +128,8 @@ function getSatisfactionStats(person: PlacedPerson | WaitingPerson): HTMLElement
     cssClass: CssClass.STATS_GRID,
   });
 
+  const isTablePhobia = hasTablePhobia(person);
+
   const stats: HappyStat[] = [
     {
       phobia: isTriskaidekaphobia ? "😱" : undefined,
@@ -157,16 +137,13 @@ function getSatisfactionStats(person: PlacedPerson | WaitingPerson): HTMLElement
       explainText: getTranslation(TranslationKey.INFO_TRISKAIDEKAPHOBIA),
     },
     {
-      phobia: person.smallFear,
-      satisfied: noSmallFear,
-      explainText: getTranslation(TranslationKey.INFO_SMALL_FEAR, '<span class="svg"></span>'),
-      svg: PhobiaSvgMap[person.smallFear],
-    },
-    {
-      phobia: person.fear,
-      satisfied: noBigFear,
-      explainText: getTranslation(TranslationKey.INFO_BIG_FEAR, '<span class="svg"></span>'),
-      svg: PhobiaSvgMap[person.fear],
+      phobia: person.phobia,
+      satisfied: phobiaNotTriggered,
+      explainText: getTranslation(
+        isTablePhobia ? TranslationKey.INFO_TABLE_PHOBIA : TranslationKey.INFO_REGULAR_FEAR,
+        '<span class="svg"></span>',
+      ),
+      svg: PhobiaSvgMap[person.phobia],
     },
     { phobia: CellType.CHAIR, satisfied: hasTable, explainText: getTranslation(TranslationKey.INFO_FOMO) },
   ];

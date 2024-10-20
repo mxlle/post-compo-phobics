@@ -10,6 +10,7 @@ import moon from "./assets/svgs/moon.svg";
 import fire from "./assets/svgs/fire.svg";
 import carbon from "./assets/svgs/carbon.svg";
 import waterDrop from "./assets/svgs/water-drop.svg";
+import { BasePerson } from "./types";
 
 export const PHOBIAS = ["red", "green", "blue", "yellow", "purple", "orange", "hotpink", "cyan"] as const;
 
@@ -40,6 +41,26 @@ export const PhobiaSvgMap: Record<Phobia, SVGElement> = {
   hotpink: carbon(),
   cyan: waterDrop(),
 };
+
+export type PhobiaType = "regular" | "table";
+
+export const PhobiaTypeMap: Record<Phobia, PhobiaType> = {
+  red: "regular",
+  green: "table",
+  blue: "regular",
+  yellow: "table",
+  purple: "regular",
+  orange: "table",
+  hotpink: "regular",
+  cyan: "table",
+};
+
+export function hasTablePhobia(person: BasePerson): boolean {
+  return PhobiaTypeMap[person.name] === "table";
+}
+
+export const REGULAR_PHOBIAS = PHOBIAS.filter((phobia) => PhobiaTypeMap[phobia] === "regular");
+export const TABLE_PHOBIAS = PHOBIAS.filter((phobia) => PhobiaTypeMap[phobia] === "table");
 
 export function getPhobiaName(phobia: Phobia | undefined): string {
   if (!phobia) {

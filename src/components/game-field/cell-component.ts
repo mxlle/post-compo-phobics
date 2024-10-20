@@ -13,7 +13,7 @@ import { createElement } from "../../utils/html-utils";
 import { getNearestTableCell, isHappy } from "../../logic/checks";
 import { globals } from "../../globals";
 import { CssClass } from "../../utils/css-class";
-import { PhobiaSvgMap } from "../../phobia";
+import { hasTablePhobia, PhobiaSvgMap } from "../../phobia";
 
 export function createCellElement(cell: Cell | undefined, isInMiddle: boolean = false, isOnTheRightOfATable: boolean = false): HTMLElement {
   const cellElem = createElement({
@@ -102,16 +102,10 @@ export function createPersonElement(person: BasePerson): HTMLElement {
 
   personElem.append(personTextElem);
 
-  if (person.fear) {
-    const fearElem = createElement({ cssClass: `fear ${person.fear}` });
-    fearElem.append(PhobiaSvgMap[person.fear].cloneNode(true));
-    personElem.append(fearElem);
-  }
-
-  if (person.smallFear) {
-    const smallFearElem = createElement({ cssClass: `fear small ${person.smallFear}` });
-    smallFearElem.append(PhobiaSvgMap[person.smallFear].cloneNode(true));
-    personElem.append(smallFearElem);
+  if (person.phobia) {
+    const phobiaElem = createElement({ cssClass: `phobia ${person.phobia} ${hasTablePhobia(person) ? "table-phobia" : ""}` });
+    phobiaElem.append(PhobiaSvgMap[person.phobia].cloneNode(true));
+    personElem.append(phobiaElem);
   }
 
   return personElem;
