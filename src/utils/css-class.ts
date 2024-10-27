@@ -17,6 +17,10 @@ export const enum CssClass {
   CELL = "cell",
   IS_DRAGGING = "is_dragging",
   IS_DRAGGED = "is_dragged",
+  ANCHOR_POINT = "anchor_point",
+  ANCHOR_TARGET = "target",
+  ANCHOR_SOURCE = "source",
+  ANCHOR_ARROW = "anchor_arrow",
 
   // arrows
   UP = "up",

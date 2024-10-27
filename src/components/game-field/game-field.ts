@@ -4,7 +4,7 @@ import { createButton, createElement } from "../../utils/html-utils";
 import { movePerson, newGame, placePersonOnField } from "../../logic/game-logic";
 import {
   Cell,
-  CellPositionWithTableIndex,
+  CellPosition,
   findPerson,
   findPersonFromElement,
   GameFieldData,
@@ -19,7 +19,7 @@ import { createWinScreen } from "../win-screen/win-screen";
 import { createCellElement, updateCellOccupancy, updatePersonPanicState } from "./cell-component";
 import { getTranslation, TranslationKey } from "../../translations/i18n";
 import { globals } from "../../globals";
-import { requestAnimationFrameWithTimeout } from "../../utils/promise-utils";
+import { debounce, requestAnimationFrameWithTimeout } from "../../utils/promise-utils";
 import { getGameFieldData, placePersonsInitially } from "../../logic/initialize";
 import { checkTableStates, getChairNeighbors, getHappyStats } from "../../logic/checks";
 import { PubSubEvent, pubSubService } from "../../utils/pub-sub-service";
@@ -31,9 +31,10 @@ import { calculateScore } from "../../logic/score";
 import initDragDrop from "../../utils/drag-drop";
 import { CssClass } from "../../utils/css-class";
 import { getWaitingAreaElement, resetWaitlist, setDoorCount, updateWaitlistCount } from "./waiting-area";
-import { isTablePhobia } from "../../phobia";
+import { isTablePhobia, Phobia } from "../../phobia";
 
 let mainContainer: HTMLElement | undefined;
+let anchorPointContainer: HTMLElement | undefined;
 let gameFieldElem: HTMLElement | undefined;
 let startButton: HTMLElement | undefined;
 let miniHelp: HTMLElement | undefined;
@@ -44,9 +45,15 @@ let lastClickedCell: Cell | undefined;
 let hasMadeFirstMove = false;
 let moves: number = 0;
 const cellElements: HTMLElement[][] = [];
+const cellAnchorPoints: HTMLElement[][] = [];
 
 const TIMEOUT_BETWEEN_GAMES = 300;
 const TIMEOUT_CELL_APPEAR = 20;
+
+window.addEventListener(
+  "resize",
+  debounce(() => updateAnchorPoints(), 300),
+);
 
 export async function initializeEmptyGameField() {
   document.body.classList.remove(CssClass.SELECTING);
@@ -101,8 +108,10 @@ export async function startNewGame() {
       console.debug("Was onboarding, removing game field");
       gameFieldElem.remove();
       gameFieldElem = undefined;
-      waitingArea.remove();
+      waitingArea?.remove();
       waitingArea = undefined;
+      anchorPointContainer?.remove();
+      anchorPointContainer = undefined;
       globals.gameFieldData = undefined;
     }
   }
@@ -148,6 +157,8 @@ function appendGameField() {
   setupDragDrop();
 
   updateMiniHelp();
+
+  updateAnchorPoints();
 }
 
 function checkForFirstMove() {
@@ -251,8 +262,12 @@ async function performMove(person: PlacedPerson | WaitingPerson, targetCell: Cel
   updateMiniHelp(hasWon ? undefined : previousSelectedPerson);
 }
 
-function getCellElement(cell: CellPositionWithTableIndex): HTMLElement {
+function getCellElement(cell: CellPosition): HTMLElement {
   return cellElements[cell.row]?.[cell.column];
+}
+
+function getAnchorPoint(cell: CellPosition): HTMLElement {
+  return cellAnchorPoints[cell.row]?.[cell.column];
 }
 
 function resetSelection(keepMiniHelp = false) {
@@ -349,6 +364,42 @@ export function generateGameFieldElement(gameFieldData: GameFieldData) {
   });
 
   return gameField;
+}
+
+function updateAnchorPoints() {
+  console.debug("Updating anchor points");
+
+  cellAnchorPoints.length = 0;
+  anchorPointContainer?.remove();
+
+  anchorPointContainer = createElement({ cssClass: "anchor_container" });
+  const gameFieldData = globals.gameFieldData;
+
+  gameFieldData.field.forEach((row, rowIndex) => {
+    const rowAnchorElements: HTMLElement[] = [];
+
+    row.forEach((_cell, columnIndex) => {
+      const cellElement = cellElements[rowIndex][columnIndex];
+      const anchorPoint = createAnchorPoint(rowIndex, columnIndex, cellElement);
+      rowAnchorElements.push(anchorPoint);
+      anchorPointContainer.append(anchorPoint);
+    });
+    cellAnchorPoints.push(rowAnchorElements);
+  });
+
+  document.body.append(anchorPointContainer);
+}
+
+function createAnchorPoint(row: number, column: number, cellElement: HTMLElement) {
+  const anchorPoint = createElement({
+    cssClass: CssClass.ANCHOR_POINT,
+  });
+  const rect = cellElement.getBoundingClientRect();
+  anchorPoint.style.setProperty("--row", row.toString());
+  anchorPoint.style.setProperty("--column", column.toString());
+  anchorPoint.style.left = `${rect.left + rect.width / 2}px`;
+  anchorPoint.style.top = `${rect.top + rect.width / 2}px`;
+  return anchorPoint;
 }
 
 function setupDragDrop() {
@@ -518,6 +569,13 @@ export function updateStateForSelection(placedPersons: PlacedPerson[], selectedP
     });
   });
 
+  cellAnchorPoints.forEach((row) => {
+    row.forEach((anchorPoint) => {
+      anchorPoint.classList.remove(CssClass.ANCHOR_SOURCE, CssClass.ANCHOR_TARGET);
+      anchorPoint.innerHTML = "";
+    });
+  });
+
   if (!selectedPerson) {
     return;
   }
@@ -527,6 +585,7 @@ export function updateStateForSelection(placedPersons: PlacedPerson[], selectedP
   placedPersons.forEach((person) => {
     if (person.phobia === selectedPerson.name) {
       person.personElement.classList.add(CssClass.SCARED);
+      const targetAnchor = getAnchorPoint(person);
 
       const tableAssignment = globals.gameFieldData.tableAssignments.find(
         (tableAssignment) => tableAssignment.tableIndex === person.tableIndex,
@@ -535,22 +594,39 @@ export function updateStateForSelection(placedPersons: PlacedPerson[], selectedP
       if (tableAssignment) {
         if (isTablePhobia(selectedPerson.name)) {
           tableAssignment.chairCells.forEach((cell) => {
+            if (isSameCell(cell, person)) {
+              return;
+            }
+
             const cellElement = getCellElement(cell);
             cellElement.classList.add(CssClass.SECONDARY_AFFECTED_BY);
+            if (!hasPerson(placedPersons, cell)) {
+              const sourceAnchor = getAnchorPoint(cell);
+              sourceAnchor.append(createArrowBetweenElements(sourceAnchor, targetAnchor, person.phobia, true));
+            }
           });
         } else {
           getChairNeighbors(tableAssignment, person).forEach((cell) => {
             const cellElement = getCellElement(cell);
             cellElement.classList.add(CssClass.SECONDARY_AFFECTED_BY);
+            if (!hasPerson(placedPersons, cell)) {
+              const sourceAnchor = getAnchorPoint(cell);
+              sourceAnchor.append(createArrowBetweenElements(sourceAnchor, targetAnchor, person.phobia, true));
+            }
           });
         }
       }
     } else if (person.name === selectedPerson.phobia) {
       person.personElement.classList.add(CssClass.SCARY);
+      const sourceAnchor = getAnchorPoint(person);
 
       person.affects.forEach((cell) => {
         const cellElement = getCellElement(cell);
         cellElement.classList.add(CssClass.SECONDARY_AFFECTED_BY);
+        if (!hasPerson(placedPersons, cell)) {
+          const targetAnchor = getAnchorPoint(cell);
+          targetAnchor.append(createArrowBetweenElements(targetAnchor, sourceAnchor, person.name, false));
+        }
       });
     }
   });
@@ -563,4 +639,28 @@ export function updateStateForSelection(placedPersons: PlacedPerson[], selectedP
     const cellElement = getCellElement(cell);
     cellElement.classList.add(CssClass.AFFECTED_BY);
   });
+}
+
+function createArrowBetweenElements(source: HTMLElement, target: HTMLElement, phobia: Phobia, isTargetArrow: boolean) {
+  const arrow = createElement({
+    cssClass: `${CssClass.ANCHOR_ARROW} ${isTargetArrow ? CssClass.ANCHOR_TARGET : CssClass.ANCHOR_SOURCE}`,
+  });
+
+  const sourceRect = source.getBoundingClientRect();
+  const targetRect = target.getBoundingClientRect();
+
+  const sourceX = sourceRect.left;
+  const sourceY = sourceRect.top;
+
+  const targetX = targetRect.left;
+  const targetY = targetRect.top;
+
+  const angle = Math.atan2(targetY - sourceY, targetX - sourceX) * (180 / Math.PI) - 90; // todo - why -90?
+
+  arrow.style.setProperty("--angle", `${angle}deg`);
+  arrow.style.setProperty("--distance", `${Math.hypot(targetX - sourceX, targetY - sourceY)}px`);
+
+  arrow.classList.add(phobia);
+
+  return arrow;
 }

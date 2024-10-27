@@ -380,54 +380,113 @@ main {
 
 body {
   &.#{$SELECTING} {
-    .#{$CELL} {
-      &.#{$CHAIR}:not(.#{$HAS_PERSON}) {
-        cursor: pointer;
+    .field {
+      .#{$CELL} {
+        &.#{$CHAIR}:not(.#{$HAS_PERSON}) {
+          cursor: pointer;
+
+          &:after {
+            background: rgba($success-color-light, 0.3);
+            // animation: opacityBlink 1s infinite;
+          }
+        }
 
         &:after {
-          background: rgba($success-color-light, 0.3);
-          // animation: opacityBlink 1s infinite;
+          content: "";
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          pointer-events: none;
         }
-      }
 
-      &:after {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        pointer-events: none;
-      }
+        &.secondary_affected_by:not(.#{$SELECTED}) {
+          &.#{$CHAIR}:not(.#{$HAS_PERSON}) {
+            &:after {
+              background: rgba($danger-color, 0.3);
+            }
+          }
+        }
 
-      //&.affected_by {
-      //  &:after {
-      //    content: "*";
-      //  }
-      //}
-
-      &.secondary_affected_by:not(.#{$SELECTED}) {
-        //&:not(.affected_by) {
-        //  &:after {
-        //    content: "x";
-        //  }
-        //}
-
-        &.#{$CHAIR}:not(.#{$HAS_PERSON}) {
-          &:after {
-            background: rgba($danger-color, 0.3);
+        &:not(.affected_by) {
+          .#{$PERSON}:not(.#{$SCARY}, .#{$SCARED}, .#{$SELECTED}) {
+            filter: grayscale(0.5);
+            opacity: 0.75;
           }
         }
       }
+    }
 
-      &:not(.affected_by) {
-        .#{$PERSON}:not(.#{$SCARY}, .#{$SCARED}, .#{$SELECTED}) {
-          filter: grayscale(0.5);
-          opacity: 0.75;
+    .anchor_point {
+      z-index: 10;
+
+      .anchor_arrow {
+        @include phobia-colors;
+
+        $offset: 1rem;
+
+        position: absolute;
+        width: 0;
+        border: 2px dashed var(--color, gray);
+        border-top: none;
+        border-bottom: none;
+        height: calc(var(--distance) - $offset);
+        transform: rotate(var(--angle)) translate(0, $offset);
+        transform-origin: top;
+        display: block;
+        background: $text-primary;
+
+        &::before {
+          // arrow head
+          content: "";
+          position: absolute;
+          width: 0;
+          height: 0;
+          border-left: 0.5rem solid transparent;
+          border-right: 0.5rem solid transparent;
+          border-bottom: 0.5rem solid var(--color, gray);
+          top: -0.5rem;
+          left: 50%;
+          transform: translateX(-50%);
+        }
+
+        &::after {
+          // dot
+          content: "";
+          position: absolute;
+          width: 0.5rem;
+          height: 0.5rem;
+          border-radius: 50%;
+          background: $text-primary;
+          top: 100%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+        }
+
+        &.target {
+          transform: rotate(var(--angle)) translate(0, 0);
+
+          &::before {
+            // arrow head
+            top: 100%;
+            border-bottom: none;
+            border-top: 0.5rem solid var(--color, gray);
+          }
+
+          &::after {
+            // dot
+            top: 0;
+            background: var(--color, gray);
+          }
         }
       }
     }
   }
+}
+
+.anchor_point {
+  position: absolute;
 }
 
 .drag-overlay {
@@ -466,6 +525,10 @@ body {
   .#{$START_BUTTON} {
     font-size: 0.8rem;
   }
+}
+
+.anchor_container {
+  pointer-events: none;
 }
 
 @keyframes scary-pulse {
