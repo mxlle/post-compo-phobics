@@ -256,10 +256,33 @@ main {
 
   $scary-scale-props: 2s infinite ease-out;
 
+  &.affected_by {
+    .#{$SCARY} {
+      .#{$EMOJI} {
+        animation: scary-pulse $scary-scale-props;
+      }
+    }
+
+    .#{$PANIC}.#{$SCARED}:not(.#{$SCARY}) {
+      .#{$EMOJI} {
+        animation: tremble 0.15s infinite;
+
+        &::before {
+          content: "😱";
+        }
+      }
+    }
+  }
+
+  .#{$SCARY},
+  .#{$SCARED} {
+    .#{$EMOJI} {
+      scale: 1.3;
+    }
+  }
+
   .#{$SCARY} {
     .#{$EMOJI} {
-      animation: scary-pulse $scary-scale-props;
-
       &::before {
         content: "😈";
       }
@@ -276,8 +299,9 @@ main {
 
   .#{$SCARED}:not(.#{$SCARY}) {
     .#{$EMOJI} {
-      animation: tremble 0.15s infinite;
-      scale: 1.2;
+      &::before {
+        content: "😨";
+      }
     }
   }
 
@@ -361,15 +385,45 @@ body {
         cursor: pointer;
 
         &:after {
-          content: "";
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
           background: rgba($success-color-light, 0.3);
-          pointer-events: none;
-          animation: opacityBlink 1s infinite;
+          // animation: opacityBlink 1s infinite;
+        }
+      }
+
+      &:after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        pointer-events: none;
+      }
+
+      &.affected_by {
+        &:after {
+          content: "*";
+        }
+      }
+
+      &.secondary_affected_by:not(.#{$SELECTED}) {
+        &:not(.affected_by) {
+          &:after {
+            content: "x";
+          }
+        }
+
+        &.#{$CHAIR}:not(.#{$HAS_PERSON}) {
+          &:after {
+            background: rgba($danger-color, 0.3);
+          }
+        }
+      }
+
+      &:not(.affected_by) {
+        .#{$PERSON}:not(.#{$SCARY}, .#{$SCARED}, .#{$SELECTED}) {
+          filter: grayscale(0.5);
+          opacity: 0.75;
         }
       }
     }

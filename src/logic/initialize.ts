@@ -106,10 +106,10 @@ export function isTriggeringPhobia(placedPersons: PlacedPerson[], cell: Cell, pe
   for (let guest of tableGuests) {
     const personHasTablePhobia = hasTablePhobia(person);
     const guestHasTablePhobia = hasTablePhobia(guest);
-    const isAfraidOf = personHasTablePhobia && person.phobia && guest.name === person.phobia;
-    const makesAfraid = guestHasTablePhobia && guest.phobia && guest.phobia === person.name;
+    const isTriggeredBy = personHasTablePhobia && person.phobia && guest.name === person.phobia;
+    const triggers = guestHasTablePhobia && guest.phobia && guest.phobia === person.name;
 
-    if (isAfraidOf || makesAfraid) {
+    if (isTriggeredBy || triggers) {
       return true;
     }
   }
@@ -119,10 +119,10 @@ export function isTriggeringPhobia(placedPersons: PlacedPerson[], cell: Cell, pe
   for (let guest of neighbors) {
     const personHasTablePhobia = hasTablePhobia(person);
     const guestHasTablePhobia = hasTablePhobia(guest);
-    const isAfraidOf = !personHasTablePhobia && person.phobia && guest.name === person.phobia;
-    const makesAfraid = !guestHasTablePhobia && guest.phobia && guest.phobia === person.name;
+    const isTriggeredBy = !personHasTablePhobia && person.phobia && guest.name === person.phobia;
+    const triggers = !guestHasTablePhobia && guest.phobia && guest.phobia === person.name;
 
-    if (isAfraidOf || makesAfraid) {
+    if (isTriggeredBy || triggers) {
       return true;
     }
   }
@@ -154,8 +154,8 @@ function generatePerson(chanceForTablePhobia: number, id: number): Person {
     ...basePerson,
     hasPanic: false,
     triskaidekaphobia: false,
-    afraidOf: [],
-    makesAfraid: [],
+    affectedBy: [],
+    affects: [],
     personElement: createPersonElement(basePerson),
   };
 }
@@ -211,8 +211,8 @@ function applySeatedCharacters(onboardingData: OnboardingData, gameFieldData: Ga
       ...character,
       triskaidekaphobia: false,
       hasPanic: false,
-      afraidOf: [],
-      makesAfraid: [],
+      affectedBy: [],
+      affects: [],
       tableIndex: targetCell.tableIndex,
       personElement: createPersonElement(character),
     };

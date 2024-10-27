@@ -37,8 +37,8 @@ export interface BasePerson {
 export interface Person extends BasePerson {
   hasPanic: boolean;
   triskaidekaphobia: boolean;
-  afraidOf: PlacedPerson[];
-  makesAfraid: PlacedPerson[];
+  affectedBy: CellPosition[];
+  affects: CellPosition[];
   personElement: HTMLElement;
 }
 

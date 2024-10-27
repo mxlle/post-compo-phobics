@@ -21,7 +21,7 @@ import { getTranslation, TranslationKey } from "../../translations/i18n";
 import { globals } from "../../globals";
 import { requestAnimationFrameWithTimeout } from "../../utils/promise-utils";
 import { getGameFieldData, placePersonsInitially } from "../../logic/initialize";
-import { checkTableStates, getHappyStats } from "../../logic/checks";
+import { checkTableStates, getChairNeighbors, getHappyStats } from "../../logic/checks";
 import { PubSubEvent, pubSubService } from "../../utils/pub-sub-service";
 import { handlePokiCommercial, pokiSdk } from "../../poki-integration";
 import { getOnboardingData, increaseOnboardingStepIfApplicable, isOnboarding, wasOnboarding } from "../../logic/onboarding";
@@ -31,6 +31,7 @@ import { calculateScore } from "../../logic/score";
 import initDragDrop from "../../utils/drag-drop";
 import { CssClass } from "../../utils/css-class";
 import { getWaitingAreaElement, resetWaitlist, setDoorCount, updateWaitlistCount } from "./waiting-area";
+import { hasTablePhobia } from "../../phobia";
 
 let mainContainer: HTMLElement | undefined;
 let gameFieldElem: HTMLElement | undefined;
@@ -216,6 +217,7 @@ function waitingAreaCellClickHandler() {
 
   if (!waitingPerson || waitingPerson === selectedPerson) {
     resetSelection();
+    updateStateForSelection(globals.placedPersons, undefined);
 
     return;
   }
@@ -510,21 +512,55 @@ export function updateStateForSelection(placedPersons: PlacedPerson[], selectedP
     person.personElement.classList.remove(CssClass.SCARY, CssClass.SCARED, CssClass.SELECTED);
   });
 
+  cellElements.forEach((row) => {
+    row.forEach((cellElement) => {
+      cellElement.classList.remove(CssClass.AFFECTED_BY, CssClass.SECONDARY_AFFECTED_BY);
+    });
+  });
+
   if (!selectedPerson) {
     return;
   }
 
   selectedPerson.personElement.classList.add(CssClass.SELECTED);
 
+  placedPersons.forEach((person) => {
+    if (person.phobia === selectedPerson.name) {
+      person.personElement.classList.add(CssClass.SCARED);
+
+      person.affectedBy.forEach((cell) => {
+        const cellElement = getCellElement(cell);
+        cellElement.classList.add(CssClass.SECONDARY_AFFECTED_BY);
+      });
+    } else if (person.name === selectedPerson.phobia) {
+      person.personElement.classList.add(CssClass.SCARY);
+
+      const tableAssignment = globals.gameFieldData.tableAssignments.find(
+        (tableAssignment) => tableAssignment.tableIndex === person.tableIndex,
+      );
+
+      if (tableAssignment) {
+        if (hasTablePhobia(selectedPerson)) {
+          tableAssignment.chairCells.forEach((cell) => {
+            const cellElement = getCellElement(cell);
+            cellElement.classList.add(CssClass.SECONDARY_AFFECTED_BY);
+          });
+        } else {
+          getChairNeighbors(tableAssignment, person).forEach((cell) => {
+            const cellElement = getCellElement(cell);
+            cellElement.classList.add(CssClass.SECONDARY_AFFECTED_BY);
+          });
+        }
+      }
+    }
+  });
+
   if (!isPlacedPerson(selectedPerson)) {
     return;
   }
 
-  selectedPerson.afraidOf.forEach((afraidOf) => {
-    afraidOf.personElement.classList.add(CssClass.SCARY);
-  });
-
-  selectedPerson.makesAfraid.forEach((makesAfraid) => {
-    makesAfraid.personElement.classList.add(CssClass.SCARED);
+  selectedPerson.affectedBy.forEach((cell) => {
+    const cellElement = getCellElement(cell);
+    cellElement.classList.add(CssClass.AFFECTED_BY);
   });
 }

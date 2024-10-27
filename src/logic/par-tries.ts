@@ -229,16 +229,16 @@ function innerParCalc(
 ): number {
   const cellsRelatedToUnhappyPersons = placedPersons.filter((p) => {
     const isPanickedCell = hasPanic(p);
-    const numOfPeopleThatAreAfraidOfThem = remainingPanickedCells.filter((t) => t.afraidOf.some((a) => isSameCell(a, p))).length;
-    const isMakingMoreThanOnePersonUnhappy = numOfPeopleThatAreAfraidOfThem > 1;
+    const numOfPeopleThatAreTriggeredByThem = remainingPanickedCells.filter((t) => t.affectedBy.some((a) => isSameCell(a, p))).length;
+    const triggersMoreThanOnePerson = numOfPeopleThatAreTriggeredByThem > 1;
     const existsMoreThanOnceAndScaresSomeone =
-      placedPersons.filter((t) => t.name === p.name).length > 1 && numOfPeopleThatAreAfraidOfThem > 0;
+      placedPersons.filter((t) => t.name === p.name).length > 1 && numOfPeopleThatAreTriggeredByThem > 0;
 
     if (existsMoreThanOnceAndScaresSomeone) {
       console.debug("existsMoreThanOnceAndScaresSomeone", p);
     }
 
-    return isPanickedCell || isMakingMoreThanOnePersonUnhappy || existsMoreThanOnceAndScaresSomeone;
+    return isPanickedCell || triggersMoreThanOnePerson || existsMoreThanOnceAndScaresSomeone;
   });
 
   const emptyChairs = getEmptyChairs(gameFieldData, placedPersons);

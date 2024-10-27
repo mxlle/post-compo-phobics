@@ -7,6 +7,8 @@ export const enum CssClass {
   HAS_WAITING_PERSON = "has_waiting_person",
   SCARED = "scared",
   SCARY = "scary",
+  AFFECTED_BY = "affected_by",
+  SECONDARY_AFFECTED_BY = "secondary_affected_by",
   T13A = "t13a",
   P_T13A = "p_t13a",
   HAS_PERSON = "has_person",

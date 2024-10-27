@@ -116,7 +116,7 @@ function getSatisfactionStats(person: PlacedPerson | WaitingPerson): HTMLElement
   if (isPlacedPerson(person)) {
     isTriskaidekaphobia = person.triskaidekaphobia;
     hasTable = person.tableIndex !== undefined;
-    phobiaNotTriggered = !hasTable ? undefined : person.afraidOf.filter((otherCell) => person.phobia === otherCell.name).length === 0;
+    phobiaNotTriggered = !hasTable ? undefined : !person.hasPanic;
   }
 
   const satisfactionStats = createElement({
