@@ -11,7 +11,7 @@ import {
   TableAssignment,
   WaitingPerson,
 } from "../types";
-import { hasTablePhobia } from "../phobia";
+import { isTablePhobia } from "../phobia";
 
 export function checkTableStates(gameFieldData: GameFieldData, placedPersons: PlacedPerson[]) {
   const panickedTableCells: Cell[] = [];
@@ -26,30 +26,27 @@ export function checkTableStates(gameFieldData: GameFieldData, placedPersons: Pl
     }
 
     guests.forEach((guest) => {
-      const isTablePhobia = hasTablePhobia(guest);
-      const affectedBy = isTablePhobia
+      guest.affects = isTablePhobia(guest.name)
         ? tableAssignment.chairCells.filter((cell) => !isSameCell(cell, guest))
         : getChairNeighbors(tableAssignment, guest);
-      const hasPanic = affectedBy.some((cell) =>
-        placedPersons.some((otherGuest) => isSameCell(otherGuest, cell) && otherGuest.name === guest.phobia),
-      );
-
-      guest.hasPanic = hasPanic;
       guest.triskaidekaphobia = isPanic;
-      guest.affectedBy = guest.phobia ? affectedBy : [];
     });
   }
+
+  placedPersons.forEach((guest) => {
+    const affectedBy = placedPersons.filter((otherGuest) => {
+      return otherGuest.affects.some((cell) => isSameCell(cell, guest));
+    });
+    guest.affectedBy = affectedBy;
+    const triggeredBy = affectedBy.filter((otherGuest) => otherGuest.name === guest.phobia);
+    guest.hasPanic = triggeredBy.length > 0;
+  });
 
   const otherGuestsInRoom = placedPersons.filter((guest) => guest.tableIndex === undefined);
   otherGuestsInRoom.forEach((guest) => {
     guest.hasPanic = false;
     guest.triskaidekaphobia = false;
     guest.affectedBy = [];
-  });
-
-  const afraidGuests = placedPersons.filter((guest) => guest.hasPanic);
-  placedPersons.forEach((guest) => {
-    guest.affects = afraidGuests.filter((otherGuest) => otherGuest.affectedBy.find((affectedBy) => isSameCell(affectedBy, guest)));
   });
 
   return panickedTableCells;

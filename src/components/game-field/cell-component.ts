@@ -13,7 +13,7 @@ import { createElement } from "../../utils/html-utils";
 import { getNearestTableCell, isHappy } from "../../logic/checks";
 import { globals } from "../../globals";
 import { CssClass } from "../../utils/css-class";
-import { hasTablePhobia, PhobiaSvgMap } from "../../phobia";
+import { isTablePhobia, PhobiaSvgMap } from "../../phobia";
 
 export function createCellElement(cell: Cell | undefined, isOnTheRightOfATable: boolean = false): HTMLElement {
   const cellElem = createElement({
@@ -99,7 +99,7 @@ export function createPersonElement(person: BasePerson): HTMLElement {
   personElem.append(personTextElem);
 
   if (person.phobia) {
-    const phobiaElem = createElement({ cssClass: `phobia ${person.phobia} ${hasTablePhobia(person) ? "table-phobia" : ""}` });
+    const phobiaElem = createElement({ cssClass: `phobia ${person.phobia} ${isTablePhobia(person.phobia) ? "table-phobia" : ""}` });
     phobiaElem.append(PhobiaSvgMap[person.phobia].cloneNode(true));
     personElem.append(phobiaElem);
   }

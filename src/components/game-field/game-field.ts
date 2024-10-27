@@ -31,7 +31,7 @@ import { calculateScore } from "../../logic/score";
 import initDragDrop from "../../utils/drag-drop";
 import { CssClass } from "../../utils/css-class";
 import { getWaitingAreaElement, resetWaitlist, setDoorCount, updateWaitlistCount } from "./waiting-area";
-import { hasTablePhobia } from "../../phobia";
+import { isTablePhobia } from "../../phobia";
 
 let mainContainer: HTMLElement | undefined;
 let gameFieldElem: HTMLElement | undefined;
@@ -528,19 +528,12 @@ export function updateStateForSelection(placedPersons: PlacedPerson[], selectedP
     if (person.phobia === selectedPerson.name) {
       person.personElement.classList.add(CssClass.SCARED);
 
-      person.affectedBy.forEach((cell) => {
-        const cellElement = getCellElement(cell);
-        cellElement.classList.add(CssClass.SECONDARY_AFFECTED_BY);
-      });
-    } else if (person.name === selectedPerson.phobia) {
-      person.personElement.classList.add(CssClass.SCARY);
-
       const tableAssignment = globals.gameFieldData.tableAssignments.find(
         (tableAssignment) => tableAssignment.tableIndex === person.tableIndex,
       );
 
       if (tableAssignment) {
-        if (hasTablePhobia(selectedPerson)) {
+        if (isTablePhobia(selectedPerson.name)) {
           tableAssignment.chairCells.forEach((cell) => {
             const cellElement = getCellElement(cell);
             cellElement.classList.add(CssClass.SECONDARY_AFFECTED_BY);
@@ -552,15 +545,22 @@ export function updateStateForSelection(placedPersons: PlacedPerson[], selectedP
           });
         }
       }
+    } else if (person.name === selectedPerson.phobia) {
+      person.personElement.classList.add(CssClass.SCARY);
+
+      person.affects.forEach((cell) => {
+        const cellElement = getCellElement(cell);
+        cellElement.classList.add(CssClass.SECONDARY_AFFECTED_BY);
+      });
     }
   });
 
-  if (!isPlacedPerson(selectedPerson)) {
-    return;
-  }
-
-  selectedPerson.affectedBy.forEach((cell) => {
-    const cellElement = getCellElement(cell);
-    cellElement.classList.add(CssClass.AFFECTED_BY);
-  });
+  // if (!isPlacedPerson(selectedPerson)) {
+  //   return;
+  // }
+  //
+  // selectedPerson.affects.forEach((cell) => {
+  //   const cellElement = getCellElement(cell);
+  //   cellElement.classList.add(CssClass.AFFECTED_BY);
+  // });
 }

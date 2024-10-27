@@ -3,7 +3,7 @@ import "./help.scss";
 import { createElement } from "../../utils/html-utils";
 import { getTranslation, TranslationKey } from "../../translations/i18n";
 import { Cell, CellType, isBasePerson, isChair, isEmpty, isPlacedPerson, isTable, PlacedPerson, WaitingPerson } from "../../types";
-import { hasTablePhobia, Phobia, PhobiaSvgMap } from "../../phobia";
+import { isTablePhobia, Phobia, PhobiaSvgMap } from "../../phobia";
 import { createCellElement } from "../game-field/cell-component";
 import { getGuestsOnTable } from "../../logic/checks";
 import { globals } from "../../globals";
@@ -127,8 +127,6 @@ function getSatisfactionStats(person: PlacedPerson | WaitingPerson): HTMLElement
     cssClass: CssClass.STATS_GRID,
   });
 
-  const isTablePhobia = hasTablePhobia(person);
-
   const stats: HappyStat[] = [
     {
       phobia: isTriskaidekaphobia ? "😱" : undefined,
@@ -139,7 +137,7 @@ function getSatisfactionStats(person: PlacedPerson | WaitingPerson): HTMLElement
       phobia: person.phobia,
       satisfied: phobiaNotTriggered,
       explainText: getTranslation(
-        isTablePhobia ? TranslationKey.INFO_TABLE_PHOBIA : TranslationKey.INFO_REGULAR_FEAR,
+        isTablePhobia(person.phobia) ? TranslationKey.INFO_TABLE_PHOBIA : TranslationKey.INFO_REGULAR_FEAR,
         '<span class="svg"></span>',
       ),
       svg: PhobiaSvgMap[person.phobia],

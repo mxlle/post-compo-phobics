@@ -12,7 +12,7 @@ import carbon from "./assets/svgs/carbon.svg";
 import waterDrop from "./assets/svgs/water-drop.svg";
 import { BasePerson } from "./types";
 
-export const PHOBIAS = ["green", "red", "blue", "yellow", "purple", "orange", "cyan", "hotpink"] as const;
+export const PHOBIAS = ["hotpink", "green", "red", "blue", "yellow", "purple", "orange", "cyan"] as const;
 
 export type Indices<T extends readonly any[]> = Exclude<Partial<T>["length"], T["length"]>;
 
@@ -55,8 +55,12 @@ const PhobiaTypeMap: Record<Phobia, PhobiaType> = {
   hotpink: "table",
 };
 
+export function isTablePhobia(phobia: Phobia): boolean {
+  return PhobiaTypeMap[phobia] === "table";
+}
+
 export function hasTablePhobia(person: BasePerson): boolean {
-  return PhobiaTypeMap[person.name] === "table";
+  return PhobiaTypeMap[person.phobia] === "table";
 }
 
 export const REGULAR_PHOBIAS = PHOBIAS.filter((phobia) => PhobiaTypeMap[phobia] === "regular");

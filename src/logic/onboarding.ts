@@ -138,7 +138,7 @@ function getOnboardingDataForResort(): OnboardingData {
   const waiting: IndexedPersonDefinition[] = [{ nameI: 1, phobiaI: 0 }];
 
   const sitting: IndexedSittingPersonDefinition[] = [
-    { row: 2, column: 2, nameI: 0 },
+    { row: 2, column: 2, nameI: 0, phobiaI: 2 },
     { row: 2, column: 6, nameI: 2, phobiaI: 1 },
     { row: 3, column: 6, nameI: 2, phobiaI: 1 },
     { row: 4, column: 4, nameI: 3 },
