@@ -555,12 +555,12 @@ export function updateStateForSelection(placedPersons: PlacedPerson[], selectedP
     }
   });
 
-  // if (!isPlacedPerson(selectedPerson)) {
-  //   return;
-  // }
-  //
-  // selectedPerson.affects.forEach((cell) => {
-  //   const cellElement = getCellElement(cell);
-  //   cellElement.classList.add(CssClass.AFFECTED_BY);
-  // });
+  if (!isPlacedPerson(selectedPerson)) {
+    return;
+  }
+
+  selectedPerson.affects.forEach((cell) => {
+    const cellElement = getCellElement(cell);
+    cellElement.classList.add(CssClass.AFFECTED_BY);
+  });
 }

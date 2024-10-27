@@ -400,18 +400,18 @@ body {
         pointer-events: none;
       }
 
-      &.affected_by {
-        &:after {
-          content: "*";
-        }
-      }
+      //&.affected_by {
+      //  &:after {
+      //    content: "*";
+      //  }
+      //}
 
       &.secondary_affected_by:not(.#{$SELECTED}) {
-        &:not(.affected_by) {
-          &:after {
-            content: "x";
-          }
-        }
+        //&:not(.affected_by) {
+        //  &:after {
+        //    content: "x";
+        //  }
+        //}
 
         &.#{$CHAIR}:not(.#{$HAS_PERSON}) {
           &:after {
