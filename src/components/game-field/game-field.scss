@@ -386,8 +386,19 @@ body {
           cursor: pointer;
 
           &:after {
-            background: rgba($success-color-light, 0.3);
+            background-color: rgba($success-color-light, 0.3);
+            color: $success-color-light;
             // animation: opacityBlink 1s infinite;
+          }
+
+          &:hover {
+            &:after {
+              background-repeat: no-repeat;
+              background-image: url("../../assets/svgs/relocate.svg");
+              background-size: 50%;
+              background-position: center;
+              background-color: rgba($success-color-light, 0.5);
+            }
           }
         }
 
@@ -399,12 +410,22 @@ body {
           right: 0;
           bottom: 0;
           pointer-events: none;
+          font-size: 0.5em;
+          padding: 0.25em;
         }
 
         &.secondary_affected_by:not(.#{$SELECTED}) {
           &.#{$CHAIR}:not(.#{$HAS_PERSON}) {
             &:after {
-              background: rgba($danger-color, 0.3);
+              background-color: rgba($danger-color, 0.3);
+              color: $danger-color;
+            }
+
+            &:hover {
+              &:after {
+                background-image: url("../../assets/svgs/wrong-location.svg");
+                background-color: rgba($danger-color, 0.5);
+              }
             }
           }
         }
@@ -423,7 +444,7 @@ body {
 
       $offset: 1rem;
 
-      z-index: 10;
+      z-index: 1000;
       pointer-events: none;
       position: absolute;
       width: calc(var(--distance) - $offset);

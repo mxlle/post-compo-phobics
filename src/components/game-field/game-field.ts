@@ -336,6 +336,16 @@ export function generateGameFieldElement(gameFieldData: GameFieldData) {
         cellClickHandler(cell);
       });
 
+      cellElement.addEventListener("mouseover", () => {
+        if (selectedPerson) {
+          updateArrowsOnHover(globals.placedPersons, selectedPerson, cell);
+        }
+      });
+
+      cellElement.addEventListener("mouseleave", () => {
+        cleanupAllArrows();
+      });
+
       if (relatedTableAssignment && isFirstTableCell) {
         cellElement.classList.add(CssClass.FIRST);
         cellElement.style.setProperty("--table-height", relatedTableAssignment.tableCells.length.toString());
@@ -543,17 +553,11 @@ export function updateStateForSelection(placedPersons: PlacedPerson[], selectedP
 
             const cellElement = getCellElement(cell);
             cellElement.classList.add(CssClass.SECONDARY_AFFECTED_BY);
-            if (!hasPerson(placedPersons, cell)) {
-              createArrowBetweenElements(cellElement, person.personElement, person.phobia);
-            }
           });
         } else {
           getChairNeighbors(tableAssignment, person).forEach((cell) => {
             const cellElement = getCellElement(cell);
             cellElement.classList.add(CssClass.SECONDARY_AFFECTED_BY);
-            if (!hasPerson(placedPersons, cell)) {
-              createArrowBetweenElements(cellElement, person.personElement, person.phobia);
-            }
           });
         }
       }
@@ -563,9 +567,6 @@ export function updateStateForSelection(placedPersons: PlacedPerson[], selectedP
       person.affects.forEach((cell) => {
         const cellElement = getCellElement(cell);
         cellElement.classList.add(CssClass.SECONDARY_AFFECTED_BY);
-        if (!hasPerson(placedPersons, cell)) {
-          createArrowBetweenElements(person.personElement, cellElement, person.name);
-        }
       });
     }
   });
@@ -577,6 +578,47 @@ export function updateStateForSelection(placedPersons: PlacedPerson[], selectedP
   selectedPerson.affects.forEach((cell) => {
     const cellElement = getCellElement(cell);
     cellElement.classList.add(CssClass.AFFECTED_BY);
+  });
+}
+
+function updateArrowsOnHover(placedPersons: PlacedPerson[], selectedPerson: PlacedPerson | WaitingPerson, hoveredCell: Cell) {
+  cleanupAllArrows();
+
+  placedPersons.forEach((person) => {
+    if (person.phobia === selectedPerson.name) {
+      const tableAssignment = globals.gameFieldData.tableAssignments.find(
+        (tableAssignment) => tableAssignment.tableIndex === person.tableIndex,
+      );
+
+      if (tableAssignment) {
+        if (isTablePhobia(selectedPerson.name)) {
+          tableAssignment.chairCells.forEach((cell) => {
+            if (isSameCell(cell, person)) {
+              return;
+            }
+
+            const cellElement = getCellElement(cell);
+            if (!hasPerson(placedPersons, cell) && isSameCell(cell, hoveredCell)) {
+              createArrowBetweenElements(cellElement, person.personElement, person.phobia);
+            }
+          });
+        } else {
+          getChairNeighbors(tableAssignment, person).forEach((cell) => {
+            const cellElement = getCellElement(cell);
+            if (!hasPerson(placedPersons, cell) && isSameCell(cell, hoveredCell)) {
+              createArrowBetweenElements(cellElement, person.personElement, person.phobia);
+            }
+          });
+        }
+      }
+    } else if (person.name === selectedPerson.phobia) {
+      person.affects.forEach((cell) => {
+        const cellElement = getCellElement(cell);
+        if (!hasPerson(placedPersons, cell) && isSameCell(cell, hoveredCell)) {
+          createArrowBetweenElements(person.personElement, cellElement, person.name);
+        }
+      });
+    }
   });
 }
 
