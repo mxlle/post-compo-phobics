@@ -213,6 +213,8 @@ function selectPerson(person: PlacedPerson | WaitingPerson) {
 }
 
 function waitingAreaCellClickHandler() {
+  checkForFirstMove();
+
   const waitingPerson = globals.waitingPersons[0];
 
   if (!waitingPerson || waitingPerson === selectedPerson) {
