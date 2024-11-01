@@ -337,7 +337,10 @@ export function generateGameFieldElement(gameFieldData: GameFieldData) {
       });
 
       cellElement.addEventListener("mouseover", () => {
-        updateArrowsOnHover(cell, globals.placedPersons, selectedPerson);
+        // if dragging, handling is done by drag-drop logic
+        if (!mainContainer?.classList.contains(CssClass.IS_DRAGGING)) {
+          updateArrowsOnHover(cell, globals.placedPersons, selectedPerson);
+        }
       });
 
       cellElement.addEventListener("mouseleave", () => {
@@ -400,10 +403,12 @@ function setupDragDrop() {
     cleanupAllArrows();
   }
 
-  function onHover(potentialDropEl: HTMLElement) {
+  function onHover(potentialDropEl: HTMLElement, overlayEl: HTMLElement) {
     const cell = getElementCell(globals.gameFieldData, potentialDropEl);
     if (cell) {
-      updateArrowsOnHover(cell, globals.placedPersons, selectedPerson);
+      const { isScared, isScary } = updateArrowsOnHover(cell, globals.placedPersons, selectedPerson);
+      overlayEl.classList.toggle(CssClass.SCARED, isScared);
+      overlayEl.classList.toggle(CssClass.SCARY, isScary);
     }
   }
 }
@@ -594,12 +599,19 @@ export function updateStateForSelection(placedPersons: PlacedPerson[], selectedP
   });
 }
 
-function updateArrowsOnHover(hoveredCell: Cell, placedPersons: PlacedPerson[], selectedPerson: PlacedPerson | WaitingPerson | undefined) {
+function updateArrowsOnHover(
+  hoveredCell: Cell,
+  placedPersons: PlacedPerson[],
+  selectedPerson: PlacedPerson | WaitingPerson | undefined,
+): { isScary: boolean; isScared: boolean } {
   cleanupAllArrows();
 
   if (!selectedPerson) {
-    return;
+    return { isScary: false, isScared: false };
   }
+
+  let isScary = false;
+  let isScared = false;
 
   placedPersons.forEach((person) => {
     if (person.phobia === selectedPerson.name) {
@@ -619,6 +631,7 @@ function updateArrowsOnHover(hoveredCell: Cell, placedPersons: PlacedPerson[], s
               const isBothWays = selectedPerson.phobia === person.name;
               createArrowBetweenElements(cellElement, person.personElement, person.phobia, isBothWays ? CssClass.BOTH_WAYS : "");
               person.personElement.classList.add(CssClass.HOVER_RELATED_SCARED);
+              isScary = true;
             }
           });
         } else {
@@ -627,6 +640,7 @@ function updateArrowsOnHover(hoveredCell: Cell, placedPersons: PlacedPerson[], s
             if (!hasPerson(placedPersons, cell) && isSameCell(cell, hoveredCell)) {
               createArrowBetweenElements(cellElement, person.personElement, person.phobia);
               person.personElement.classList.add(CssClass.HOVER_RELATED_SCARED);
+              isScary = true;
             }
           });
         }
@@ -640,10 +654,13 @@ function updateArrowsOnHover(hoveredCell: Cell, placedPersons: PlacedPerson[], s
           const isBothWays = selectedPerson.name === person.phobia;
           createArrowBetweenElements(person.personElement, cellElement, person.name, isBothWays ? CssClass.BOTH_WAYS : "");
           person.personElement.classList.add(CssClass.HOVER_RELATED_SCARY);
+          isScared = true;
         }
       });
     }
   });
+
+  return { isScary, isScared };
 }
 
 function createArrowBetweenElements(source: HTMLElement, target: HTMLElement, phobia: Phobia, additionalCssClasses?: string) {

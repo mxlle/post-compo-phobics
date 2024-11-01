@@ -29,7 +29,7 @@ export default (
   createOverlay: (dragEl: HTMLElement) => HTMLElement,
   onDrop: (dragEl: HTMLElement, dropEl: HTMLElement, isTouch: boolean) => void,
   onDragCancel: (dragEl: HTMLElement) => void,
-  onHover: (potentialDropEl: HTMLElement) => void,
+  onHover: (potentialDropEl: HTMLElement, overlayEl: HTMLElement) => void,
 ) => {
   let dragTimeout, isDragging, dragEl, overlayEl, dropEl, potentialDropEl;
   const innerRoot = rootEl;
@@ -81,19 +81,12 @@ export default (
       e.preventDefault();
       Object.assign(overlayEl.style, getOverlayPosition(e, dragEl));
 
-      if (e.type === "touchmove") {
-        const touchList = e.touches;
-        if (!touchList?.length) {
-          return;
-        }
-
-        const newPotentialDropEl = firstParent(e, dropClass);
-        if (newPotentialDropEl && potentialDropEl !== newPotentialDropEl) {
-          potentialDropEl?.classList.remove("fake-hover");
-          potentialDropEl = newPotentialDropEl;
-          potentialDropEl.classList.add("fake-hover");
-          onHover(potentialDropEl);
-        }
+      const newPotentialDropEl = firstParent(e, dropClass);
+      if (newPotentialDropEl && potentialDropEl !== newPotentialDropEl) {
+        potentialDropEl?.classList.remove("fake-hover");
+        potentialDropEl = newPotentialDropEl;
+        potentialDropEl.classList.add("fake-hover");
+        onHover(potentialDropEl, overlayEl);
       }
     }
   };

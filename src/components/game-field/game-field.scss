@@ -512,16 +512,34 @@ body {
     place-items: center;
     width: var(--s-size);
     height: var(--s-size);
-
-    .#{$EMOJI} {
-      &::before {
-        content: "🤔";
-      }
-    }
   }
 
   .#{$ARROW} {
     display: none;
+  }
+
+  &.#{$SCARY} {
+    &.#{$PERSON} .#{$EMOJI} {
+      &::before {
+        content: "😈";
+      }
+    }
+  }
+
+  &.#{$SCARED} {
+    &.#{$PERSON} .#{$EMOJI} {
+      &::before {
+        content: "😱";
+      }
+    }
+
+    &.#{$SCARY} {
+      &.#{$PERSON} .#{$EMOJI} {
+        &::before {
+          content: "👿";
+        }
+      }
+    }
   }
 }
 
