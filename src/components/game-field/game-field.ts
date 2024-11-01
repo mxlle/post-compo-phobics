@@ -337,9 +337,7 @@ export function generateGameFieldElement(gameFieldData: GameFieldData) {
       });
 
       cellElement.addEventListener("mouseover", () => {
-        if (selectedPerson) {
-          updateArrowsOnHover(globals.placedPersons, selectedPerson, cell);
-        }
+        updateArrowsOnHover(cell, globals.placedPersons, selectedPerson);
       });
 
       cellElement.addEventListener("mouseleave", () => {
@@ -404,8 +402,8 @@ function setupDragDrop() {
 
   function onHover(potentialDropEl: HTMLElement) {
     const cell = getElementCell(globals.gameFieldData, potentialDropEl);
-    if (selectedPerson && cell) {
-      updateArrowsOnHover(globals.placedPersons, selectedPerson, cell);
+    if (cell) {
+      updateArrowsOnHover(cell, globals.placedPersons, selectedPerson);
     }
   }
 }
@@ -588,8 +586,12 @@ export function updateStateForSelection(placedPersons: PlacedPerson[], selectedP
   });
 }
 
-function updateArrowsOnHover(placedPersons: PlacedPerson[], selectedPerson: PlacedPerson | WaitingPerson, hoveredCell: Cell) {
+function updateArrowsOnHover(hoveredCell: Cell, placedPersons: PlacedPerson[], selectedPerson: PlacedPerson | WaitingPerson | undefined) {
   cleanupAllArrows();
+
+  if (!selectedPerson) {
+    return;
+  }
 
   placedPersons.forEach((person) => {
     if (person.phobia === selectedPerson.name) {
@@ -632,9 +634,9 @@ function updateArrowsOnHover(placedPersons: PlacedPerson[], selectedPerson: Plac
   });
 }
 
-function createArrowBetweenElements(source: HTMLElement, target: HTMLElement, phobia: Phobia) {
+function createArrowBetweenElements(source: HTMLElement, target: HTMLElement, phobia: Phobia, additionalCssClasses?: string) {
   const arrow = createElement({
-    cssClass: `${CssClass.ANCHOR_ARROW}`,
+    cssClass: `${CssClass.ANCHOR_ARROW} ${additionalCssClasses}`,
   });
 
   const sourceRect = source.getBoundingClientRect();

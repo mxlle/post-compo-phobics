@@ -446,53 +446,53 @@ body {
         //}
       }
     }
-
-    .anchor_arrow {
-      @include phobia-colors;
-
-      $offset: 1rem;
-
-      z-index: 1000;
-      pointer-events: none;
-      position: absolute;
-      width: calc(var(--distance) - $offset);
-      border: 4px dashed var(--color, gray);
-      border-left: none;
-      border-right: none;
-      height: 0;
-      transform: rotate(var(--angle));
-      transform-origin: left;
-      display: block;
-      background: $text-primary;
-
-      &::before {
-        // arrow head
-        content: "";
-        position: absolute;
-        width: 0;
-        height: 0;
-        border-top: 0.75rem solid transparent;
-        border-bottom: 0.75rem solid transparent;
-        border-left: 0.75rem solid var(--color, gray);
-        left: 100%;
-        top: 50%;
-        transform: translateY(-50%);
-      }
-
-      //&::after {
-      //  // dot
-      //  content: "";
-      //  position: absolute;
-      //  width: 0.5rem;
-      //  height: 0.5rem;
-      //  border-radius: 50%;
-      //  background: $text-primary;
-      //  left: 0;
-      //  top: 50%;
-      //  transform: translate(-50%, -50%);
-      //}
-    }
   }
+}
+
+.anchor_arrow {
+  @include phobia-colors;
+
+  $offset: 1rem;
+
+  z-index: 1000;
+  pointer-events: none;
+  position: absolute;
+  width: calc(var(--distance) - $offset);
+  border: 4px dashed var(--color, gray);
+  border-left: none;
+  border-right: none;
+  height: 0;
+  transform: rotate(var(--angle));
+  transform-origin: left;
+  display: block;
+  background: $text-primary;
+
+  &::before {
+    // arrow head
+    content: "";
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-top: 0.75rem solid transparent;
+    border-bottom: 0.75rem solid transparent;
+    border-left: 0.75rem solid var(--color, gray);
+    left: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  //&::after {
+  //  // dot
+  //  content: "";
+  //  position: absolute;
+  //  width: 0.5rem;
+  //  height: 0.5rem;
+  //  border-radius: 50%;
+  //  background: $text-primary;
+  //  left: 0;
+  //  top: 50%;
+  //  transform: translate(-50%, -50%);
+  //}
 }
 
 .drag-overlay {
