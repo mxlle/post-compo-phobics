@@ -386,9 +386,11 @@ body {
           cursor: pointer;
 
           &:after {
-            background-color: rgba($success-color-light, 0.3);
-            color: $success-color-light;
-            // animation: opacityBlink 1s infinite;
+            background-color: rgba(mix($main-color, white, 70%), 0.4);
+
+            @media (prefers-color-scheme: dark) {
+              background-color: rgba(mix($main-color, white, 70%), 0.15);
+            }
           }
 
           &:hover,
@@ -398,7 +400,7 @@ body {
               background-image: url("../../assets/svgs/relocate.svg");
               background-size: 50%;
               background-position: center;
-              background-color: rgba($success-color-light, 0.5);
+              background-color: rgba($success-color-light, 0.3);
             }
           }
         }
@@ -417,16 +419,11 @@ body {
 
         &.secondary_affected_by:not(.#{$SELECTED}) {
           &.#{$CHAIR}:not(.#{$HAS_PERSON}) {
-            &:after {
-              background-color: rgba($danger-color, 0.3);
-              color: $danger-color;
-            }
-
             &:hover,
             &.fake-hover {
               &:after {
                 background-image: url("../../assets/svgs/wrong-location.svg");
-                background-color: rgba($danger-color, 0.5);
+                background-color: rgba($danger-color, 0.3);
               }
             }
           }
