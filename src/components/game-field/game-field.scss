@@ -391,7 +391,8 @@ body {
             // animation: opacityBlink 1s infinite;
           }
 
-          &:hover {
+          &:hover,
+          &.fake-hover {
             &:after {
               background-repeat: no-repeat;
               background-image: url("../../assets/svgs/relocate.svg");
@@ -421,7 +422,8 @@ body {
               color: $danger-color;
             }
 
-            &:hover {
+            &:hover,
+            &.fake-hover {
               &:after {
                 background-image: url("../../assets/svgs/wrong-location.svg");
                 background-color: rgba($danger-color, 0.5);

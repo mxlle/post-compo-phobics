@@ -29,8 +29,9 @@ export default (
   createOverlay: (dragEl: HTMLElement) => HTMLElement,
   onDrop: (dragEl: HTMLElement, dropEl: HTMLElement, isTouch: boolean) => void,
   onDragCancel: (dragEl: HTMLElement) => void,
+  onHover: (potentialDropEl: HTMLElement) => void,
 ) => {
-  let dragTimeout, isDragging, dragEl, overlayEl, dropEl;
+  let dragTimeout, isDragging, dragEl, overlayEl, dropEl, potentialDropEl;
   const innerRoot = rootEl;
   const outerRoot = document.body;
 
@@ -79,6 +80,21 @@ export default (
     if (isDragging && overlayEl) {
       e.preventDefault();
       Object.assign(overlayEl.style, getOverlayPosition(e, dragEl));
+
+      if (e.type === "touchmove") {
+        const touchList = e.touches;
+        if (!touchList?.length) {
+          return;
+        }
+
+        const newPotentialDropEl = firstParent(e, dropClass);
+        if (newPotentialDropEl && potentialDropEl !== newPotentialDropEl) {
+          potentialDropEl?.classList.remove("fake-hover");
+          potentialDropEl = newPotentialDropEl;
+          potentialDropEl.classList.add("fake-hover");
+          onHover(potentialDropEl);
+        }
+      }
     }
   };
   const dropping = (e) => {
@@ -95,6 +111,8 @@ export default (
         onDragCancel(dragEl);
       }
     }
+    document.querySelectorAll(".fake-hover").forEach((elem) => elem.classList.remove("fake-hover"));
+    potentialDropEl = undefined;
   };
   innerRoot.addEventListener("mousedown", pointerdown);
   innerRoot.addEventListener("touchstart", pointerdown);

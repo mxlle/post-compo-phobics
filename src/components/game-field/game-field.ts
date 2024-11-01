@@ -362,7 +362,7 @@ export function generateGameFieldElement(gameFieldData: GameFieldData) {
 }
 
 function setupDragDrop() {
-  initDragDrop(mainContainer, CssClass.PERSON, CssClass.CELL, createOverlayOnDragStart, onDrop, onDragCancel);
+  initDragDrop(mainContainer, CssClass.PERSON, CssClass.CELL, createOverlayOnDragStart, onDrop, onDragCancel, onHover);
 
   function createOverlayOnDragStart(personElement: HTMLElement) {
     const person = findPersonFromElement(globals.placedPersons, globals.waitingPersons, personElement);
@@ -400,6 +400,13 @@ function setupDragDrop() {
     mainContainer.classList.remove(CssClass.IS_DRAGGING);
     personElement.classList.remove(CssClass.IS_DRAGGED);
     // personElement.click();
+  }
+
+  function onHover(potentialDropEl: HTMLElement) {
+    const cell = getElementCell(globals.gameFieldData, potentialDropEl);
+    if (selectedPerson && cell) {
+      updateArrowsOnHover(globals.placedPersons, selectedPerson, cell);
+    }
   }
 }
 
