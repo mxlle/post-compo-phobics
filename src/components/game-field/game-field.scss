@@ -223,6 +223,7 @@ main {
   &.#{$HAS_PERSON} {
     .#{$EMOJI} {
       z-index: 1;
+      transition: transform 0.2s ease-in-out;
     }
   }
 
@@ -274,10 +275,18 @@ main {
     }
   }
 
-  .#{$SCARY},
-  .#{$SCARED} {
-    .#{$EMOJI} {
-      scale: 1.3;
+  .hover_related {
+    &.#{$SCARY} {
+      .#{$EMOJI} {
+        transform: scale(1.3);
+      }
+    }
+
+    &.#{$SCARED} {
+      .#{$EMOJI} {
+        scale: 1.2;
+        animation: tremble 0.15s infinite;
+      }
     }
   }
 
@@ -429,12 +438,12 @@ body {
           }
         }
 
-        &:not(.affected_by) {
-          .#{$PERSON}:not(.#{$SCARY}, .#{$SCARED}, .#{$SELECTED}) {
-            filter: grayscale(0.5);
-            opacity: 0.75;
-          }
-        }
+        //&:not(.affected_by) {
+        //  .#{$PERSON}:not(.#{$SCARY}, .#{$SCARED}, .#{$SELECTED}) {
+        //    filter: grayscale(0.5);
+        //    opacity: 0.75;
+        //  }
+        //}
       }
     }
 
@@ -447,7 +456,7 @@ body {
       pointer-events: none;
       position: absolute;
       width: calc(var(--distance) - $offset);
-      border: 2px dashed var(--color, gray);
+      border: 4px dashed var(--color, gray);
       border-left: none;
       border-right: none;
       height: 0;
@@ -462,9 +471,9 @@ body {
         position: absolute;
         width: 0;
         height: 0;
-        border-top: 0.5rem solid transparent;
-        border-bottom: 0.5rem solid transparent;
-        border-left: 0.5rem solid var(--color, gray);
+        border-top: 0.75rem solid transparent;
+        border-bottom: 0.75rem solid transparent;
+        border-left: 0.75rem solid var(--color, gray);
         left: 100%;
         top: 50%;
         transform: translateY(-50%);

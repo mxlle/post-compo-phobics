@@ -399,7 +399,7 @@ function setupDragDrop() {
 
     mainContainer.classList.remove(CssClass.IS_DRAGGING);
     personElement.classList.remove(CssClass.IS_DRAGGED);
-    // personElement.click();
+    cleanupAllArrows();
   }
 
   function onHover(potentialDropEl: HTMLElement) {
@@ -526,7 +526,7 @@ export async function updatePanicStates(
 
 export function updateStateForSelection(placedPersons: PlacedPerson[], selectedPerson: PlacedPerson | WaitingPerson | undefined) {
   placedPersons.forEach((person) => {
-    person.personElement.classList.remove(CssClass.SCARY, CssClass.SCARED, CssClass.SELECTED);
+    person.personElement.classList.remove(CssClass.SCARY, CssClass.SCARED, CssClass.SELECTED, CssClass.HOVER_RELATED);
   });
 
   cellElements.forEach((row) => {
@@ -607,6 +607,7 @@ function updateArrowsOnHover(placedPersons: PlacedPerson[], selectedPerson: Plac
             const cellElement = getCellElement(cell);
             if (!hasPerson(placedPersons, cell) && isSameCell(cell, hoveredCell)) {
               createArrowBetweenElements(cellElement, person.personElement, person.phobia);
+              person.personElement.classList.add(CssClass.HOVER_RELATED);
             }
           });
         } else {
@@ -614,6 +615,7 @@ function updateArrowsOnHover(placedPersons: PlacedPerson[], selectedPerson: Plac
             const cellElement = getCellElement(cell);
             if (!hasPerson(placedPersons, cell) && isSameCell(cell, hoveredCell)) {
               createArrowBetweenElements(cellElement, person.personElement, person.phobia);
+              person.personElement.classList.add(CssClass.HOVER_RELATED);
             }
           });
         }
@@ -623,6 +625,7 @@ function updateArrowsOnHover(placedPersons: PlacedPerson[], selectedPerson: Plac
         const cellElement = getCellElement(cell);
         if (!hasPerson(placedPersons, cell) && isSameCell(cell, hoveredCell)) {
           createArrowBetweenElements(person.personElement, cellElement, person.name);
+          person.personElement.classList.add(CssClass.HOVER_RELATED);
         }
       });
     }
@@ -657,4 +660,8 @@ function createArrowBetweenElements(source: HTMLElement, target: HTMLElement, ph
 
 function cleanupAllArrows() {
   document.querySelectorAll(`.${CssClass.ANCHOR_ARROW}`).forEach((arrow) => arrow.remove());
+
+  globals.placedPersons.forEach((person) => {
+    person.personElement.classList.remove(CssClass.HOVER_RELATED);
+  });
 }
