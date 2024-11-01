@@ -281,10 +281,14 @@ main {
     }
   }
 
-  .hover_related_scared {
+  .hover_related_scared.#{$SCARED}:not(.#{$SCARY}) {
     .#{$EMOJI} {
       scale: 1.2;
       animation: tremble 0.15s infinite;
+
+      &::before {
+        content: "😱";
+      }
     }
   }
 
