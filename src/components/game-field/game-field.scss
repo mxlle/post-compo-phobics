@@ -431,7 +431,7 @@ body {
       border-left: none;
       border-right: none;
       height: 0;
-      transform: rotate(var(--angle)) translate($offset, 0);
+      transform: rotate(var(--angle));
       transform-origin: left;
       display: block;
       background: $text-primary;
@@ -444,8 +444,8 @@ body {
         height: 0;
         border-top: 0.5rem solid transparent;
         border-bottom: 0.5rem solid transparent;
-        border-right: 0.5rem solid var(--color, gray);
-        left: -0.5rem;
+        border-left: 0.5rem solid var(--color, gray);
+        left: 100%;
         top: 50%;
         transform: translateY(-50%);
       }
@@ -458,26 +458,9 @@ body {
         height: 0.5rem;
         border-radius: 50%;
         background: $text-primary;
-        left: 100%;
+        left: 0;
         top: 50%;
         transform: translate(-50%, -50%);
-      }
-
-      &.target {
-        transform: rotate(var(--angle)) translate(0, 0);
-
-        &::before {
-          // arrow head
-          left: 100%;
-          border-right: none;
-          border-left: 0.5rem solid var(--color, gray);
-        }
-
-        &::after {
-          // dot
-          left: 0;
-          background: var(--color, gray);
-        }
       }
     }
   }

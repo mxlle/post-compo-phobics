@@ -544,7 +544,7 @@ export function updateStateForSelection(placedPersons: PlacedPerson[], selectedP
             const cellElement = getCellElement(cell);
             cellElement.classList.add(CssClass.SECONDARY_AFFECTED_BY);
             if (!hasPerson(placedPersons, cell)) {
-              createArrowBetweenElements(cellElement, person.personElement, person.phobia, true);
+              createArrowBetweenElements(cellElement, person.personElement, person.phobia);
             }
           });
         } else {
@@ -552,7 +552,7 @@ export function updateStateForSelection(placedPersons: PlacedPerson[], selectedP
             const cellElement = getCellElement(cell);
             cellElement.classList.add(CssClass.SECONDARY_AFFECTED_BY);
             if (!hasPerson(placedPersons, cell)) {
-              createArrowBetweenElements(cellElement, person.personElement, person.phobia, true);
+              createArrowBetweenElements(cellElement, person.personElement, person.phobia);
             }
           });
         }
@@ -564,7 +564,7 @@ export function updateStateForSelection(placedPersons: PlacedPerson[], selectedP
         const cellElement = getCellElement(cell);
         cellElement.classList.add(CssClass.SECONDARY_AFFECTED_BY);
         if (!hasPerson(placedPersons, cell)) {
-          createArrowBetweenElements(cellElement, person.personElement, person.name, false);
+          createArrowBetweenElements(person.personElement, cellElement, person.name);
         }
       });
     }
@@ -580,9 +580,9 @@ export function updateStateForSelection(placedPersons: PlacedPerson[], selectedP
   });
 }
 
-function createArrowBetweenElements(source: HTMLElement, target: HTMLElement, phobia: Phobia, isTargetArrow: boolean) {
+function createArrowBetweenElements(source: HTMLElement, target: HTMLElement, phobia: Phobia) {
   const arrow = createElement({
-    cssClass: `${CssClass.ANCHOR_ARROW} ${isTargetArrow ? CssClass.ANCHOR_TARGET : CssClass.ANCHOR_SOURCE}`,
+    cssClass: `${CssClass.ANCHOR_ARROW}`,
   });
 
   const sourceRect = source.getBoundingClientRect();
