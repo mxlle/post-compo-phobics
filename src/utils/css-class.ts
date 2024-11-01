@@ -18,7 +18,9 @@ export const enum CssClass {
   IS_DRAGGING = "is_dragging",
   IS_DRAGGED = "is_dragged",
   ANCHOR_ARROW = "anchor_arrow",
-  HOVER_RELATED = "hover_related",
+  HOVER_RELATED_SCARY = "hover_related_scary",
+  HOVER_RELATED_SCARED = "hover_related_scared",
+  BOTH_WAYS = "both_ways",
 
   // arrows
   UP = "up",

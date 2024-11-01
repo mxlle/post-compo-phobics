@@ -524,7 +524,13 @@ export async function updatePanicStates(
 
 export function updateStateForSelection(placedPersons: PlacedPerson[], selectedPerson: PlacedPerson | WaitingPerson | undefined) {
   placedPersons.forEach((person) => {
-    person.personElement.classList.remove(CssClass.SCARY, CssClass.SCARED, CssClass.SELECTED, CssClass.HOVER_RELATED);
+    person.personElement.classList.remove(
+      CssClass.SCARY,
+      CssClass.SCARED,
+      CssClass.SELECTED,
+      CssClass.HOVER_RELATED_SCARY,
+      CssClass.HOVER_RELATED_SCARED,
+    );
   });
 
   cellElements.forEach((row) => {
@@ -566,7 +572,9 @@ export function updateStateForSelection(placedPersons: PlacedPerson[], selectedP
           });
         }
       }
-    } else if (person.name === selectedPerson.phobia) {
+    }
+
+    if (person.name === selectedPerson.phobia) {
       person.personElement.classList.add(CssClass.SCARY);
 
       person.affects.forEach((cell) => {
@@ -608,8 +616,9 @@ function updateArrowsOnHover(hoveredCell: Cell, placedPersons: PlacedPerson[], s
 
             const cellElement = getCellElement(cell);
             if (!hasPerson(placedPersons, cell) && isSameCell(cell, hoveredCell)) {
-              createArrowBetweenElements(cellElement, person.personElement, person.phobia);
-              person.personElement.classList.add(CssClass.HOVER_RELATED);
+              const isBothWays = selectedPerson.phobia === person.name;
+              createArrowBetweenElements(cellElement, person.personElement, person.phobia, isBothWays ? CssClass.BOTH_WAYS : "");
+              person.personElement.classList.add(CssClass.HOVER_RELATED_SCARED);
             }
           });
         } else {
@@ -617,17 +626,20 @@ function updateArrowsOnHover(hoveredCell: Cell, placedPersons: PlacedPerson[], s
             const cellElement = getCellElement(cell);
             if (!hasPerson(placedPersons, cell) && isSameCell(cell, hoveredCell)) {
               createArrowBetweenElements(cellElement, person.personElement, person.phobia);
-              person.personElement.classList.add(CssClass.HOVER_RELATED);
+              person.personElement.classList.add(CssClass.HOVER_RELATED_SCARED);
             }
           });
         }
       }
-    } else if (person.name === selectedPerson.phobia) {
+    }
+
+    if (person.name === selectedPerson.phobia) {
       person.affects.forEach((cell) => {
         const cellElement = getCellElement(cell);
         if (!hasPerson(placedPersons, cell) && isSameCell(cell, hoveredCell)) {
-          createArrowBetweenElements(person.personElement, cellElement, person.name);
-          person.personElement.classList.add(CssClass.HOVER_RELATED);
+          const isBothWays = selectedPerson.name === person.phobia;
+          createArrowBetweenElements(person.personElement, cellElement, person.name, isBothWays ? CssClass.BOTH_WAYS : "");
+          person.personElement.classList.add(CssClass.HOVER_RELATED_SCARY);
         }
       });
     }
@@ -664,6 +676,6 @@ function cleanupAllArrows() {
   document.querySelectorAll(`.${CssClass.ANCHOR_ARROW}`).forEach((arrow) => arrow.remove());
 
   globals.placedPersons.forEach((person) => {
-    person.personElement.classList.remove(CssClass.HOVER_RELATED);
+    person.personElement.classList.remove(CssClass.HOVER_RELATED_SCARY, CssClass.HOVER_RELATED_SCARED);
   });
 }

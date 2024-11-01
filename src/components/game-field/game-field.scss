@@ -275,18 +275,16 @@ main {
     }
   }
 
-  .hover_related {
-    &.#{$SCARY} {
-      .#{$EMOJI} {
-        transform: scale(1.3);
-      }
+  .hover_related_scary {
+    .#{$EMOJI} {
+      transform: scale(1.3);
     }
+  }
 
-    &.#{$SCARED} {
-      .#{$EMOJI} {
-        scale: 1.2;
-        animation: tremble 0.15s infinite;
-      }
+  .hover_related_scared {
+    .#{$EMOJI} {
+      scale: 1.2;
+      animation: tremble 0.15s infinite;
     }
   }
 
@@ -466,6 +464,10 @@ body {
   transform-origin: left;
   display: block;
   background: $text-primary;
+
+  &.both_ways {
+    transform: rotate(var(--angle)) translateY(0.25rem);
+  }
 
   &::before {
     // arrow head
