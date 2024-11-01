@@ -492,7 +492,7 @@ body {
   font-size: grid-mixins.$font-size;
 
   @media (max-width: 600px) {
-    transform: scale(2.5);
+    transform: scale(1.75);
   }
 
   &.#{$PERSON} {
