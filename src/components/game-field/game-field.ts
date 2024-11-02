@@ -161,8 +161,6 @@ function checkForFirstMove() {
 function cellClickHandler(cell: Cell) {
   console.debug("Cell clicked", cell);
 
-  checkForFirstMove();
-
   const cellHasPerson = hasPerson(globals.placedPersons, cell);
 
   if (!cellHasPerson && lastClickedCell && isSameCell(cell, lastClickedCell)) {
@@ -202,6 +200,8 @@ function cellClickHandler(cell: Cell) {
 }
 
 function selectPerson(person: PlacedPerson | WaitingPerson) {
+  checkForFirstMove();
+
   if (selectedPerson) {
     selectedPerson.personElement.classList.remove(CssClass.SELECTED);
   }
@@ -213,8 +213,6 @@ function selectPerson(person: PlacedPerson | WaitingPerson) {
 }
 
 function waitingAreaCellClickHandler() {
-  checkForFirstMove();
-
   const waitingPerson = globals.waitingPersons[0];
 
   if (!waitingPerson || waitingPerson === selectedPerson) {
