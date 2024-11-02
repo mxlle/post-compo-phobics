@@ -55,16 +55,16 @@ const PhobiaTypeMap: Record<Phobia, PhobiaType> = {
   hotpink: "table",
 };
 
-export function isTablePhobia(phobia: Phobia): boolean {
-  return PhobiaTypeMap[phobia] === "table";
+export function isTablePhobia(_phobia: Phobia): boolean {
+  return false; // PhobiaTypeMap[phobia] === "table";
 }
 
-export function hasTablePhobia(person: BasePerson): boolean {
-  return PhobiaTypeMap[person.phobia] === "table";
+export function hasTablePhobia(_person: BasePerson): boolean {
+  return false; // PhobiaTypeMap[person.phobia] === "table";
 }
 
-export const REGULAR_PHOBIAS = PHOBIAS.filter((phobia) => PhobiaTypeMap[phobia] === "regular");
-export const TABLE_PHOBIAS = PHOBIAS.filter((phobia) => PhobiaTypeMap[phobia] === "table");
+export const REGULAR_PHOBIAS = PHOBIAS; //.filter((phobia) => PhobiaTypeMap[phobia] === "regular");
+export const TABLE_PHOBIAS = PHOBIAS; //.filter((phobia) => PhobiaTypeMap[phobia] === "table");
 
 export function getPhobiaName(phobia: Phobia | undefined): string {
   if (!phobia) {
