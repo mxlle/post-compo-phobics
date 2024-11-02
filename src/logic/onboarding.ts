@@ -11,6 +11,7 @@ export const enum OnboardingStep {
   INTRO = 0,
   BIG_FEAR = 1,
   RESORT = 2,
+  MULTIPLE_PERSONS = 3,
   // TRISKAIDEKAPHOBIA = 3,
 }
 
@@ -66,6 +67,20 @@ const mediumField = (() => {
   ];
 })();
 
+// a 7 by 7 grid
+const mediumPlusField = (() => {
+  const { _, T, c } = getCellTypesWithoutPrefix();
+  return [
+    [_, _, _, _, _, _, _],
+    [c, T, c, _, _, _, _],
+    [c, T, c, _, c, T, c],
+    [c, T, c, _, c, T, c],
+    [c, T, c, _, c, T, c],
+    [_, _, _, _, c, T, c],
+    [_, _, _, _, _, _, _],
+  ];
+})();
+
 export function getOnboardingData(): OnboardingData | undefined {
   const step = globals.onboardingStep;
 
@@ -76,6 +91,8 @@ export function getOnboardingData(): OnboardingData | undefined {
       return getOnboardingDataForBothPhobias();
     case OnboardingStep.RESORT:
       return getOnboardingDataForResort();
+    case OnboardingStep.MULTIPLE_PERSONS:
+      return getOnboardingDataForMultiplePersons();
     // case OnboardingStep.TRISKAIDEKAPHOBIA:
     //   return getOnboardingDataForTriskaidekaphobia();
     default:
@@ -93,7 +110,7 @@ export function increaseOnboardingStepIfApplicable() {
 
   let step = globals.onboardingStep + 1;
 
-  if (step > OnboardingStep.RESORT) {
+  if (step > OnboardingStep.MULTIPLE_PERSONS) {
     step = -1;
   }
 
@@ -121,8 +138,8 @@ function getOnboardingDataForBothPhobias(): OnboardingData {
   const sitting: IndexedSittingPersonDefinition[] = [
     { row: 2, column: 0, nameI: 0 },
     { row: 2, column: 4, nameI: 2, phobiaI: 1 },
-    { row: 4, column: 6, nameI: 3 },
-    { row: 3, column: 2, nameI: 4 },
+    { row: 3, column: 6, nameI: 3 },
+    { row: 4, column: 2, nameI: 0 },
   ];
 
   const { waitingPersons, sittingPersons } = getPersonsFromIndexedDefinitions(waiting, sitting);
@@ -143,7 +160,7 @@ function getOnboardingDataForResort(): OnboardingData {
     { row: 3, column: 6, nameI: 2, phobiaI: 1 },
     { row: 4, column: 4, nameI: 3 },
     { row: 3, column: 0, nameI: 4 },
-    { row: 4, column: 2, nameI: 4 },
+    { row: 4, column: 2, nameI: 0, phobiaI: 2 },
   ];
 
   const { waitingPersons, sittingPersons } = getPersonsFromIndexedDefinitions(waiting, sitting);
@@ -153,6 +170,32 @@ function getOnboardingDataForResort(): OnboardingData {
     waitingPersons,
     sittingPersons,
     par: 2,
+  };
+}
+
+function getOnboardingDataForMultiplePersons(): OnboardingData {
+  const waiting: IndexedPersonDefinition[] = [
+    { nameI: 1, phobiaI: 0 },
+    { nameI: 2, phobiaI: 1 },
+    { nameI: 1, phobiaI: 0 },
+  ];
+
+  const sitting: IndexedSittingPersonDefinition[] = [
+    { row: 2, column: 6, nameI: 0, phobiaI: 2 },
+    { row: 2, column: 2, nameI: 2, phobiaI: 1 },
+    { row: 3, column: 2, nameI: 2, phobiaI: 1 },
+    { row: 5, column: 6, nameI: 3 },
+    { row: 3, column: 0, nameI: 4 },
+    { row: 4, column: 4, nameI: 0, phobiaI: 2 },
+  ];
+
+  const { waitingPersons, sittingPersons } = getPersonsFromIndexedDefinitions(waiting, sitting);
+
+  return {
+    field: mediumPlusField,
+    waitingPersons,
+    sittingPersons,
+    par: 4,
   };
 }
 

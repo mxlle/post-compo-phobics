@@ -448,9 +448,9 @@ function addOnboardingArrowIfApplicable() {
   const onboardingData = getOnboardingData();
   const waitingLength = onboardingData?.waitingPersons.length;
 
-  if (waitingLength) {
+  if (waitingLength === 1) {
     onboardingArrow = getOnboardingArrow(Direction.AUTO);
-    const cellElement = waitingArea?.children[0]?.children[waitingLength - 1] as HTMLElement;
+    const cellElement = waitingArea?.children[0]?.children[0] as HTMLElement;
     cellElement.append(onboardingArrow);
   }
 }
